@@ -18,3 +18,6 @@ yarn-error.log*
 
 *.sublime-project
 *.sublime-workspace
+
+# Sass builds
+src/**/*.css

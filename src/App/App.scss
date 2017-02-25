@@ -76,3 +76,9 @@ Resizer.disabled {
 Resizer.disabled:hover {
   border-color: transparent;
 }
+
+.code-block {
+  text-align: left;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}

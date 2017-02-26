@@ -10379,14 +10379,12 @@ td.uk-text-break {
   padding: 0.5em;
   background: #fafafa;
   color: #5c6773; }
-
-.hljs ::selection {
-  background: #f0eee4;
-  color: inherit; }
-
-.hljs ::-moz-selection {
-  background: #f0eee4;
-  color: inherit; }
+  .hljs ::selection {
+    background: #f0eee4;
+    color: inherit; }
+  .hljs ::-moz-selection {
+    background: #f0eee4;
+    color: inherit; }
 
 .hljs::selection {
   background: #f0eee4;

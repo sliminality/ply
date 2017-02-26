@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import uikit from 'react-uikit-base';
 import Codeblock from 'react-uikit-codeblock';
 import SplitPane from 'react-split-pane';
-import DOMExplorer from '../components/DOMExplorer/DOMExplorer';
+import DOMExplorer from '../../components/DOMExplorer/DOMExplorer';
 import codeExample from './codeExample';
 import './App.css';
 

@@ -1,0 +1,95 @@
+// @flow
+import React, { Component } from 'react';
+import { Parser, DomHandler } from 'htmlparser2';
+import './DOMExplorer.css';
+
+const parserOpts = {
+  withStartIndices: true,
+  withEndIndices: true,
+  normalizeWhitespace: true,
+};
+
+class DOMExplorer extends Component {
+  constructor(props, context) {
+    super(props, context);
+    this._parse = this._parse.bind(this);
+    this._handleParse = this._handleParse.bind(this);
+
+    this.domHandler = new DomHandler(this._handleParse, parserOpts);
+    this._parser = new Parser(this.domHandler);
+
+    this.state = {
+      parseError: null,
+      ast: null,
+    };
+  }
+
+  componentDidMount() {
+    this._parse(this.props.code);
+  }
+
+  componentWillUnmount() {
+    this.parser.done();
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.code !== this.props.code) {
+      this._parse(nextProps.code);
+    }
+    // May want to change focus here?
+  };
+
+  shouldComponentUpdate(nextProps, nextState) {
+    return nextState.ast !== this.state.ast
+      || nextState.parseError !== this.state.parseError
+      || nextProps.code !== this.props.code;
+  }
+
+  _handleParse(err, ast) {
+    if (err) {
+      this.setState({ parseError: err });
+    } else {
+      this.setState({ ast: ast, parseError: null });
+    }
+  }
+
+  _parse(code) {
+    if (!this._parser) {
+      return;
+    }
+    this._parser.parseComplete(code);
+  }
+
+  render() {
+    let output;
+    if (this.state.parseError) {
+      output = (
+        <div className="DOMExplorer__parse-error">
+          {this.state.parseError.message}
+        </div>
+      );
+    } else {
+      output = (
+        this.state.ast
+      );
+    }
+
+    return (
+      <div className="DOMExplorer">
+        <pre className="code-block">
+          {output && output.toString()}
+        </pre>
+      </div>
+    );
+  }
+}
+
+DOMExplorer.propTypes = {
+  code: React.PropTypes.string.isRequired,
+  // parser: PropTypes.object.isRequired,
+  // parserSettings: PropTypes.object,
+  // cursor: PropTypes.any,
+  // onParseError: React.PropTypes.func.isRequired,
+};
+
+export default DOMExplorer;

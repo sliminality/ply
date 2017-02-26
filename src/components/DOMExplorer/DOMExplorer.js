@@ -10,6 +10,10 @@ const parserOpts = {
 };
 
 class DOMExplorer extends Component {
+  props: {
+    code: string,
+  };
+
   constructor(props, context) {
     super(props, context);
     this._parse = this._parse.bind(this);
@@ -84,12 +88,12 @@ class DOMExplorer extends Component {
   }
 }
 
-DOMExplorer.propTypes = {
-  code: React.PropTypes.string.isRequired,
-  // parser: PropTypes.object.isRequired,
-  // parserSettings: PropTypes.object,
-  // cursor: PropTypes.any,
-  // onParseError: React.PropTypes.func.isRequired,
-};
+// DOMExplorer.propTypes = {
+//   code: React.PropTypes.string.isRequired,
+//   // parser: PropTypes.object.isRequired,
+//   // parserSettings: PropTypes.object,
+//   // cursor: PropTypes.any,
+//   // onParseError: React.PropTypes.func.isRequired,
+// };
 
 export default DOMExplorer;

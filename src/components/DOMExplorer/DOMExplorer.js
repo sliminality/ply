@@ -44,7 +44,7 @@ class DOMExplorer extends Component {
   };
 
   shouldComponentUpdate(nextProps, nextState) {
-    debugger
+    debugger;
     return nextState.ast !== this.state.ast
       || nextState.parseError !== this.state.parseError
       || nextProps.code !== this.props.code;

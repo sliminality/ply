@@ -1,5 +1,6 @@
-const html = `<div class="parent"> test
+const html = `<div class="parent">test
   <div class="child">Child DivChild DivChild DivChild DivChild DivChild </div>
+  <img src="foo.jpg">
 </div>`;
 
 const css = `.parent {

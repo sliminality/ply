@@ -13,7 +13,8 @@ class App extends Component {
       <div className="App">
         <SplitPane split="vertical"
                    minSize={50}
-                   defaultSize={400}>
+                   defaultSize={400}
+        >
           <DOMExplorer code={codeExample.html} />
           <div>
             <Codeblock scroll="auto">{codeExample.css}</Codeblock>

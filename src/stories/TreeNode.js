@@ -1,4 +1,25 @@
+// @flow
 import React, { Component } from 'react';
+
+type BaseElement = {
+  parent: ?Element,
+  next: ?Element,
+  prev: ?Element,
+  startIndex: number,
+  type: 'text' | 'tag',
+};
+
+type TextElement = {
+  data: string,
+} & BaseElement;
+
+type TagElement = {
+  attribs: { [attrib: string]: string },
+  children: Element[],
+  name: string,
+} & BaseElement;
+
+type Element = TagElement | TextElement;
 
 const styles = {
   main: {
@@ -78,6 +99,7 @@ const TagNode = (props) => {
                   node={child}
                   depth={props.depth + 1}
                   isExpanded={false}
+                  onToggleExpand={props.onToggleExpand}
         />
       );
     });
@@ -91,16 +113,25 @@ const TagNode = (props) => {
     .map(attrToSpan);
 
   return (
-    <span>
-      <span style={arrowStyle}></span>
+    <li>
+      <span style={arrowStyle}
+            onClick={props.onToggleExpand}
+      />
       <span style={styles.tagName}>{node.name}</span>
       {attrList}
-      {childNodes}
-    </span>
+      <ul>{childNodes}</ul>
+    </li>
   );
 };
 
 class TreeNode extends Component {
+  props: {
+    node: Element,
+    depth: number,
+    isExpanded: boolean,
+    onToggleExpand: () => void,
+  };
+
   render() {
     const { type } = this.props.node;
     let contents;
@@ -109,9 +140,7 @@ class TreeNode extends Component {
       const text = this.props.node.data.trim();
 
       contents =
-        <div className="TextNode">
-          "{text}"
-        </div>;
+        <span>"{text}"</span>;
     } else if (type === 'tag') {
       contents = TagNode(this.props);
     } else {
@@ -128,9 +157,9 @@ class TreeNode extends Component {
     };
 
     return (
-      <div style={treeNodeStyles}>
+      <li style={treeNodeStyles}>
         {contents}
-      </div>
+      </li>
     );
   }
 }

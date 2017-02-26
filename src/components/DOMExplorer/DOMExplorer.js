@@ -1,6 +1,8 @@
 // @flow
 import React, { Component } from 'react';
 import { Parser, DomHandler } from 'htmlparser2';
+import Codeblock from 'react-uikit-codeblock';
+import TreeNode from '../../stories/TreeNode';
 import './DOMExplorer.css';
 
 const parserOpts = {
@@ -44,7 +46,6 @@ class DOMExplorer extends Component {
   };
 
   shouldComponentUpdate(nextProps, nextState) {
-    debugger;
     return nextState.ast !== this.state.ast
       || nextState.parseError !== this.state.parseError
       || nextProps.code !== this.props.code;
@@ -67,23 +68,28 @@ class DOMExplorer extends Component {
 
   render() {
     let output;
+
     if (this.state.parseError) {
       output = (
         <div className="DOMExplorer__parse-error">
           {this.state.parseError.message}
         </div>
       );
-    } else {
-      output = (
-        this.state.ast
-      );
+    } else if (this.state.ast) {
+      if (this.state.ast.length) {
+        output =
+          <TreeNode depth={0}
+                    node={this.state.ast[0]}
+                    isExpanded={true}
+          />;
+      }
     }
 
     return (
       <div className="DOMExplorer">
-        <pre className="code-block">
-          {output && output.toString()}
-        </pre>
+        <Codeblock>
+          {output}
+        </Codeblock>
       </div>
     );
   }

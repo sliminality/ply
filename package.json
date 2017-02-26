@@ -6,7 +6,8 @@
     "flow-bin": "^0.40.0",
     "node-sass": "^4.5.0",
     "npm-run-all": "^4.0.2",
-    "react-scripts": "0.9.0"
+    "react-scripts": "0.9.0",
+    "@kadira/storybook": "^2.21.0"
   },
   "dependencies": {
     "htmlparser2": "^3.9.2",
@@ -25,6 +26,8 @@
     "build": "npm run build-css && react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
-    "flow": "flow"
+    "flow": "flow",
+    "storybook": "start-storybook -p 9009 -s public",
+    "build-storybook": "build-storybook -s public"
   }
 }

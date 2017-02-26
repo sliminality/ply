@@ -1,5 +1,6 @@
 // @flow
 import React, { Component } from 'react';
+import uikit from 'react-uikit-base';
 import SplitPane from 'react-split-pane';
 import DOMExplorer from '../DOMExplorer/DOMExplorer';
 import codeExample from './codeExample';
@@ -14,11 +15,13 @@ class App extends Component {
                    minSize={50}
                    defaultSize={400}>
           <DOMExplorer code={codeExample.html} />
-          <div><pre className="code-block">{codeExample.css}</pre></div>
+          <div>
+            <pre><code className="css">{codeExample.css}</code></pre>
+          </div>
         </SplitPane>
       </div>
     );
   }
 }
 
-export default App;
+export default uikit.base(App);

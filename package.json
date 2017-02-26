@@ -12,7 +12,10 @@
     "htmlparser2": "^3.9.2",
     "react": "^15.4.2",
     "react-dom": "^15.4.2",
-    "react-split-pane": "^0.1.57"
+    "react-split-pane": "^0.1.57",
+    "react-uikit-base": "^2.0.2",
+    "react-uikit-codeblock": "^2.0.2",
+    "react-uikit-icons": "^2.0.3"
   },
   "scripts": {
     "build-css": "node-sass src/ -o src/",

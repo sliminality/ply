@@ -1,0 +1,10 @@
+.cm-s-academic-markdown {
+	background: #FFFFFF;
+	color: #474747;
+}
+.cm-s-academic-markdown .CodeMirror-activeline-background {
+	background: #E0E0E0;
+}
+.cm-s-academic-markdown .CodeMirror-selected {
+	background: #E2FAFCE6;
+}

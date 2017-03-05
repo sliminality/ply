@@ -3,8 +3,8 @@ const uuid = require('node-uuid');
 
 const port = 8090;
 const io = new Server().attach(port);
-const sessions = new Set();
-const requests = new Set();
+io.sessions = new Set();
+io.requests = new Set();
 
 io.on('connection', client => {
   const clientId = client.id;

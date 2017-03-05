@@ -8,18 +8,35 @@ io.requests = new Set();
 
 io.on('connection', client => {
   const clientId = client.id;
-  sessions.add(clientId);
+  io.sessions.add(clientId);
   console.log('Client connected:', clientId);
+  console.log(io.sessions.size, 'clients');
 
   client.on('ui.request.node', ({ id, selector }) => {
-    requests.add(id);
     console.log(`[${id}]`, 'UI requested node', selector);
+    if (io.sessions.size < 2) {
+      io.emit('server.response.error', ({
+        id,
+        name: 'HostError',
+        message: 'Chrome extension not connected',
+      }));
+      return;
+    }
+    requests.add(id);
     io.emit('server.request.node', ({ id, selector }));
   });
 
   client.on('ui.request.styles', ({ id, nodeId }) => {
-    requests.add(id);
     console.log(`[${id}]`, 'UI requested styles for node', nodeId);
+    if (io.sessions.size < 2) {
+      io.emit('server.response.error', ({
+        id,
+        name: 'HostError',
+        message: 'Chrome extension not connected',
+      }));
+      return;
+    }
+    requests.add(id);
     io.emit('server.request.styles', ({ id, nodeId }));
   });
 
@@ -42,7 +59,8 @@ io.on('connection', client => {
   });
 
   client.on('disconnect', () => {
-    sessions.delete(clientId);
+    io.sessions.delete(clientId);
     console.log('Client disconnected:', clientId);
+    console.log(io.sessions.size, 'clients remaining');
   });
 });

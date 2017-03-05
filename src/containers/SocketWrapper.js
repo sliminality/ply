@@ -68,7 +68,6 @@ class SocketWrapper extends Component {
       [id]: 'REQUEST_NODE',
     };
     this.setState({ requests });
-
     this.socket.emit('ui.request.node', { id, selector });
   }
 
@@ -86,7 +85,6 @@ class SocketWrapper extends Component {
       [id]: 'REQUEST_STYLES',
     };
     this.setState({ requests });
-
     this.socket.emit('ui.request.styles', { id, nodeId });
   }
 

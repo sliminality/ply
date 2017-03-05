@@ -22,7 +22,7 @@ io.on('connection', client => {
       }));
       return;
     }
-    requests.add(id);
+    io.requests.add(id);
     io.emit('server.request.node', ({ id, selector }));
   });
 
@@ -36,24 +36,24 @@ io.on('connection', client => {
       }));
       return;
     }
-    requests.add(id);
+    io.requests.add(id);
     io.emit('server.request.styles', ({ id, nodeId }));
   });
 
   client.on('ext.response.node', ({ id, node }) => {
-    requests.delete(id);
+    io.requests.delete(id);
     console.log(`[${id}]`, 'Extension responsed with node', node);
     io.emit('server.response.node', ({ id, node }));
   });
 
   client.on('ext.response.styles', ({ id, styles }) => {
-    requests.delete(id);
+    io.requests.delete(id);
     console.log(`[${id}]`, 'Extension responded with styles', styles);
     io.emit('server.response.styles', ({ id, styles }));
   });
 
   client.on('ext.response.error', ({ id, name, message }) => {
-    requests.delete(id);
+    io.requests.delete(id);
     console.log(`[${id}]`, 'Extension responded with', name, message);
     io.emit('server.response.error', ({ id, name, message }));
   });

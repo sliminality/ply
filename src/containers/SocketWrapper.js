@@ -3,6 +3,8 @@ import uuid from 'node-uuid';
 import io from 'socket.io-client';
 import { deleteIn } from '../utils/state';
 
+const SELECTOR = 'body > main > section:nth-child(3) > div:nth-child(2) > figure';
+
 class SocketWrapper extends Component {
   constructor(props) {
     super(props);
@@ -39,13 +41,13 @@ class SocketWrapper extends Component {
   _onServerNode({ id, node }) {
     const requests = deleteIn(this.state.requests, id);
     this.setState({ node, requests });
-    console.log(`[${id}]`, 'Server responded with node:', node);
+    console.log(`[${id}]`, 'Server responded with node:\n', node);
   }
 
   _onServerStyles({ id, styles }) {
     const requests = deleteIn(this.state.requests, id);
     this.setState({ styles, requests });
-    console.log(`[${id}]`, 'Server responded with styles:', styles);
+    console.log(`[${id}]`, 'Server responded with styles:\n', styles);
   }
 
   _onServerError({ id, name, message }) {
@@ -59,10 +61,8 @@ class SocketWrapper extends Component {
     console.log('Disconnected from socket');
   }
 
-  requestNode() {
+  requestNode(selector) {
     const id = uuid();
-    const selector = 'body > main > section:nth-child(3) > div:nth-child(2) > figure';
-
     const requests = {
       ...this.state.requests,
       [id]: 'REQUEST_NODE',
@@ -73,7 +73,6 @@ class SocketWrapper extends Component {
   }
 
   requestStyles() {
-    const id = uuid();
     let nodeId;
     if (this.state.node) {
       nodeId = this.state.node.nodeId;
@@ -81,7 +80,7 @@ class SocketWrapper extends Component {
       console.error('No node defined');
       return;
     }
-
+    const id = uuid();
     const requests = {
       ...this.state.requests,
       [id]: 'REQUEST_STYLES',
@@ -94,7 +93,7 @@ class SocketWrapper extends Component {
   render() {
     return (
       <div>
-        <button onClick={this.requestNode}>Request Node</button>
+        <button onClick={() => this.requestNode(SELECTOR)}>Request Node</button>
         <button onClick={this.requestStyles}>Request Styles</button>
         {this.props.children}
       </div>

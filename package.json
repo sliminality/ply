@@ -19,6 +19,7 @@
     "react-uikit-icons": "^2.0.3"
   },
   "scripts": {
+    "ws:serve": "node src/server.js",
     "build-css": "node-sass src/ -o src/",
     "watch-css": "npm run build-css && node-sass src/ -o src/ --watch --recursive",
     "start-js": "react-scripts start",

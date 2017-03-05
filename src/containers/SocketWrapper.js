@@ -6,21 +6,27 @@ import { deleteIn } from '../utils/state';
 class SocketWrapper extends Component {
   constructor(props) {
     super(props);
-    this.requestDOM = this.requestDOM.bind(this);
+    this.requestNode = this.requestNode.bind(this);
     this.requestStyles = this.requestStyles.bind(this);
+    this._onSocketConnect = this._onSocketConnect.bind(this);
+    this._onServerNode = this._onServerNode.bind(this);
+    this._onServerStyles = this._onServerStyles.bind(this);
+    this._onServerError = this._onServerError.bind(this);
+    this._onSocketDisconnect = this._onSocketDisconnect.bind(this);
 
     const port = 8090;
     this.socket = io.connect(`http://localhost:${port}`);
 
     this.socket.on('connect', this._onSocketConnect);
-    this.socket.on('server.response.DOM', this._onServerDOM);
+    this.socket.on('server.response.node', this._onServerNode);
     this.socket.on('server.response.styles', this._onServerStyles);
+    this.socket.on('server.response.error', this._onServerError);
     this.socket.on('disconnect', this._onSocketDisconnect);
 
     this.state = {
       requests: {},
       socketId: io.connect(`http://localhost:${port}`),
-      node: null,
+      root: null,
       styles: null,
     };
   }
@@ -30,16 +36,22 @@ class SocketWrapper extends Component {
     console.log(`Connected to socket: ${this.state.socketId}`);
   }
 
-  _onServerDOM({ id, node }) {
+  _onServerNode({ id, node }) {
     const requests = deleteIn(this.state.requests, id);
     this.setState({ node, requests });
-    console.log(`[${id}]`, 'Server responded with node', node);
+    console.log(`[${id}]`, 'Server responded with node:', node);
   }
 
   _onServerStyles({ id, styles }) {
     const requests = deleteIn(this.state.requests, id);
     this.setState({ styles, requests });
-    console.log(`[${id}]`, 'Server responded with styles', styles);
+    console.log(`[${id}]`, 'Server responded with styles:', styles);
+  }
+
+  _onServerError({ id, name, message }) {
+    console.log(`[${id}]`, 'Server responded with', name, message);
+    const requests = deleteIn(this.state.requests, id);
+    this.setState({ requests });
   }
 
   _onSocketDisconnect() {
@@ -47,15 +59,17 @@ class SocketWrapper extends Component {
     console.log('Disconnected from socket');
   }
 
-  requestDOM() {
+  requestNode() {
     const id = uuid();
     const selector = 'body > main > section:nth-child(3) > div:nth-child(2) > figure';
+
     const requests = {
       ...this.state.requests,
-      [id]: 'REQUEST_DOM',
+      [id]: 'REQUEST_NODE',
     };
     this.setState({ requests });
-    this.socket.emit('ui.request.DOM', { id, selector });
+
+    this.socket.emit('ui.request.node', { id, selector });
   }
 
   requestStyles() {
@@ -67,18 +81,20 @@ class SocketWrapper extends Component {
       console.error('No node defined');
       return;
     }
+
     const requests = {
       ...this.state.requests,
       [id]: 'REQUEST_STYLES',
     };
     this.setState({ requests });
+
     this.socket.emit('ui.request.styles', { id, nodeId });
   }
 
   render() {
     return (
       <div>
-        <button onClick={this.requestDOM}>Request DOM</button>
+        <button onClick={this.requestNode}>Request Node</button>
         <button onClick={this.requestStyles}>Request Styles</button>
         {this.props.children}
       </div>

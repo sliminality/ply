@@ -11,24 +11,22 @@ io.on('connection', client => {
   sessions.add(clientId);
   console.log('Client connected:', clientId);
 
-  // Handle client emitting requests for DOM
-  client.on('ui.request.DOM', ({ id, selector }) => {
+  client.on('ui.request.node', ({ id, selector }) => {
     requests.add(id);
     console.log(`[${id}]`, 'UI requested node', selector);
-    io.emit('server.request.DOM', ({ id, selector }));
+    io.emit('server.request.node', ({ id, selector }));
   });
 
-  // Handle client emitting requests for DOM
   client.on('ui.request.styles', ({ id, nodeId }) => {
     requests.add(id);
     console.log(`[${id}]`, 'UI requested styles for node', nodeId);
     io.emit('server.request.styles', ({ id, nodeId }));
   });
 
-  client.on('ext.response.DOM', ({ id, node }) => {
+  client.on('ext.response.node', ({ id, node }) => {
     requests.delete(id);
     console.log(`[${id}]`, 'Extension responsed with node', node);
-    io.emit('server.response.DOM', ({ id, node }));
+    io.emit('server.response.node', ({ id, node }));
   });
 
   client.on('ext.response.styles', ({ id, styles }) => {
@@ -37,10 +35,11 @@ io.on('connection', client => {
     io.emit('server.response.styles', ({ id, styles }));
   });
 
-  // client.on('got nodes', ({ root }) => {
-  //   console.log('got node from browser');
-  //   client.emit('chrome node', { root });
-  // });
+  client.on('ext.response.error', ({ id, name, message }) => {
+    requests.delete(id);
+    console.log(`[${id}]`, 'Extension responded with', name, message);
+    io.emit('server.response.error', ({ id, name, message }));
+  });
 
   client.on('disconnect', () => {
     sessions.delete(clientId);

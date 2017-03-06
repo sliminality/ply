@@ -33,6 +33,10 @@ class SocketWrapper extends Component {
     };
   }
 
+  componentDidMount() {
+    this.requestNode(SELECTOR);
+  }
+
   _onSocketConnect() {
     this.setState({ socketId: this.socket.id });
     console.log(`Connected to socket: ${this.state.socketId}`);
@@ -89,11 +93,15 @@ class SocketWrapper extends Component {
   }
 
   render() {
+    const childProps = {
+      node: this.state.node,
+      styles: this.state.styles,
+    };
     return (
       <div>
         <button onClick={() => this.requestNode(SELECTOR)}>Request Node</button>
         <button onClick={this.requestStyles}>Request Styles</button>
-        {this.props.children}
+        {React.cloneElement(this.props.children, childProps)}
       </div>
     );
   }

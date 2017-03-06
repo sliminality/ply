@@ -2,7 +2,8 @@
 import React, { Component } from 'react';
 import Codeblock from 'react-uikit-codeblock';
 import SplitPane from 'react-split-pane';
-import DOMExplorer from '../../components/DOMExplorer/DOMExplorer';
+import DOMViewer from '../DOMViewer/DOMViewer';
+import TreeView from 'react-treeview';
 import codeExample from './codeExample';
 import './App.css';
 
@@ -14,10 +15,8 @@ class App extends Component {
                    minSize={50}
                    defaultSize={400}
         >
-          <DOMExplorer code={codeExample.html} />
-          <div>
-            <Codeblock scroll="auto">{codeExample.css}</Codeblock>
-          </div>
+          <DOMViewer root={this.props.node} />
+          <Codeblock scroll="auto">{codeExample.css}</Codeblock>
         </SplitPane>
       </div>
     );

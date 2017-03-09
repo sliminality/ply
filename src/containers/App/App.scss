@@ -44,10 +44,19 @@ $transparent-white: rgba(255, 255, 255, 0);
   border-right: 5px solid rgba(0, 0, 0, 0.5);
 }
 
-Resizer.disabled {
+.Resizer.disabled {
   cursor: not-allowed;
 }
 
-Resizer.disabled:hover {
+.Resizer.disabled:hover {
   border-color: transparent;
+}
+
+.Pane2 {
+  overflow: auto;
+}
+
+pre {
+  width: 100%;
+  margin-bottom: 0 !important;
 }

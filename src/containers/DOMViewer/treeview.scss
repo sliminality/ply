@@ -38,6 +38,10 @@
   transform: rotate(-90deg);
 }
 
+.node--selected {
+  background-color: #b6e5e0;
+}
+
 .node__name {
   color: green;
 }

@@ -3,11 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "devDependencies": {
+    "@kadira/storybook": "^2.21.0",
+    "denode": "^1.10.4",
     "flow-bin": "^0.40.0",
     "node-sass": "^4.5.0",
     "npm-run-all": "^4.0.2",
-    "react-scripts": "0.9.0",
-    "@kadira/storybook": "^2.21.0"
+    "react-scripts": "0.9.0"
   },
   "dependencies": {
     "htmlparser2": "^3.9.2",

@@ -1,5 +1,6 @@
 // @flow
 import React, { Component } from 'react';
+import { deleteIn } from '../../utils/state';
 import TreeView from 'react-treeview';
 import './treeview.css';
 
@@ -9,10 +10,12 @@ const nodeLabel = node => {
   }
 
   const results = [];
+  let j = 0;
 
   if (node.localName !== 'div') {
-    const nameSpan = <span className="node__name">{node.localName}</span>;
+    const nameSpan = <span key={j} className="node__name">{node.localName}</span>;
     results.push(nameSpan);
+    j += 1;
   }
 
   if (node.attributes) {
@@ -32,8 +35,9 @@ const nodeLabel = node => {
         if (a in classNames) {
           nextClassName = a;
         } else {
-          el = (<span className="node__attr-name">{a}</span>);
+          el = (<span key={j} className="node__attr-name">{a}</span>);
           results.push(el);
+          j += 1;
         }
       } else {
         // If it's a value, check for the last prefix.
@@ -43,15 +47,17 @@ const nodeLabel = node => {
             contents = contents.split(' ').join('.');
           }
           el = (
-            <span className={classNames[nextClassName]}>
+            <span key={j} className={classNames[nextClassName]}>
               {contents}
             </span>
           );
           results.push(el);
+          j += 1;
           nextClassName = null;
         } else {
           const contents = a.substring(0, 10).concat('...');
-          el = (<span className="node__attr-value">{contents}</span>);
+          el = (<span key={j} className="node__attr-value">{contents}</span>);
+          j += 1;
           results.push(el);
         }
       }
@@ -61,22 +67,58 @@ const nodeLabel = node => {
   return results;
 };
 
-const TreeViewNode = node => {
+const TreeViewNode = (props) => {
+  const { node, onClick, isSelected } = props;
+  const { nodeId } = node;
+  const selected = isSelected(nodeId) ? 'node--selected' : '';
   return (
-    <TreeView key={node.nodeId}
-              node={node}
+    <TreeView key={nodeId}
               nodeLabel={nodeLabel(node)}
               defaultCollapsed={true}
+              onClick={() => onClick(nodeId)}
+              itemClassName={`${selected} node`}
     >
-      {node.children ? node.children.map(TreeViewNode) : ''}
+      {node.children
+        ? node.children.map(child =>
+            TreeViewNode({ node: child, onClick, isSelected }))
+        : ''}
     </TreeView>
   );
 };
 
 class DOMViewer extends Component {
+  constructor(props) {
+    super(props);
+    this.selectNode = this.selectNode.bind(this);
+    this.isSelected = this.isSelected.bind(this);
+
+    this.state = {
+      selected: {},
+    };
+  }
+
+  isSelected(nodeId) {
+    return nodeId in this.state.selected;
+  }
+
+  selectNode(nodeId) {
+    const oldSelected = this.state.selected;
+    let selected;
+    if (nodeId in oldSelected) {
+      selected = deleteIn(oldSelected, nodeId);
+    } else {
+      selected = Object.assign({}, oldSelected, { [nodeId]: true });
+    }
+    this.props.requestStyles(nodeId);
+    this.setState({ selected });
+  }
+
   render() {
     const rootItem = this.props.root
-      ? TreeViewNode(this.props.root)
+      ? <TreeViewNode node={this.props.root}
+                      onClick={this.selectNode}
+                      isSelected={this.isSelected}
+        />
       : <span>Loading...</span>;
 
     return (

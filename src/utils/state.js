@@ -2,7 +2,10 @@ export const deleteIn = (obj, deleteKey) => {
   const keys = Object.keys(obj);
   const result = keys
     .filter(k => k !== deleteKey)
-    .reduce((memo, k) => memo[k] = obj[k], {});
+    .reduce((memo, k) => ({
+      ...memo,
+      [k]: obj[k],
+    }), {});
   return result;
 };
 
@@ -24,3 +27,19 @@ export const setPlus = (S, item) => {
   S_.add(item);
   return S_;
 };
+
+export const cap = (A, B) => {
+  const AnB = new Set();
+  for (const a of A) {
+    if (B.has(a)) {
+      AnB.add(a);
+    }
+  }
+  return AnB;
+};
+
+export const pairsToObject = pairs =>
+  pairs.reduce(
+    (memo, [k, v]) =>
+      Object.assign(memo, { [k]: v }),
+  {});

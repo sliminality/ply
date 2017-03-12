@@ -14,7 +14,7 @@
     "react": "^15.4.2",
     "react-dom": "^15.4.2",
     "react-split-pane": "^0.1.57",
-    "react-uikit-codeblock": "^2.0.2",
+    "react-uikit-codeblock": "^2.0.2"
   },
   "scripts": {
     "ws:serve": "node src/server.js",
@@ -25,7 +25,7 @@
     "build": "npm run build-css && react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
-    "flow": "flow",
+    "flow": "flow"
   },
   "eslintConfig": {
     "extends": "react-app"

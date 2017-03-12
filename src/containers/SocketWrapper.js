@@ -156,13 +156,7 @@ class SocketWrapper extends Component {
   }
 
   render() {
-    const { rootNode, styles, selected } = this.state;
-    const childProps = {
-      rootNode: this.state.rootNode,
-      styles,
-      selected,
-      requestData: this.requestData,
-    };
+    const { rootNode, styles } = this.state;
 
     const requestRootNode = () =>
       this.requestNode(SELECTOR);
@@ -192,6 +186,11 @@ class SocketWrapper extends Component {
         </button>
       </div>;
 
+    const childProps = {
+      rootNode,
+      styles,
+      requestData: this.requestData,
+    };
     const wrappedChild =
       React.cloneElement(this.props.children, childProps);
 

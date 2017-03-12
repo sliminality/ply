@@ -165,16 +165,28 @@ class SocketWrapper extends Component {
 
     const requestRootNode = () =>
       this.requestNode(SELECTOR);
+    const requestStyles = () =>
+      this.requestStyles(this.state.rootNode.nodeId);
+
+    const buttonProps = {
+      className: 'uk-button-default uk-button-small',
+    };
 
     const utils =
-      <div className="utils">
-        <button onClick={requestRootNode}>
+      <div>
+        <button {...buttonProps}
+                onClick={requestRootNode}
+        >
           Request Node
         </button>
-        <button onClick={this.requestStyles}>
+        <button {...buttonProps}
+                onClick={requestStyles}
+        >
           Request Styles
         </button>
-        <button onClick={this.flushRequests}>
+        <button {...buttonProps}
+                onClick={this.flushRequests}
+        >
           Flush Pending Requests
         </button>
       </div>;

@@ -5,9 +5,10 @@ import io from 'socket.io-client';
 import { deleteIn } from '../utils/state';
 
 const SELECTOR =
-  'body > main > section:nth-child(3) > div:nth-child(2) > figure';
-// const SELECTOR = '#account_actions_logged_out_dashboard > div.about-tumblr-showcase.ready.show-login > div.showcase > div.section.login-section.active';
-// const SELECTOR = '#main > ol';
+  // 'body > main > section:nth-child(3) > div:nth-child(2) > figure';
+  'body > main > section:nth-child(3) > div:nth-child(2)';
+  // '#account_actions_logged_out_dashboard > div.about-tumblr-showcase.ready.show-login > div.showcase > div.section.login-section.active';
+  // '#main > ol';
 
 const logResult = (id: number, ...rest: any[]): void =>
   console.log(`[${id}]`, ...rest);
@@ -173,7 +174,7 @@ class SocketWrapper extends Component {
     };
 
     const utils =
-      <div>
+      <div className="utils-bar">
         <button {...buttonProps}
                 onClick={requestRootNode}
         >
@@ -195,7 +196,7 @@ class SocketWrapper extends Component {
       React.cloneElement(this.props.children, childProps);
 
     return (
-      <div>
+      <div className="App">
         {utils}
         {wrappedChild}
       </div>

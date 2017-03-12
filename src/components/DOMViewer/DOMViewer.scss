@@ -4,13 +4,17 @@ $node-name: #668a36;
 $node-attr-name: #b7b7b7;
 $node-attr-value: #5581b9;
 $node-attr-value-background: #eaf2fc;
-$node-value: #333;
+$node-value: #111;
 
 $hover-highlight: #fbf4b9;
 $select-highlight: #efefef;
 
 .DOMViewer {
   padding: 10px;
+}
+
+.tree-view {
+  overflow: visible;
 }
 
 .Node {
@@ -32,13 +36,13 @@ $select-highlight: #efefef;
   }
 
   &__label {
-    display: inline-block;
+    display: inline-block;  // to allow word wrap
     text-indent: -1.5em;
     padding-left: 1.5em;
     cursor: pointer;
   }
 
-  &__attrs {
+  &__attr-list {
     list-style: none;
     margin: 0;
     padding: 0;
@@ -46,6 +50,7 @@ $select-highlight: #efefef;
 
     & > li {
       display: inline;
+      word-break: break-word;
     }
   }
 
@@ -56,6 +61,7 @@ $select-highlight: #efefef;
   &__attr-name {
     color: $node-attr-name;
     margin-left: 0.5em;
+    font-style: italic;
 
     &::after {
       content: '=';
@@ -75,6 +81,10 @@ $select-highlight: #efefef;
 
   &__attr-value--id {
     content: '#';
+  }
+
+  &__value {
+    color: $node-value;
   }
 
   &__child-value {

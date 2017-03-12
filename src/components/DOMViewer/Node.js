@@ -61,46 +61,66 @@ const pairToAttr = ([ name, value ], i) =>
         </span>
       </li>;
 
+const truncate = len => str => `${str.substring(0, len)}...`;
+
 const NodeLabel = ({ node, selectNode }) => {
   const type = nodeType(node);
+  const maxTextLength = 40;
+  const truncateText = truncate(maxTextLength);
 
   if (type === LEAF) {
+    // Just need to get the current node's value.
     const { nodeValue } = node;
     return (
       <div className="Node">
-        <span className="Node__value">{nodeValue}</span>
+        <span className="Node__value">
+          {truncateText(nodeValue)}
+        </span>
       </div>
     );
   } else {
+    // Create a full label, including the node's name and
+    // attributes.
     const { attributes, localName } = node;
     const name =
       <span className="Node__name">
         {localName}
       </span>;
     const attrs =
-      <ul className="Node__attrs">
+      <ul className="Node__attr-list">
         {splitPairs(attributes).map(pairToAttr)}
       </ul>;
+    let child = null;
+
     const sharedProps = {
       className: 'Node__label',
       onClick: selectNode,
     };
 
-    if (type === INLINE_LEAF && node.children[0]) {
+    // If it's an inline leaf with a single text child
+    // (e.g. an <h1>) we need to get the child's value.
+    const hasInlineChild = type === INLINE_LEAF
+      && node.children[0];
+
+    if (hasInlineChild) {
       const childValue = node.children[0].nodeValue;
-      const value =
+      child =
         <span className="Node__child-value">
-          {childValue}
+          {truncateText(childValue)}
         </span>;
       return (
         <div {...sharedProps}>
-          {name}{attrs}{value}
+          {name}
+          {attrs}
+          {child}
         </div>
       );
     }
+
     return (
       <div {...sharedProps}>
-        {name}{attrs}
+        {name}
+        {attrs}
       </div>
     );
   }
@@ -121,7 +141,7 @@ const nodeActions = ({ toggleSelected, isSelected }) => {
       [LEAF]: 'Node Node--leaf',
     }[type];
 
-    const selected = isSelected(nodeId) && 'Node--selected';
+    const selected = isSelected(nodeId) ? 'Node--selected' : null;
     const className = [nodeClass, selected].join(' ');
 
     // Props shared between leaf and fork nodes.

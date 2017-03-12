@@ -1,7 +1,16 @@
 @import '../../../lib/css/split-pane.css';
 
-.Pane2 {
-  overflow: auto;
+.Pane {
+  overflow: scroll;
+
+  &::-webkit-scrollbar {
+    height: 5px;
+    width: 5px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: #ccc;
+  }
 }
 
 pre {

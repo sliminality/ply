@@ -1,2 +1,17 @@
 @import '../lib/css/uikit';
 @import '../lib/css/hljs-ayu.scss';
+
+::-webkit-scrollbar {
+  width: 0.5em;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #ccc;
+}
+
+.utils-bar {
+  position: fixed;
+  bottom: 0;
+  z-index: 999;
+  background-color: white;
+}

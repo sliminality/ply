@@ -27,6 +27,20 @@ class Inspector extends Component {
     };
   }
 
+  componentWillReceiveProps() {
+    /**
+     * Automatically select the received node,
+     * if it's the only one selected.
+     */
+    const { rootNode } = this.props;
+    const { selected } = this.state;
+    if (selected.size === 0) {
+      if (rootNode) {
+        this.toggleSelected(rootNode.nodeId);
+      }
+    }
+  }
+
   requestStyles(nodeId: number): void {
     this.props.requestData({
       type: 'REQUEST_STYLES',

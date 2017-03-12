@@ -108,19 +108,13 @@ const NodeLabel = ({ node, selectNode }) => {
         <span className="Node__child-value">
           {truncateText(childValue)}
         </span>;
-      return (
-        <div {...sharedProps}>
-          {name}
-          {attrs}
-          {child}
-        </div>
-      );
     }
 
     return (
       <div {...sharedProps}>
         {name}
         {attrs}
+        {child}
       </div>
     );
   }

@@ -68,6 +68,7 @@ class SocketWrapper extends Component {
     const dispatch = {
       'RECEIVE_NODE': this._onServerNode,
       'RECEIVE_STYLES': this._onServerStyles,
+      'SERVER_ERROR': this._onServerError,
       'DEFAULT': ({ id, type }) =>
         logResult(id, 'Unrecognized response type', type),
     };
@@ -88,11 +89,12 @@ class SocketWrapper extends Component {
   }
 
   _onServerStyles(res) {
-    const { id, nodeId,
+    const { id, nodeId, computedStyle,
       inlineStyle, attributesStyle, matchedCSSRules,
       inherited, pseudoElements, cssKeyframesRules } = res;
 
     const styles = {
+      computedStyle,
       inlineStyle, attributesStyle, matchedCSSRules,
       inherited, pseudoElements, cssKeyframesRules,
     };

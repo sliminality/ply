@@ -1,0 +1,71 @@
+@import '../../../lib/css/tree-view';
+
+.DOMViewer {
+  padding: 5px;
+}
+
+.Node {
+  font-family: 'Inconsolata', monospace;
+  letter-spacing: -0.01em;
+  font-size: 13px;
+
+  &:hover {
+    background-color: #e8e8e8;
+  }
+
+  &--leaf {
+    padding-left: 15px;  // compensate for arrow
+  }
+
+  &__label {
+    display: inline-block;
+    text-indent: -1.5em;
+    padding-left: 1.5em;
+    cursor: pointer;
+  }
+
+  &__attrs {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: inline;
+
+    & > li {
+      display: inline;
+    }
+  }
+
+  &--selected {
+    background-color: #fbf4b9;
+  }
+
+  &__name {
+    color: green;
+  }
+
+  &__attr-name {
+    color: red;
+    margin-left: 0.5em;
+
+    &::after {
+      content: '=';
+      color: lightgrey;
+    }
+  }
+
+  &__attr-value--class {
+    color: blue;
+
+    &::before {
+      content: '.';
+    }
+  }
+
+  &__attr-value--id {
+    content: '#';
+  }
+
+  &__child-value {
+    margin-left: 0.5em;
+  }
+}

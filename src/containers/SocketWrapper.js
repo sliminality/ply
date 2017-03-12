@@ -1,11 +1,16 @@
+// @flow
 import React, { Component } from 'react';
 import uuid from 'node-uuid';
 import io from 'socket.io-client';
 import { deleteIn } from '../utils/state';
 
-const SELECTOR = 'body > main > section:nth-child(3) > div:nth-child(2) > figure';
+const SELECTOR =
+  'body > main > section:nth-child(3) > div:nth-child(2) > figure';
 // const SELECTOR = '#account_actions_logged_out_dashboard > div.about-tumblr-showcase.ready.show-login > div.showcase > div.section.login-section.active';
 // const SELECTOR = '#main > ol';
+
+const logResult = (id: number, ...rest: any[]): void =>
+  console.log(`[${id}]`, ...rest);
 
 class SocketWrapper extends Component {
   constructor(props) {
@@ -13,6 +18,7 @@ class SocketWrapper extends Component {
     this.flushRequests = this.flushRequests.bind(this);
     this.requestNode = this.requestNode.bind(this);
     this.requestStyles = this.requestStyles.bind(this);
+    this.requestData = this.requestData.bind(this);
     this._onSocketConnect = this._onSocketConnect.bind(this);
     this._onServerNode = this._onServerNode.bind(this);
     this._onServerStyles = this._onServerStyles.bind(this);
@@ -21,122 +27,165 @@ class SocketWrapper extends Component {
     this._onSocketResponse = this._onSocketResponse.bind(this);
 
     const port = 1111;
-    this.socket = io.connect(`http://localhost:${port}/frontends`, {
+    const socketURL = `http://localhost:${port}/frontends`;
+    this.socket = io.connect(socketURL, {
       reconnectionAttempts: 5,
     });
-
-    this.socket.on('connect', this._onSocketConnect);
-    this.socket.on('data.res', this._onSocketResponse);
-    this.socket.on('data.err', this._onSocketError);
-    this.socket.on('disconnect', this._onSocketDisconnect);
 
     this.state = {
       requests: {},
       socketId: this.socket.id,
-      root: null,
+      rootNode: null,
       styles: {},
     };
   }
 
   componentDidMount() {
+    this.socket.on('connect', this._onSocketConnect);
+    this.socket.on('data.res', this._onSocketResponse);
+    this.socket.on('data.err', this._onSocketError);
+    this.socket.on('disconnect', this._onSocketDisconnect);
     this.requestNode(SELECTOR);
   }
 
+  componentWillUnmount() {
+    this.socket.off();
+  }
+
   _onSocketConnect() {
-    this.setState({ socketId: this.socket.id });
-    console.log(`Connected to socket: ${this.state.socketId}`);
+    this.setState({
+      socketId: this.socket.id
+    });
+    console.log('Connected to socket:', this.state.socketId);
   }
 
   _onSocketResponse(res) {
-    if (res.id in this.state.requests) {
-      const requests = deleteIn(this.state.requests, res.id);
-      this.setState({ requests });
-
-      switch (res.type) {
-        case 'RECEIVE_NODE':
-          this._onServerNode(res);
-          break;
-        case 'RECEIVE_STYLES':
-          this._onServerStyles(res);
-          break;
-      }
+    const { requests } = this.state;
+    if (!requests[res.id]) {
+      return;
     }
+    const dispatch = {
+      'RECEIVE_NODE': this._onServerNode,
+      'RECEIVE_STYLES': this._onServerStyles,
+      'DEFAULT': ({ id, type }) =>
+        logResult(id, 'Unrecognized response type', type),
+    };
+    const action = dispatch[res.type] || dispatch['DEFAULT'];
+    action(res);
+
+    const nextRequests = deleteIn(requests, res.id);
+    this.setState({
+      requests: nextRequests,
+    });
   }
 
   _onServerNode({ id, node }) {
-    this.setState({ node });
-    console.log(`[${id}]`, 'Server responded with node:\n', node);
+    logResult(id, 'Server responded with node:\n', node);
+    this.setState({
+      rootNode: node
+    });
   }
 
   _onServerStyles(res) {
-    const { id, nodeId, inlineStyle, attributesStyle, matchedCSSRules,
+    const { id, nodeId,
+      inlineStyle, attributesStyle, matchedCSSRules,
       inherited, pseudoElements, cssKeyframesRules } = res;
+
     const styles = {
       inlineStyle, attributesStyle, matchedCSSRules,
       inherited, pseudoElements, cssKeyframesRules,
     };
-    console.log(`[${id}]`, 'Server responded with styles:\n', styles);
-    const newStyles = Object.assign({}, this.state.styles, {
-      [nodeId]: styles,
+
+    const nextStyles = Object.assign({},
+      this.state.styles,
+      { [nodeId]: styles },
+    );
+    logResult(id, 'Server responded with styles:\n', styles);
+    this.setState({
+      styles: nextStyles
     });
-    this.setState({ styles: newStyles });
   }
 
   _onServerError({ id, message }) {
-    console.error(`[${id}]`, 'Server responded with', message);
-    const requests = deleteIn(this.state.requests, id);
-    this.setState({ requests });
-  }
-
-  _onSocketDisconnect() {
-    this.setState({ socketId: null });
-    console.log('Disconnected from socket');
-  }
-
-  requestNode(selector) {
-    const id = uuid();
-    const requests = {
-      ...this.state.requests,
-    };
-    requests[id] = 'REQUEST_NODE';
-    this.setState({ requests });
-    this.socket.emit('data.req', {
-      id,
-      type: 'REQUEST_NODE',
-      selector
+    logResult(id, 'Server responded with error:', message);
+    const nextRequests = deleteIn(this.state.requests, id);
+    this.setState({
+      requests: nextRequests
     });
   }
 
-  requestStyles(nodeId) {
+  _onSocketDisconnect() {
+    this.setState({
+      socketId: null,
+    });
+    console.log('Disconnected from socket');
+  }
+
+  requestData(req) {
     const id = uuid();
     const requests = {
       ...this.state.requests,
+      [id]: req.type,
     };
-    requests[id] = 'REQUEST_STYLES';
     this.setState({ requests });
-    this.socket.emit('data.req', { id, type: 'REQUEST_STYLES', nodeId });
+    this.socket.emit('data.req', {
+      id,
+      ...req,
+    });
   }
 
   flushRequests() {
-    this.setState({ requests: {} });
+    this.setState({
+      requests: {}
+    });
+  }
+
+  requestStyles(nodeId: number): void {
+    this.requestData({
+      type: 'REQUEST_STYLES',
+      nodeId,
+    });
+  }
+
+  requestNode(selector: string): void {
+    this.requestData({
+      type: 'REQUEST_NODE',
+      selector,
+    });
   }
 
   render() {
+    const { rootNode, styles, selected } = this.state;
     const childProps = {
-      node: this.state.node,
-      styles: this.state.styles,
-      requestStyles: this.requestStyles,
+      rootNode: this.state.rootNode,
+      styles,
+      selected,
+      requestData: this.requestData,
     };
-    return (
-      <div>
-        <button onClick={() => this.requestNode(SELECTOR)}>Request Node</button>
-        <button onClick={() => this.requestStyles(this.state.node.nodeId)}>
+
+    const requestRootNode = () =>
+      this.requestNode(SELECTOR);
+
+    const utils =
+      <div className="utils">
+        <button onClick={requestRootNode}>
+          Request Node
+        </button>
+        <button onClick={this.requestStyles}>
           Request Styles
         </button>
         <button onClick={this.flushRequests}>
           Flush Pending Requests
         </button>
-        {React.cloneElement(this.props.children, childProps)}
+      </div>;
+
+    const wrappedChild =
+      React.cloneElement(this.props.children, childProps);
+
+    return (
+      <div>
+        {utils}
+        {wrappedChild}
       </div>
     );
   }

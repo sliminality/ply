@@ -1,12 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import SocketWrapper from './containers/SocketWrapper';
-import App from './containers/App/App';
+import Inspector from './containers/Inspector/Inspector';
 import './index.css';
 
 ReactDOM.render(
   <SocketWrapper>
-    <App />
+    <Inspector />
   </SocketWrapper>,
   document.getElementById('root')
 );

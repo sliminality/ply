@@ -143,7 +143,8 @@ const nodeActions = ({ toggleSelected, isSelected }) => {
       key: nodeId,  // for React
     };
 
-    const isLeafNode = type === INLINE_LEAF || type === LEAF;
+    const isLeafNode = type === INLINE_LEAF
+      || type === LEAF;
     if (isLeafNode) {
       const props = {...sharedProps, className};
       return (

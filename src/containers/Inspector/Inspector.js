@@ -2,7 +2,7 @@
 import React, { Component } from 'react';
 import SplitPane from 'react-split-pane';
 import DOMViewer from '../../components/DOMViewer/DOMViewer';
-import CSSViewer from '../../components/CSSViewer/CSSViewer';
+import StyleViewer from '../../components/StyleViewer/StyleViewer';
 import { setMinus, setPlus } from '../../utils/state';
 import './Inspector.css';
 
@@ -56,6 +56,7 @@ class Inspector extends Component {
 
   render() {
     const { rootNode, styles } = this.props;
+    const { selected } = this.state;
     const splitPaneProps = {
       split: 'vertical',
       minSize: 50,
@@ -67,6 +68,7 @@ class Inspector extends Component {
       isSelected: this.isSelected,
     };
     const cssViewerProps = {
+      selected,
       styles,
     };
 
@@ -74,7 +76,7 @@ class Inspector extends Component {
       <div className="Inspector">
         <SplitPane {...splitPaneProps}>
           <DOMViewer {...domViewerProps} />
-          <CSSViewer {...cssViewerProps} />
+          <StyleViewer {...cssViewerProps} />
         </SplitPane>
       </div>
     );

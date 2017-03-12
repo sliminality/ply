@@ -1,7 +1,15 @@
 @import '../../../lib/css/tree-view';
 
+$node-name: #668a36;
+$node-attr-name: #b7b7b7;
+$node-attr-value: #5581b9;
+$node-attr-value-background: #eaf2fc;
+
+$hover-highlight: #fbf4b9;
+$select-highlight: #efefef;
+
 .DOMViewer {
-  padding: 5px;
+  padding: 10px;
 }
 
 .Node {
@@ -10,7 +18,12 @@
   font-size: 13px;
 
   &:hover {
-    background-color: #e8e8e8;
+    background-color: $hover-highlight;
+  }
+
+  &--selected,
+  &--selected:hover {
+    background-color: $select-highlight;
   }
 
   &--leaf {
@@ -35,16 +48,12 @@
     }
   }
 
-  &--selected {
-    background-color: #fbf4b9;
-  }
-
   &__name {
-    color: green;
+    color: $node-name;
   }
 
   &__attr-name {
-    color: red;
+    color: $node-attr-name;
     margin-left: 0.5em;
 
     &::after {
@@ -54,7 +63,9 @@
   }
 
   &__attr-value--class {
-    color: blue;
+    margin-left: 0.5em;
+    color: $node-attr-value;
+    background-color: $node-attr-value-background;
 
     &::before {
       content: '.';

@@ -4,6 +4,7 @@ $node-name: #668a36;
 $node-attr-name: #b7b7b7;
 $node-attr-value: #5581b9;
 $node-attr-value-background: #eaf2fc;
+$node-value: #333;
 
 $hover-highlight: #fbf4b9;
 $select-highlight: #efefef;
@@ -77,6 +78,7 @@ $select-highlight: #efefef;
   }
 
   &__child-value {
+    color: $node-value;
     margin-left: 0.5em;
   }
 }

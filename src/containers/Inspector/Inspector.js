@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import SplitPane from 'react-split-pane';
 import DOMViewer from '../../components/DOMViewer/DOMViewer';
 import StyleViewer from '../../components/StyleViewer/StyleViewer';
-import { setMinus, setPlus } from '../../utils/state';
+import { deleteIn } from '../../utils/state';
 import './Inspector.css';
 
 class Inspector extends Component {
@@ -14,7 +14,7 @@ class Inspector extends Component {
   };
 
   state: {
-    selected: Set<number>,
+    selected: { [id: number]: Node },
   };
 
   constructor(props) {
@@ -23,7 +23,7 @@ class Inspector extends Component {
     this.isSelected = this.isSelected.bind(this);
 
     this.state = {
-      selected: new Set(),
+      selected: {},
     };
   }
 
@@ -34,7 +34,8 @@ class Inspector extends Component {
      */
     const { rootNode } = this.props;
     const { selected } = this.state;
-    if (selected.size === 0) {
+    const noneSelected = Object.keys(selected).length === 0;
+    if (noneSelected) {
       if (rootNode) {
         this.toggleSelected(rootNode.nodeId);
       }
@@ -48,16 +49,41 @@ class Inspector extends Component {
     });
   }
 
+  resolveNode(nodeId: number): Node | false {
+    const { rootNode } = this.props;
+    const queue = [ rootNode ];
+    while (queue.length > 0) {
+      const node = queue.shift();
+      if (node.nodeId === nodeId) {
+        return { node };
+      }
+      if (node.children) {
+        queue.push(...node.children);
+      }
+    }
+    return false;
+  }
+
   toggleSelected(nodeId: number): void {
+    const { selected } = this.state;
     let nextState;
     if (this.isSelected(nodeId)) {
       nextState = {
-        selected: setMinus(this.state.selected, nodeId),
+        selected: deleteIn(selected, nodeId),
       };
     } else {
+      const node = this.resolveNode(nodeId);
       nextState = {
-        selected: setPlus(this.state.selected, nodeId),
+        selected: {
+          ...selected,
+          [nodeId]: node,
+        },
       };
+      // Get parent nodeId.
+      const { parentId } = node;
+      if (parentId) {
+        this.requestStyles(parentId);
+      }
       this.requestStyles(nodeId);
     }
     // TODO: This will get dicey if the request fails.
@@ -65,7 +91,7 @@ class Inspector extends Component {
   }
 
   isSelected(nodeId: number): boolean {
-    return this.state.selected.has(nodeId);
+    return this.state.selected[nodeId];
   }
 
   render() {

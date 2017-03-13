@@ -122,7 +122,7 @@ const NodeLabel = ({ node, selectNode }) => {
 
 const nodeActions = ({ toggleSelected, isSelected }) => {
   // Naming our inner function so that recursion, like, works
-  const Node = (node: Node) => {
+  const Node = node => {
     const { nodeId } = node;
     const selectNode = () => toggleSelected(nodeId);
     const label = NodeLabel({ node, selectNode });

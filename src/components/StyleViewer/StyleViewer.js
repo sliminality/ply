@@ -1,19 +1,19 @@
 // @flow
 import React from 'react';
 import SplitPane from 'react-split-pane';
-import StyleDetails, { StyleDetailsProps } from './StyleDetails';
+import StyleDetails from './StyleDetails';
 import './StyleViewer.css';
-
-type Props = {
-  styles: { [nodeId: number]: Object },
-  selected: { [nodeId: number]: Node },
-};
 
 const styleDetailsProps = (styles: Styles) =>
   (nodeId: number): StyleDetailsProps => ({
     nodeId,
     styles: styles[nodeId],
   });
+
+type Props = {
+  styles: { [nodeId: number]: Object },
+  selected: { [nodeId: number]: Node },
+};
 
 const StyleDetailTree = (styleDetails: StyleDetails[]) => {
   /**

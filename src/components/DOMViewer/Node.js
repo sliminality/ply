@@ -1,74 +1,14 @@
 // @flow
 import React from 'react';
 import TreeView from 'react-treeview';
-
-/**
- * Types of nodes.
- * - Fork: a node with regular children. May be expanded/collapsed.
- * - Inline Leaf: a node with one child, a Value. Rendered with content inline.
- * - Value: a node with no children and a value, e.g. text.
- */
-const FORK = 'FORK';
-const INLINE_LEAF = 'INLINE_LEAF';
-const LEAF = 'LEAF';
-
-type NodeType = FORK | INLINE_LEAF | LEAF;
-
-const nodeType = (node: Node): NodeType => {
-  const { children, attributes } = node;
-
-  if (children && children.length > 0) {
-    if (children.length > 1) {
-      return FORK;
-    } else {
-      // One child; check if it has attributes.
-      return children[0].attributes
-        ? FORK
-        : INLINE_LEAF;
-    }
-  } else {
-    // No children; check if there are attributes.
-    return attributes
-      ? INLINE_LEAF
-      : LEAF;
-  }
-}
-
-const splitPairs = arr => arr.reduce((memo, curr, i) => {
-  if (i % 2 === 0) {
-    return [...memo, [ curr ]];
-  } else {
-    const lastIndex = memo.length - 1;
-    return [
-      ...memo.slice(0, lastIndex),
-      [...memo[lastIndex], curr],
-    ];
-  }
-}, []);
-
-const pairToAttr = ([ name, value ], i) =>
-  new Set(['class', 'id']).has(name)
-    ? <li key={i}>
-        <span className={`Node__attr-value--${name}`}>
-          {value}
-        </span>
-      </li>
-    : <li key={i}>
-        <span className="Node__attr-name">
-          {name}
-        </span><span className="Node__attr-value">
-          {value}
-        </span>
-      </li>;
-
-const truncate = len => str => `${str.substring(0, len)}...`;
+import { nodeType, splitPairs, pairToAttr, truncate } from './nodeHelpers';
 
 const NodeLabel = ({ node, selectNode }) => {
   const type = nodeType(node);
   const maxTextLength = 40;
   const truncateText = truncate(maxTextLength);
 
-  if (type === LEAF) {
+  if (type === 'LEAF') {
     // Just need to get the current node's value.
     const { nodeValue } = node;
     return (
@@ -99,7 +39,7 @@ const NodeLabel = ({ node, selectNode }) => {
 
     // If it's an inline leaf with a single text child
     // (e.g. an <h1>) we need to get the child's value.
-    const hasInlineChild = type === INLINE_LEAF
+    const hasInlineChild = type === 'INLINE_LEAF'
       && node.children[0];
 
     if (hasInlineChild) {
@@ -130,9 +70,9 @@ const nodeActions = ({ toggleSelected, isSelected }) => {
     // Compute className string.
     const type = nodeType(node);
     const nodeClass = {
-      [FORK]: 'Node',
-      [INLINE_LEAF]: 'Node Node--leaf',
-      [LEAF]: 'Node Node--leaf',
+      'FORK': 'Node',
+      'INLINE_LEAF': 'Node Node--leaf',
+      'LEAF': 'Node Node--leaf',
     }[type];
 
     const selected = isSelected(nodeId) ? 'Node--selected' : null;
@@ -143,8 +83,8 @@ const nodeActions = ({ toggleSelected, isSelected }) => {
       key: nodeId,  // for React
     };
 
-    const isLeafNode = type === INLINE_LEAF
-      || type === LEAF;
+    const isLeafNode = type === 'INLINE_LEAF'
+      || type === 'LEAF';
     if (isLeafNode) {
       const props = {...sharedProps, className};
       return (

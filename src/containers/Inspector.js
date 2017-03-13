@@ -1,9 +1,9 @@
 // @flow
 import React, { Component } from 'react';
 import SplitPane from 'react-split-pane';
-import DOMViewer from '../../components/DOMViewer/DOMViewer';
-import StyleViewer from '../../components/StyleViewer/StyleViewer';
-import { deleteIn } from '../../utils/state';
+import DOMViewer from '../components/DOMViewer/DOMViewer';
+import StyleViewer from '../components/StyleViewer/StyleViewer';
+import { deleteIn } from '../utils/state';
 import './Inspector.css';
 
 class Inspector extends Component {

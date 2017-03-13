@@ -1,18 +1,6 @@
 // @flow
 import React, { Component } from 'react';
-import { pairsToObject } from '../../utils/state';
-
-const filterStyles = (whitelist: string[]) =>
-  (cs: ComputedStyle): ComputedStyle =>
-    whitelist
-      .map(prop => [prop, cs[prop]])
-      .reduce(pairsToObject, {});
-
-const ownStyles =
-  (mine: ComputedStyle, parent: ComputedStyle): ComputedStyle =>
-    Object.entries(mine)
-      .filter(([ prop, val ]) => val !== parent[prop])
-      .reduce(pairsToObject, {});
+import { filterStyles, ownStyles } from './styleHelpers';
 
 const whitelist = [
   'box-sizing', 'display', 'position',
@@ -24,13 +12,25 @@ const whitelist = [
   'top', 'left', 'right', 'bottom', 'z-index',
 ];
 
-export type StyleDetailsProps = {
-  key: number,
-  styles: Styles,
-};
-
 class StyleDetails extends Component {
-  props: StyleDetailsProps;
+  props: {
+    key: number,
+    styles: Styles,
+  };
+
+  renderToolbar() {
+    const inputProps = {
+      className: 'uk-checkbox',
+      type: 'checkbox',
+    };
+    return (
+      <div className="StyleDetails__settings">
+        <label>Show Inherited
+          <input {...inputProps} checked />
+        </label>
+      </div>
+    );
+  }
 
   render() {
     const { styles, nodeId } = this.props;
@@ -42,34 +42,23 @@ class StyleDetails extends Component {
        * then take the set difference to get the element's own
        * computed styles.
        */
-      let computed;
+      ;
       const { computedStyle, parentComputedStyle } = styles;
-      const whitelisted = filterStyles(whitelist);
-      const cs = whitelisted(computedStyle);
-      if (parentComputedStyle) {
-        const parent = whitelisted(parentComputedStyle);
-        computed = ownStyles(cs, parent);
-      } else {
-        computed = cs;
-      }
+      const cs = filterStyles(whitelist)(computedStyle);
+      const computed = parentComputedStyle
+        ? ownStyles(cs, parentComputedStyle)
+        : cs;
       content = JSON.stringify(computed, null, 2);
+    } else {
+      content = 'Loading styles...';
     }
-
-    const toolbar =
-      <div className="StyleDetails__settings">
-        <label>
-          <input className="uk-checkbox"
-                 type="checkbox"
-                 checked
-          />
-            Show Inherited
-          </label>
-      </div>;
 
     const props = {
       className: 'StyleDetails',
       key: nodeId,
     };
+    const toolbar = this.renderToolbar();
+
     return (
       <div {...props}>
         {toolbar}

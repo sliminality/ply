@@ -84,17 +84,17 @@ class SocketWrapper extends Component {
   _onServerNode({ id, node }) {
     logResult(id, 'Server responded with node:\n', node);
     this.setState({
-      rootNode: node
+      rootNode: node,
     });
   }
 
   _onServerStyles(res) {
-    const { id, nodeId, computedStyle,
+    const { id, nodeId, computedStyle, parentComputedStyle,
       inlineStyle, attributesStyle, matchedCSSRules,
       inherited, pseudoElements, cssKeyframesRules } = res;
 
     const styles = {
-      nodeId, computedStyle,
+      nodeId, computedStyle, parentComputedStyle,
       inlineStyle, attributesStyle, matchedCSSRules,
       inherited, pseudoElements, cssKeyframesRules,
     };

@@ -5,6 +5,7 @@ type ComputedStyle = { [prop: string]: string };
 
 declare type Styles = {
   nodeId: number,
+  parentComputedStyle: ComputedStyle,
   computedStyle: ComputedStyle,
   inlineStyle: CSSStyle,
   attributesStyle: CSSStyle,

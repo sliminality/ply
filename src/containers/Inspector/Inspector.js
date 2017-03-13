@@ -21,6 +21,7 @@ class Inspector extends Component {
     super(props);
     this.toggleSelected = this.toggleSelected.bind(this);
     this.isSelected = this.isSelected.bind(this);
+    this.parents = new WeakMap();
 
     this.state = {
       selected: {},
@@ -49,19 +50,21 @@ class Inspector extends Component {
     });
   }
 
-  resolveNode(nodeId: number): Node | false {
+  resolveNode(nodeId: number): {
+    node: Node, parentId: number
+  } {
     const { rootNode } = this.props;
     const queue = [ rootNode ];
     while (queue.length > 0) {
       const node = queue.shift();
       if (node.nodeId === nodeId) {
-        return { node };
+        return node;
       }
       if (node.children) {
         queue.push(...node.children);
       }
     }
-    return false;
+    throw new Error('Could not resolve node for', nodeId);
   }
 
   toggleSelected(nodeId: number): void {
@@ -79,11 +82,6 @@ class Inspector extends Component {
           [nodeId]: node,
         },
       };
-      // Get parent nodeId.
-      const { parentId } = node;
-      if (parentId) {
-        this.requestStyles(parentId);
-      }
       this.requestStyles(nodeId);
     }
     // TODO: This will get dicey if the request fails.

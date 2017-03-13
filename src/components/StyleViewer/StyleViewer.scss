@@ -1,0 +1,10 @@
+.StyleDetails {
+  padding: 10px;
+}
+
+.StyleViewer {
+  &__none-selected {
+    display: block;
+    padding: 10px;
+  }
+}

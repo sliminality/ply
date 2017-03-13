@@ -10,11 +10,11 @@ class Inspector extends Component {
   props: {
     requestData: (Object) => void,
     rootNode: Node,
-    styles: { [id: number]: Object },
+    styles: { [nodeId: string]: Object },
   };
 
   state: {
-    selected: { [id: number]: Node },
+    selected: { [nodeId: string]: Node },
   };
 
   constructor(props) {

@@ -12,6 +12,7 @@ declare type AttributeList = string[];
 
 declare type Node = {
   nodeId: number,
+  parentId?: number,
   backendNodeId: number,
   nodeType: number,
   nodeName: string,

@@ -38,8 +38,5 @@ export const cap = (A, B) => {
   return AnB;
 };
 
-export const pairsToObject = pairs =>
-  pairs.reduce(
-    (memo, [k, v]) =>
-      Object.assign(memo, { [k]: v }),
-  {});
+export const pairsToObject = (memo, [k, v]) =>
+  Object.assign(memo, { [k]: v });

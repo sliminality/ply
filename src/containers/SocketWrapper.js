@@ -94,7 +94,7 @@ class SocketWrapper extends Component {
       inherited, pseudoElements, cssKeyframesRules } = res;
 
     const styles = {
-      computedStyle,
+      nodeId, computedStyle,
       inlineStyle, attributesStyle, matchedCSSRules,
       inherited, pseudoElements, cssKeyframesRules,
     };

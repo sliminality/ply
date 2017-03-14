@@ -1,33 +1,96 @@
 $padding-sides: 12px;
 
+@mixin a11y-hidden {
+  position: absolute;
+  left: -10000px;
+  top: auto;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
 @mixin small-caps {
   text-transform: uppercase;
   font-size: 0.9rem;
   color: #999;
 }
 
-.StyleDetails {
-  border-bottom: 1px solid rgb(229, 229, 229);
+.StyleViewer {
+  &__none-selected {
+    display: block;
+    padding: 10px;
+  }
+}
 
-  &__settings {
+.StyleDetails {
+  width: 100%;  // parent is flex
+  height: 100%;  // get last child to scroll
+  position: relative;
+
+  // Let computed styles scroll correctly
+  display: flex;
+  flex-direction: column;
+
+  &__tabs {
     @include small-caps;
+    width: 100%;
+    padding-top: 4px;
+    // Extend Uikit border bottom
+    padding-right: 20px;
+    margin-bottom: 0;
+
+    // Prevent header from getting crushed
+    flex-shrink: 0;
+
+    // Display the header properties in a row
     display: flex;
     justify-content: space-between;
-    padding: 6px $padding-sides;
-    border-bottom: 1px solid rgb(229, 229, 229);
+    align-items: baseline;
+  }
+
+  &__options {
+    // Remove default list styles.
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    flex-grow: 1;
+
+    // Flex options in a row.
+    display: flex;
+    justify-content: flex-end;
+
+    // Spacing between options
+    > li {
+      margin-right: 20px;
+
+      &:last-child {
+        margin-right: 0;
+      }
+    }
 
     input[type="checkbox"] {
       margin-right: 5px;
-      height: 14px;
-      width: 14px;
+      height: 11px;
+      width: 11px;
     }
   }
 
+  // Enable scrolling.
+  &__content {
+    height: 100%;
+    overflow-y: scroll;
+  }
+
   &__computed-list {
-    margin: 5px 0 0;
+    // Neeeded for overflow scrolling.
+    height: 100%;
+
+    // Give the last element the same
+    // amount of padding.
+    margin-bottom: 2px;
 
     th {
-      padding: 4px $padding-sides;
+      @include a11y-hidden;
     }
 
     td {
@@ -35,13 +98,9 @@ $padding-sides: 12px;
       font-family: 'Inconsolata', monospace;
       letter-spacing: -0.01em;
       font-size: 12px;
-    }
-  }
-}
 
-.StyleViewer {
-  &__none-selected {
-    display: block;
-    padding: 10px;
+      // Evenly space columns
+      width: 50%;
+    }
   }
 }

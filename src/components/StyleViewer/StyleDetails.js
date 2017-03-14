@@ -18,22 +18,6 @@ class StyleDetails extends Component {
     styles: Styles,
   };
 
-  renderToolbar({ nodeId }) {
-    const inputProps = {
-      className: 'uk-checkbox',
-      type: 'checkbox',
-    };
-    return (
-      <div className="StyleDetails__settings">
-        <label>
-          <input {...inputProps} checked />
-          Show Inherited
-        </label>
-        <span>Node ID: {nodeId}</span>
-      </div>
-    );
-  }
-
   renderComputedStyleTable(cs: ComputedStyle) {
     const tableClassName = [
       'StyleDetails__computed-list',
@@ -66,6 +50,46 @@ class StyleDetails extends Component {
     );
   }
 
+  renderToolbar({ nodeId }) {
+    const checkboxProps = {
+      className: 'uk-checkbox',
+      type: 'checkbox',
+    };
+    const options = [
+      <li key={0}>
+        <label>
+          <input {...checkboxProps} checked />
+          Show Inherited
+        </label>
+      </li>,
+      <li key={1}>
+        <label>
+          <input {...checkboxProps} checked />
+          Show Inherited
+        </label>
+      </li>,
+      <li className="StyleDetails__node-id">
+        Node ID: {nodeId}
+      </li>
+    ];
+    const tabsClassName = [
+      'uk-tab',
+      'StyleDetails__tabs',
+    ].join(' ');
+
+    return (
+      <ul className={tabsClassName}>
+          <li className="uk-active">
+            <a href="#">Computed</a>
+          </li>
+          <li><a href="#">Full</a></li>
+          <ul className="StyleDetails__options">
+            {options}
+          </ul>
+      </ul>
+    );
+  }
+
   render() {
     const { styles, nodeId } = this.props;
     let content = null;
@@ -95,7 +119,9 @@ class StyleDetails extends Component {
     return (
       <div {...props}>
         {toolbar}
-        {content}
+        <div className="StyleDetails__content">
+          {content}
+        </div>
       </div>
     );
   }

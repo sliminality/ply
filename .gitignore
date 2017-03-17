@@ -21,3 +21,6 @@ yarn-error.log*
 
 # Sass builds
 src/**/*.css
+
+# PDF builds
+*.pdf

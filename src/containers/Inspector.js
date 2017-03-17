@@ -97,8 +97,10 @@ class Inspector extends Component {
     const { selected } = this.state;
     const splitPaneProps = {
       split: 'vertical',
-      minSize: 50,
-      defaultSize: 400,
+      minSize: 100,
+      defaultSize: 175,
+      maxSize: 0,
+      primary: 'second',
     };
     const domViewerProps = {
       rootNode,

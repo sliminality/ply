@@ -56,18 +56,12 @@ class StyleDetails extends Component {
       type: 'checkbox',
     };
     const options = [
-      <li key={0}>
-        <label>
-          <input {...checkboxProps} checked />
-          Show Inherited
-        </label>
-      </li>,
-      <li key={1}>
-        <label>
-          <input {...checkboxProps} checked />
-          Show Inherited
-        </label>
-      </li>,
+      // <li key={0}>
+        // <label>
+          // <input {...checkboxProps} checked />
+          // Show Inherited
+        // </label>
+      // </li>,
       <li className="StyleDetails__node-id">
         Node ID: {nodeId}
       </li>
@@ -82,7 +76,6 @@ class StyleDetails extends Component {
           <li className="uk-active">
             <a href="#">Computed</a>
           </li>
-          <li><a href="#">Full</a></li>
           <ul className="StyleDetails__options">
             {options}
           </ul>

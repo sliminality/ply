@@ -5,8 +5,8 @@ import io from 'socket.io-client';
 import { deleteIn } from '../utils/state';
 
 const SELECTOR =
-  // 'body > main > section:nth-child(3) > div:nth-child(2) > figure';
   'body > main > section:nth-child(3) > div:nth-child(2)';
+  // 'body > main > section:nth-child(3) > div:nth-child(2) > figure';
   // '#account_actions_logged_out_dashboard > div.about-tumblr-showcase.ready.show-login > div.showcase > div.section.login-section.active';
   // '#main > ol';
 

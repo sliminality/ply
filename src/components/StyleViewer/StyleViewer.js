@@ -17,7 +17,7 @@ type Props = {
 
 const StyleDetailTree = (styleDetails: StyleDetails[]) => {
   /**
-   * To make all the panes evenly sized, compute
+ * To make all the panes evenly sized, compute
    * the size of the top pane in the current frame
    * as (100% / (TOTAL_NODES - NODES_PROCESSED).
    */
@@ -59,6 +59,10 @@ const StyleViewer = (props: Props) => {
           .map(styleDetailsProps(styles))
           .map(p => <StyleDetails {...p} />);
       content = StyleDetailTree(styleDetails);
+    } else {
+      // There are selected nodes, but no styles yet.
+      // Tell it like it is.
+      content = 'No styles loaded yet';
     }
   }
   return (

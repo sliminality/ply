@@ -20,7 +20,6 @@ $select-highlight: #efefef;
 .Node {
   font-family: 'Inconsolata', monospace;
   letter-spacing: -0.01em;
-  font-size: 13px;
 
   &:hover {
     background-color: $hover-highlight;
@@ -40,6 +39,7 @@ $select-highlight: #efefef;
     text-indent: -1.5em;
     padding-left: 1.5em;
     cursor: pointer;
+    width: 90%;  // click (mostly) anywhere on the line to toggle
   }
 
   &__attr-list {

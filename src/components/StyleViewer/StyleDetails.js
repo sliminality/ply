@@ -62,7 +62,7 @@ class StyleDetails extends Component {
           // Show Inherited
         // </label>
       // </li>,
-      <li className="StyleDetails__node-id">
+      <li className="StyleDetails__node-id" key={0}>
         Node ID: {nodeId}
       </li>
     ];
@@ -100,7 +100,11 @@ class StyleDetails extends Component {
         : cs;
       content = this.renderComputedStyleTable(computed, null, 2);
     } else {
-      content = 'Loading styles...';
+      content = (
+        <span className="StyleDetails__loading">
+          Loading styles...;
+        </span>
+      );
     }
 
     const props = {

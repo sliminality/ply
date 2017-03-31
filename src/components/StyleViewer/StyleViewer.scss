@@ -78,13 +78,14 @@ $padding-sides: 12px;
   // Enable scrolling.
   &__content {
     height: 100%;
-    overflow-y: scroll;
+    overflow-y: auto;
+  }
+
+  &__loading {
+    margin: 10px;
   }
 
   &__computed-list {
-    // Neeeded for overflow scrolling.
-    height: 100%;
-
     // Give the last element the same
     // amount of padding.
     margin-bottom: 2px;
@@ -97,7 +98,6 @@ $padding-sides: 12px;
       padding: 2px $padding-sides;
       font-family: 'Inconsolata', monospace;
       letter-spacing: -0.01em;
-      font-size: 12px;
 
       // Evenly space columns and text within them
       width: 50%;

@@ -19,6 +19,7 @@ yarn-error.log*
 *.sublime-project
 *.sublime-workspace
 iTermocil.yml
+*.vim
 
 # Sass builds
 src/**/*.css

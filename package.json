@@ -11,9 +11,11 @@
   },
   "dependencies": {
     "htmlparser2": "^3.9.2",
+    "node-uuid": "^1.4.8",
     "react": "^15.4.2",
     "react-dom": "^15.4.2",
     "react-split-pane": "^0.1.57",
+    "react-treeview": "^0.4.6",
     "react-uikit-codeblock": "^2.0.2"
   },
   "scripts": {

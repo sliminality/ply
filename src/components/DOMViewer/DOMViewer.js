@@ -1,10 +1,10 @@
 // @flow
 import React from 'react';
-import nodeActions from './Node';
+import Element from './Element';
 import './DOMViewer.css';
 
 type Props = {
-  rootNode: Node,
+  rootNode: Element,
   toggleSelected: (number) => void,
   isSelected: (number) => void,
 };
@@ -13,8 +13,7 @@ const DOMViewer = ({ rootNode, toggleSelected, isSelected }: Props) => {
   let rootItem;
 
   if (rootNode) {
-    const Node = nodeActions({ toggleSelected, isSelected });
-    rootItem = Node(rootNode);
+    rootItem = Element({ toggleSelected, isSelected })(rootNode);
   } else {
     rootItem = (<span className="DOMViewer__loading">Loading...</span>);
   }

@@ -3,7 +3,7 @@ import React from 'react';
 import TreeView from 'react-treeview';
 import { nodeType, splitPairs, pairToAttr, truncate } from './nodeHelpers';
 
-const NodeLabel = ({ node, selectNode }) => {
+const ElementLabel = ({ node, selectNode }) => {
   const type = nodeType(node);
   const maxTextLength = 40;
   const truncateText = truncate(maxTextLength);
@@ -60,12 +60,12 @@ const NodeLabel = ({ node, selectNode }) => {
   }
 };
 
-const nodeActions = ({ toggleSelected, isSelected }) => {
+const Element = ({ toggleSelected, isSelected }) => {
   // Naming our inner function so that recursion, like, works
-  const Node = node => {
+  const elWithActions = node => {
     const { nodeId } = node;
     const selectNode = () => toggleSelected(nodeId);
-    const label = NodeLabel({ node, selectNode });
+    const label = ElementLabel({ node, selectNode });
 
     // Compute className string.
     const type = nodeType(node);
@@ -96,7 +96,7 @@ const nodeActions = ({ toggleSelected, isSelected }) => {
 
     // Get children if it's a fork.
     const { children } = node;
-    const childNodes = children.map(Node);
+    const childNodes = children.map(elWithActions);
     const props = {
       ...sharedProps,
       nodeLabel: label,
@@ -111,7 +111,7 @@ const nodeActions = ({ toggleSelected, isSelected }) => {
     );
   };
 
-  return Node;
+  return elWithActions;
 };
 
-export default nodeActions;
+export default Element;

@@ -20,12 +20,6 @@ class SocketWrapper extends Component {
     this.requestNode = this.requestNode.bind(this);
     this.requestStyles = this.requestStyles.bind(this);
     this.requestData = this.requestData.bind(this);
-    this._onSocketConnect = this._onSocketConnect.bind(this);
-    this._onServerNode = this._onServerNode.bind(this);
-    this._onServerStyles = this._onServerStyles.bind(this);
-    this._onServerError = this._onServerError.bind(this);
-    this._onSocketDisconnect = this._onSocketDisconnect.bind(this);
-    this._onSocketResponse = this._onSocketResponse.bind(this);
 
     const port = 1111;
     const socketURL = `http://localhost:${port}/frontends`;
@@ -53,14 +47,14 @@ class SocketWrapper extends Component {
     this.socket.off();
   }
 
-  _onSocketConnect() {
+  _onSocketConnect = () => {
     this.setState({
       socketId: this.socket.id
     });
     console.log('Connected to socket:', this.state.socketId);
   }
 
-  _onSocketResponse(res) {
+  _onSocketResponse = (res) => {
     const { requests } = this.state;
     if (!requests[res.id]) {
       return;
@@ -81,14 +75,14 @@ class SocketWrapper extends Component {
     });
   }
 
-  _onServerNode({ id, node }) {
+  _onServerNode = ({ id, node }) => {
     logResult(id, 'Server responded with node:\n', node);
     this.setState({
       rootNode: node,
     });
   }
 
-  _onServerStyles(res) {
+  _onServerStyles = (res) => {
     const { id, nodeId, computedStyle, parentComputedStyle,
       inlineStyle, attributesStyle, matchedCSSRules,
       inherited, pseudoElements, cssKeyframesRules } = res;
@@ -109,7 +103,7 @@ class SocketWrapper extends Component {
     });
   }
 
-  _onServerError({ id, message }) {
+  _onServerError = ({ id, message }) => {
     logResult(id, 'Server responded with error:', message);
     const nextRequests = deleteIn(this.state.requests, id);
     this.setState({
@@ -117,7 +111,7 @@ class SocketWrapper extends Component {
     });
   }
 
-  _onSocketDisconnect() {
+  _onSocketDisconnect = () => {
     this.setState({
       socketId: null,
     });

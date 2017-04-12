@@ -22,7 +22,7 @@ class SocketWrapper extends Component {
     this.requestData = this.requestData.bind(this);
 
     const port = 1111;
-    const socketURL = `http://localhost:${port}/frontends`;
+    const socketURL = `http://localhost:${port}/apps`;
     this.socket = io.connect(socketURL, {
       reconnectionAttempts: 5,
     });

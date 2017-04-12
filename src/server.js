@@ -4,13 +4,13 @@ const io = require('socket.io')().attach(port);
 /**
  * Namespaces
  *   /browser - for browser clients (Chrome extension)
- *   /frontend - for clients requesting info from browsers
+ *   /app - for clients requesting info from browsers
  */
 const browsers = io.of('/browsers');
-const frontends = io.of('/frontends');
+const apps = io.of('/apps');
 
 let browserConnections = new Set();
-let frontendConnections = new Set();
+let appConnections = new Set();
 
 browsers.on('connect', browser => {
   const socketId = browser.id;
@@ -20,22 +20,22 @@ browsers.on('connect', browser => {
 
   browserConnections.add(socketId);
   console.log('Connected to browser', socketId);
-  console.log('Total frontends:', frontendConnections.size);
+  console.log('Total apps:', appConnections.size);
   console.log('Total browsers:', browserConnections.size);
 
   /**
    * When browser clients provide responses, we need to forward
-   * to the frontend clients.
+   * to the app clients.
    */
   browser.on('data.res', res => {
     console.dir(res);
     // Refactor this to support multiple clients.
-    frontends.emit('data.res', res);
+    apps.emit('data.res', res);
   });
 
   browser.on('data.err', err => {
     console.log(err);
-    frontends.emit('data.err', err);
+    apps.emit('data.err', err);
   });
 
   browser.on('disconnect', () => {
@@ -50,46 +50,46 @@ browsers.on('connect', browser => {
 });
 
 /**
- * When frontend clients send requests, we need to forward
+ * When app clients send requests, we need to forward
  * to the browser client.
  */
-frontends.on('connect', frontend => {
-  const socketId = frontend.id;
-  if (frontendConnections.has(socketId)) {
-    throw new Error('tried to connect a frontend already added');
+apps.on('connect', app => {
+  const socketId = app.id;
+  if (appConnections.has(socketId)) {
+    throw new Error('tried to connect a app already added');
   }
-  frontendConnections.add(socketId);
-  console.log('Connected to frontend', socketId);
-  console.log('Total frontends:', frontendConnections.size);
+  appConnections.add(socketId);
+  console.log('Connected to app', socketId);
+  console.log('Total apps:', appConnections.size);
   console.log('Total browsers:', browserConnections.size);
 
   /**
-   * When frontend clients send requests, we need to forward
+   * When app clients send requests, we need to forward
    * to the browser clients.
    */
-  frontend.on('data.req', req => {
+  app.on('data.req', req => {
     if (browserConnections.size > 0) {
       console.dir(req);
       browsers.emit('data.req', req);
     } else {
       console.error('No available browser clients');
       // If there are no connected browser clients, return
-      // an error to the requesting frontend.
-      frontend.emit('server.err', {
+      // an error to the requesting app.
+      app.emit('server.err', {
         type: 'SERVER_ERROR',
         id: req.id,
-        message: 'No available browser clients',
+        message: 'No available browsers',
       });
     }
   });
 
-  frontend.on('disconnect', () => {
-    if (frontendConnections.has(socketId)) {
-      frontendConnections.delete(socketId);
-      console.log('Disconnected from frontend', socketId);
-      console.log('Total frontends:', frontendConnections.size);
+  app.on('disconnect', () => {
+    if (appConnections.has(socketId)) {
+      appConnections.delete(socketId);
+      console.log('Disconnected from app', socketId);
+      console.log('Total apps:', appConnections.size);
     } else {
-      throw new Error('tried to disconnect a frontend that didnt exist');
+      throw new Error('tried to disconnect a app that didnt exist');
     }
   });
 });

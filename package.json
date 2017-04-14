@@ -19,12 +19,13 @@
     "react-uikit-codeblock": "^2.0.2"
   },
   "scripts": {
-    "ws:serve": "node src/server.js",
-    "build-css": "node-sass src/ -o src/",
-    "watch-css": "npm run build-css && node-sass src/ -o src/ --watch --recursive",
-    "start-js": "react-scripts start",
-    "start": "npm-run-all -p watch-css start-js",
-    "build": "npm run build-css && react-scripts build",
+    "start:ws": "node src/server.js",
+    "build:css": "node-sass src/ -o src/",
+    "watch:css": "npm run build:css && node-sass src/ -o src/ --watch --recursive",
+    "start:js": "react-scripts start",
+    "start:target": "open 'http://loremipsumgenerator.com'",
+    "start": "npm-run-all -p watch:css start:js start:target",
+    "build": "npm run build:css && react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
     "flow": "flow"

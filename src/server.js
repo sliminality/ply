@@ -12,6 +12,27 @@ const apps = io.of('/apps');
 let browserConnections = new Set();
 let appConnections = new Set();
 
+const log = msg => {
+  const cols = process.stdout.columns;
+  const divider = '-'.repeat(cols);
+  console.log(divider);
+  console.log(msg);
+};
+
+const logConnections = ({ connected, what, socketId, apps, browsers }) => {
+  const status = connected ? 'Connected to' : 'Disconnected from';
+  const lines = [
+    `${status} ${what}: ${socketId}`,
+    `Total apps: ${apps}`,
+    `Total browsers: ${browsers}`,
+  ];
+  const cols = process.stdout.columns;
+  const msg = lines.map(s =>
+    `| ${s}${' '.repeat(cols - s.length - 4)} |`
+  ).join('');
+  log(msg);
+};
+
 browsers.on('connect', browser => {
   const socketId = browser.id;
   if (browserConnections.has(socketId)) {
@@ -19,9 +40,13 @@ browsers.on('connect', browser => {
   }
 
   browserConnections.add(socketId);
-  console.log('Connected to browser', socketId);
-  console.log('Total apps:', appConnections.size);
-  console.log('Total browsers:', browserConnections.size);
+  logConnections({
+    connected: true,
+    socketId,
+    what: 'browser',
+    apps: appConnections.size,
+    browsers: browserConnections.size,
+  });
 
   /**
    * When browser clients provide responses, we need to forward
@@ -34,15 +59,20 @@ browsers.on('connect', browser => {
   });
 
   browser.on('data.err', err => {
-    console.log(err);
+    console.error(err);
     apps.emit('data.err', err);
   });
 
   browser.on('disconnect', () => {
     if (browserConnections.has(socketId)) {
       browserConnections.delete(socketId);
-      console.log('Disconnected from browser', socketId);
-      console.log('Total browsers:', browserConnections.size);
+      logConnections({
+        connected: false,
+        what: 'browser',
+        socketId,
+        apps: appConnections.size,
+        browsers: browserConnections.size,
+      });
     } else {
       throw new Error('tried to disconnect a socket that didnt exist');
     }
@@ -59,9 +89,13 @@ apps.on('connect', app => {
     throw new Error('tried to connect a app already added');
   }
   appConnections.add(socketId);
-  console.log('Connected to app', socketId);
-  console.log('Total apps:', appConnections.size);
-  console.log('Total browsers:', browserConnections.size);
+  logConnections({
+    connected: true,
+    what: 'app',
+    socketId,
+    apps: appConnections.size,
+    browsers: browserConnections.size,
+  });
 
   /**
    * When app clients send requests, we need to forward
@@ -86,8 +120,13 @@ apps.on('connect', app => {
   app.on('disconnect', () => {
     if (appConnections.has(socketId)) {
       appConnections.delete(socketId);
-      console.log('Disconnected from app', socketId);
-      console.log('Total apps:', appConnections.size);
+      logConnections({
+        connected: false,
+        what: 'app',
+        socketId,
+        apps: appConnections.size,
+        browsers: browserConnections.size,
+      });
     } else {
       throw new Error('tried to disconnect a app that didnt exist');
     }

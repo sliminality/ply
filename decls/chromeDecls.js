@@ -433,3 +433,75 @@ declare type StyleDeclarationEdit = {
   range: SourceRange,
   text: string,
 };
+
+declare type ShorthandEntry = {
+  name: string,
+  value: string,
+  important?: boolean,
+};
+
+/**
+ * CSS media rule descriptor.
+ */
+declare type CSSMedia = {
+  text: string,
+  source: 'mediaRule' | 'importRule' | 'linkedSheet' | 'inlineSheet',
+  sourceURL?: string,
+  range?: SourceRange,
+  styleSheetId?: StyleSheetId,
+  mediaList?: MediaQuery[],
+};
+
+/**
+ * Media query descriptor.
+ */
+declare type MediaQuery = {
+  expressions: MediaQueryExpression[],
+  active: boolean,
+};
+
+/**
+ * Media query expression descriptor.
+ */
+declare type MediaQueryExpression = {
+  value: number,
+  unit: string,
+  feature: string,
+  valueRange?: SourceRange,
+  computedLength?: number,
+};
+
+/**
+ * Result of calling CSS.getMatchedStylesForNode.
+ */
+declare type MatchedStyles = {
+  inlineStyle: CSSStyle,
+  attributesStyle: CSSStyle,
+  matchedCSSRules: RuleMatch[],
+  inherited: InheritedStyleEntry[],
+  pseudoElements: PseudoElementMatches[],
+  cssKeyframesRules: CSSKeyframesRule[],
+};
+
+/**
+ * Inherited CSS rule collection from ancestor node.
+ */
+declare type InheritedStyleEntry = {
+  inlineStyle?: CSSStyle,
+  matchedCSSRules: RuleMatch[],
+};
+
+/**
+ * CSS keyframe rule representation.
+ */
+declare type CSSKeyframesRule = {
+  animationName: Value,
+  keyframes: CSSKeyframeRule[],
+};
+
+declare type CSSKeyframeRule = {
+  styleSheetId?: StyleSheetId,
+  origin: StyleSheetOrigin,
+  keyText: Value,
+  style: CSSStyle,
+};

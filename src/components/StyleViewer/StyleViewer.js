@@ -4,21 +4,20 @@ import SplitPane from 'react-split-pane';
 import StyleDetails from './StyleDetails';
 import './StyleViewer.css';
 
-const styleDetailsProps = (styles: Styles) => (
-  nodeId: number
-): StyleDetailsProps => ({
-  nodeId,
-  styles: styles[nodeId],
-});
+const styleDetailsProps = (styles: { [NodeId]: NodeStyles }) =>
+  (nodeId: NodeId) => ({
+    nodeId,
+    styles: styles[nodeId],
+  });
 
 type Props = {
-  styles: { [nodeId: number]: Object },
-  selected: { [nodeId: number]: Node },
+  styles: { [NodeId]: NodeStyles },
+  selected: { [NodeId]: Node },
 };
 
 const StyleDetailTree = (styleDetails: StyleDetails[]) => {
   /**
- * To make all the panes evenly sized, compute
+   * To make all the panes evenly sized, compute
    * the size of the top pane in the current frame
    * as (100% / (TOTAL_NODES - NODES_PROCESSED).
    */
@@ -53,8 +52,8 @@ const StyleViewer = (props: Props) => {
     // Construct a nested series of SplitPanes,
     // in the order elements were selected.
     if (styles) {
-      const selectedNodeIds = Object.keys(selected);
-      const styleDetails: StyleDetails[] = selectedNodeIds
+      const selectedNodeIds = Object.keys(selected).map(s => parseInt(s, 10));
+      const styleDetails = selectedNodeIds
         .map(styleDetailsProps(styles))
         .map(p => <StyleDetails {...p} />);
       content = StyleDetailTree(styleDetails);

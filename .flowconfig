@@ -1,6 +1,6 @@
 [ignore]
-./node_modules/fbjs/lib
-./node_modules/npm
+.*/node_modules/npm/.*
+.*/node_modules/fbjs/.*
 
 [include]
 

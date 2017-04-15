@@ -6,22 +6,21 @@ import StyleViewer from '../components/StyleViewer/StyleViewer';
 import { deleteIn } from '../utils/state';
 import './Inspector.css';
 
+type Props = {
+  requestData: (Object) => void,
+  rootNode: Node,
+  styles: { [nodeId: string]: Object },
+};
+
 class Inspector extends Component {
-  props: {
-    requestData: Object => void,
-    rootNode: Node,
-    styles: { [nodeId: string]: Object },
-  };
+  props: Props;
 
   state: {
     selected: { [nodeId: string]: Node },
   };
 
-  constructor(props) {
+  constructor(props: Props) {
     super(props);
-    this.toggleSelected = this.toggleSelected.bind(this);
-    this.isSelected = this.isSelected.bind(this);
-    this.parents = new WeakMap();
 
     this.state = {
       selected: {},
@@ -51,12 +50,7 @@ class Inspector extends Component {
     });
   }
 
-  resolveNode(
-    nodeId: number
-  ): {
-    node: Node,
-    parentId: number,
-  } {
+  resolveNode(nodeId: number): NodeWithParent {
     const { rootNode } = this.props;
     const queue = [rootNode];
     while (queue.length > 0) {
@@ -71,7 +65,7 @@ class Inspector extends Component {
     throw new Error('Could not resolve node for', nodeId);
   }
 
-  toggleSelected(nodeId: number): void {
+  toggleSelected = (nodeId: number): void => {
     const { selected } = this.state;
     let nextState;
     if (this.isSelected(nodeId)) {
@@ -90,12 +84,10 @@ class Inspector extends Component {
     }
     // TODO: This will get dicey if the request fails.
     this.setState(nextState);
-  }
-
-  isSelected(nodeId: number): boolean {
-    return this.state.selected[nodeId];
-  }
-
+  };
+  isSelected = (nodeId: number): boolean => {
+    return !!this.state.selected[nodeId];
+  };
   render() {
     const { rootNode, styles } = this.props;
     const { selected } = this.state;

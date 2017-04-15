@@ -24,18 +24,21 @@ export const nodeType = (node: Node): NodeType => {
   }
 };
 
-export const splitPairs = arr =>
-  arr.reduce((memo, curr, i) => {
-    if (i % 2 === 0) {
-      return [...memo, [curr]];
-    } else {
-      const lastIndex = memo.length - 1;
-      return [...memo.slice(0, lastIndex), [...memo[lastIndex], curr]];
-    }
-  }, []);
+export const splitPairs = (arr: AttributeList): AttributeList[] =>
+  arr.reduce(
+    (memo, curr, i) => {
+      if (i % 2 === 0) {
+        return [...memo, [curr]];
+      } else {
+        const lastIndex = memo.length - 1;
+        return [...memo.slice(0, lastIndex), [...memo[lastIndex], curr]];
+      }
+    },
+    []
+  );
 
-export const pairToAttr = ([name, value], i) =>
-  (new Set(['class', 'id']).has(name)
+export const pairToAttr = ([name, value]: [string, string], i: number) =>
+  new Set(['class', 'id']).has(name)
     ? <li key={i}>
         <span className={`Node__attr-value--${name}`}>
           {value}
@@ -47,6 +50,7 @@ export const pairToAttr = ([name, value], i) =>
         </span><span className="Node__attr-value">
           {value}
         </span>
-      </li>);
+      </li>;
 
-export const truncate = len => str => `${str.substring(0, len)}...`;
+export const truncate = (len: number) =>
+  (str: string) => `${str.substring(0, len)}...`;

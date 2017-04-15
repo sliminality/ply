@@ -28,7 +28,8 @@ const whitelist = [
 class StyleDetails extends Component {
   props: {
     key: number,
-    styles: Styles,
+    styles: NodeStyles,
+    nodeId: NodeId,
   };
 
   renderComputedStyleTable(cs: ComputedStyle) {
@@ -63,7 +64,7 @@ class StyleDetails extends Component {
     );
   }
 
-  renderToolbar({ nodeId }) {
+  renderToolbar({ nodeId }: { nodeId: NodeId }) {
     const checkboxProps = {
       className: 'uk-checkbox',
       type: 'checkbox',
@@ -93,7 +94,10 @@ class StyleDetails extends Component {
   }
 
   render() {
-    const { styles, nodeId } = this.props;
+    const {
+      styles,
+      nodeId,
+    }: { styles: NodeStyles, nodeId: NodeId } = this.props;
     let content = null;
     if (styles) {
       /**
@@ -103,9 +107,8 @@ class StyleDetails extends Component {
        * computed styles.
        */
       const { computedStyle, parentComputedStyle } = styles;
-      const cs = filterStyles(whitelist)(computedStyle);
-      /* const computed = cs; */
-      const computed = parentComputedStyle
+      const cs: ComputedStyle = filterStyles(whitelist)(computedStyle);
+      const computed: ComputedStyle = parentComputedStyle
         ? ownStyles(cs, parentComputedStyle)
         : cs;
       content = this.renderComputedStyleTable(computed, null, 2);

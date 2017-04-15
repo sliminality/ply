@@ -8,16 +8,38 @@ const SELECTOR =
   // 'body';
   'body > main > section:nth-child(3) > div:nth-child(2)';
 
-const logResult = (id: number, ...rest: any[]): void =>
+const logResult = (id: string, ...rest: any[]): void =>
   console.log(`[${id}]`, ...rest);
 
+type SocketServerError = { id: string, type: 'SERVER_ERROR', message: string };
+type SocketReceiveStyles = { id: string, type: 'RECEIVE_STYLES' } & NodeStyles;
+type SocketReceiveNode = { id: string, type: 'RECEIVE_NODE', node: Node };
+type SocketRequestNode = { id: string, type: 'REQUEST_NODE', nodeId: NodeId };
+type SocketRequestStyles = {
+  id: string,
+  type: 'REQUEST_STYLES',
+  selector: string,
+};
+
+type SocketMessage =
+  | SocketServerError
+  | SocketRequestStyles
+  | SocketRequestNode
+  | SocketReceiveNode
+  | SocketReceiveStyles;
+
 class SocketWrapper extends Component {
+  socket: Object;
+
+  state: {
+    requests: Object,
+    socketId: ?string,
+    rootNode: ?Node,
+    styles: { [nodeId: NodeId]: NodeStyles },
+  };
+
   constructor(props) {
     super(props);
-    this.flushRequests = this.flushRequests.bind(this);
-    this.requestNode = this.requestNode.bind(this);
-    this.requestStyles = this.requestStyles.bind(this);
-    this.requestData = this.requestData.bind(this);
 
     const port = 1111;
     const socketURL = `http://localhost:${port}/apps`;
@@ -51,7 +73,7 @@ class SocketWrapper extends Component {
     });
     console.log('Connected to socket:', this.state.socketId);
   };
-  _onSocketResponse = res => {
+  _onSocketResponse = (res: SocketMessage) => {
     const { requests } = this.state;
     if (!requests[res.id]) {
       return;
@@ -71,13 +93,13 @@ class SocketWrapper extends Component {
       requests: nextRequests,
     });
   };
-  _onServerNode = ({ id, node }) => {
+  _onServerNode = ({ id, node }: SocketReceiveNode) => {
     logResult(id, 'Server responded with node:\n', node);
     this.setState({
       rootNode: node,
     });
   };
-  _onServerStyles = res => {
+  _onServerStyles = (res: SocketReceiveStyles) => {
     const {
       id,
       nodeId,
@@ -91,7 +113,7 @@ class SocketWrapper extends Component {
       cssKeyframesRules,
     } = res;
 
-    const styles = {
+    const styles: NodeStyles = {
       nodeId,
       computedStyle,
       parentComputedStyle,
@@ -111,7 +133,7 @@ class SocketWrapper extends Component {
       styles: nextStyles,
     });
   };
-  _onServerError = ({ id, message }) => {
+  _onServerError = ({ id, message }: SocketServerError) => {
     logResult(id, 'Server responded with error:', message);
     const nextRequests = deleteIn(this.state.requests, id);
     this.setState({
@@ -124,7 +146,7 @@ class SocketWrapper extends Component {
     });
     console.log('Disconnected from socket');
   };
-  requestData(req) {
+  requestData = (req: Object) => {
     const id = uuid();
     const requests = {
       ...this.state.requests,
@@ -135,33 +157,32 @@ class SocketWrapper extends Component {
       id,
       ...req,
     });
-  }
-
-  flushRequests() {
+  };
+  flushRequests = () => {
     this.setState({
       requests: {},
     });
-  }
-
-  requestStyles(nodeId: number): void {
+  };
+  requestStyles = (nodeId: number): void => {
     this.requestData({
       type: 'REQUEST_STYLES',
       nodeId,
     });
-  }
-
-  requestNode(selector: string): void {
+  };
+  requestNode = (selector: string): void => {
     this.requestData({
       type: 'REQUEST_NODE',
       selector,
     });
-  }
-
+  };
   render() {
     const { rootNode, styles } = this.state;
 
     const requestRootNode = () => this.requestNode(SELECTOR);
-    const requestStyles = () => this.requestStyles(this.state.rootNode.nodeId);
+    const requestStyles = () =>
+      this.state.rootNode
+        ? this.requestStyles(this.state.rootNode.nodeId)
+        : null;
 
     const buttonProps = {
       className: 'uk-button-default uk-button-small',

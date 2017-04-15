@@ -4,9 +4,9 @@ import Element from './Element';
 import './DOMViewer.css';
 
 type Props = {
-  rootNode: Element,
-  toggleSelected: number => void,
-  isSelected: number => void,
+  rootNode: Node,
+  toggleSelected: (NodeId) => void,
+  isSelected: (NodeId) => boolean,
 };
 
 const DOMViewer = ({ rootNode, toggleSelected, isSelected }: Props) => {

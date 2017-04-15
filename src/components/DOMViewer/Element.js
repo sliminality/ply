@@ -29,7 +29,7 @@ const ElementLabel = ({ node, selectNode }) => {
     );
     const attrs = (
       <ul className="Node__attr-list">
-        {splitPairs(attributes).map(pairToAttr)}
+        {attributes && splitPairs(attributes).map(pairToAttr)}
       </ul>
     );
     let child = null;
@@ -62,9 +62,14 @@ const ElementLabel = ({ node, selectNode }) => {
   }
 };
 
-const Element = ({ toggleSelected, isSelected }) => {
+type ElementProps = {
+  toggleSelected: (nodeId: NodeId) => void,
+  isSelected: (nodeId: NodeId) => boolean,
+};
+
+const Element = ({ toggleSelected, isSelected }: ElementProps) => {
   // Naming our inner function so that recursion, like, works
-  const elWithActions = node => {
+  const elWithActions = (node: Node) => {
     const { nodeId } = node;
     const selectNode = () => toggleSelected(nodeId);
     const label = ElementLabel({ node, selectNode });

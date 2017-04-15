@@ -5,10 +5,8 @@ import io from 'socket.io-client';
 import { deleteIn } from '../utils/state';
 
 const SELECTOR =
+  // 'body';
   'body > main > section:nth-child(3) > div:nth-child(2)';
-  // 'body > main > section:nth-child(3) > div:nth-child(2) > figure';
-  // '#account_actions_logged_out_dashboard > div.about-tumblr-showcase.ready.show-login > div.showcase > div.section.login-section.active';
-  // '#main > ol';
 
 const logResult = (id: number, ...rest: any[]): void =>
   console.log(`[${id}]`, ...rest);
@@ -49,21 +47,20 @@ class SocketWrapper extends Component {
 
   _onSocketConnect = () => {
     this.setState({
-      socketId: this.socket.id
+      socketId: this.socket.id,
     });
     console.log('Connected to socket:', this.state.socketId);
-  }
-
-  _onSocketResponse = (res) => {
+  };
+  _onSocketResponse = res => {
     const { requests } = this.state;
     if (!requests[res.id]) {
       return;
     }
     const dispatch = {
-      'RECEIVE_NODE': this._onServerNode,
-      'RECEIVE_STYLES': this._onServerStyles,
-      'SERVER_ERROR': this._onServerError,
-      'DEFAULT': ({ id, type }) =>
+      RECEIVE_NODE: this._onServerNode,
+      RECEIVE_STYLES: this._onServerStyles,
+      SERVER_ERROR: this._onServerError,
+      DEFAULT: ({ id, type }) =>
         logResult(id, 'Unrecognized response type', type),
     };
     const action = dispatch[res.type] || dispatch['DEFAULT'];
@@ -73,51 +70,60 @@ class SocketWrapper extends Component {
     this.setState({
       requests: nextRequests,
     });
-  }
-
+  };
   _onServerNode = ({ id, node }) => {
     logResult(id, 'Server responded with node:\n', node);
     this.setState({
       rootNode: node,
     });
-  }
-
-  _onServerStyles = (res) => {
-    const { id, nodeId, computedStyle, parentComputedStyle,
-      inlineStyle, attributesStyle, matchedCSSRules,
-      inherited, pseudoElements, cssKeyframesRules } = res;
+  };
+  _onServerStyles = res => {
+    const {
+      id,
+      nodeId,
+      computedStyle,
+      parentComputedStyle,
+      inlineStyle,
+      attributesStyle,
+      matchedCSSRules,
+      inherited,
+      pseudoElements,
+      cssKeyframesRules,
+    } = res;
 
     const styles = {
-      nodeId, computedStyle, parentComputedStyle,
-      inlineStyle, attributesStyle, matchedCSSRules,
-      inherited, pseudoElements, cssKeyframesRules,
+      nodeId,
+      computedStyle,
+      parentComputedStyle,
+      inlineStyle,
+      attributesStyle,
+      matchedCSSRules,
+      inherited,
+      pseudoElements,
+      cssKeyframesRules,
     };
 
-    const nextStyles = Object.assign({},
-      this.state.styles,
-      { [nodeId]: styles },
-    );
+    const nextStyles = Object.assign({}, this.state.styles, {
+      [nodeId]: styles,
+    });
     logResult(id, 'Server responded with styles:\n', styles);
     this.setState({
-      styles: nextStyles
+      styles: nextStyles,
     });
-  }
-
+  };
   _onServerError = ({ id, message }) => {
     logResult(id, 'Server responded with error:', message);
     const nextRequests = deleteIn(this.state.requests, id);
     this.setState({
-      requests: nextRequests
+      requests: nextRequests,
     });
-  }
-
+  };
   _onSocketDisconnect = () => {
     this.setState({
       socketId: null,
     });
     console.log('Disconnected from socket');
-  }
-
+  };
   requestData(req) {
     const id = uuid();
     const requests = {
@@ -133,7 +139,7 @@ class SocketWrapper extends Component {
 
   flushRequests() {
     this.setState({
-      requests: {}
+      requests: {},
     });
   }
 
@@ -154,41 +160,33 @@ class SocketWrapper extends Component {
   render() {
     const { rootNode, styles } = this.state;
 
-    const requestRootNode = () =>
-      this.requestNode(SELECTOR);
-    const requestStyles = () =>
-      this.requestStyles(this.state.rootNode.nodeId);
+    const requestRootNode = () => this.requestNode(SELECTOR);
+    const requestStyles = () => this.requestStyles(this.state.rootNode.nodeId);
 
     const buttonProps = {
       className: 'uk-button-default uk-button-small',
     };
 
-    const utils =
+    const utils = (
       <div className="utils-bar">
-        <button {...buttonProps}
-                onClick={requestRootNode}
-        >
+        <button {...buttonProps} onClick={requestRootNode}>
           Request Node
         </button>
-        <button {...buttonProps}
-                onClick={requestStyles}
-        >
+        <button {...buttonProps} onClick={requestStyles}>
           Request Styles
         </button>
-        <button {...buttonProps}
-                onClick={this.flushRequests}
-        >
+        <button {...buttonProps} onClick={this.flushRequests}>
           Flush Pending Requests
         </button>
-      </div>;
+      </div>
+    );
 
     const childProps = {
       rootNode,
       styles,
       requestData: this.requestData,
     };
-    const wrappedChild =
-      React.cloneElement(this.props.children, childProps);
+    const wrappedChild = React.cloneElement(this.props.children, childProps);
 
     return (
       <div className="App">

@@ -8,7 +8,7 @@ import './Inspector.css';
 
 class Inspector extends Component {
   props: {
-    requestData: (Object) => void,
+    requestData: Object => void,
     rootNode: Node,
     styles: { [nodeId: string]: Object },
   };
@@ -36,6 +36,7 @@ class Inspector extends Component {
     const { rootNode } = this.props;
     const { selected } = this.state;
     const noneSelected = Object.keys(selected).length === 0;
+
     if (noneSelected) {
       if (rootNode) {
         this.toggleSelected(rootNode.nodeId);
@@ -50,11 +51,14 @@ class Inspector extends Component {
     });
   }
 
-  resolveNode(nodeId: number): {
-    node: Node, parentId: number
+  resolveNode(
+    nodeId: number
+  ): {
+    node: Node,
+    parentId: number,
   } {
     const { rootNode } = this.props;
-    const queue = [ rootNode ];
+    const queue = [rootNode];
     while (queue.length > 0) {
       const node = queue.shift();
       if (node.nodeId === nodeId) {

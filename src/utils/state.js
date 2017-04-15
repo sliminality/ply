@@ -1,11 +1,12 @@
 export const deleteIn = (obj, deleteKey) => {
   const keys = Object.keys(obj);
-  const result = keys
-    .filter(k => k !== deleteKey.toString())
-    .reduce((memo, k) => ({
+  const result = keys.filter(k => k !== deleteKey.toString()).reduce(
+    (memo, k) => ({
       ...memo,
       [k]: obj[k],
-    }), {});
+    }),
+    {}
+  );
   return result;
 };
 
@@ -38,5 +39,4 @@ export const cap = (A, B) => {
   return AnB;
 };
 
-export const pairsToObject = (memo, [k, v]) =>
-  Object.assign(memo, { [k]: v });
+export const pairsToObject = (memo, [k, v]) => Object.assign(memo, { [k]: v });

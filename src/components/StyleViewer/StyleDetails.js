@@ -3,13 +3,26 @@ import React, { Component } from 'react';
 import { filterStyles, ownStyles } from './styleHelpers';
 
 const whitelist = [
-  'box-sizing', 'display', 'position',
-  'margin-left', 'margin-right', 'margin-top',
+  'box-sizing',
+  'display',
+  'position',
+  'margin-left',
+  'margin-right',
+  'margin-top',
   'margin-bottom',
-  'padding-left', 'padding-right', 'padding-top',
+  'padding-left',
+  'padding-right',
+  'padding-top',
   'padding-bottom',
-  'height', 'width', 'line-height',
-  'top', 'left', 'right', 'bottom', 'z-index',
+  'height',
+  'width',
+  'line-height',
+  'top',
+  'left',
+  'right',
+  'bottom',
+  'z-index',
+  'vertical-align',
 ];
 
 class StyleDetails extends Component {
@@ -26,7 +39,7 @@ class StyleDetails extends Component {
       'uk-table-striped',
     ].join(' ');
 
-    const tableRow = ([ prop, val ]) => (
+    const tableRow = ([prop, val]) => (
       <tr className="Style__computed-style" key={prop}>
         <td className="Style__prop-name">{prop}</td>
         <td className="Style__prop-value">{val}</td>
@@ -57,28 +70,24 @@ class StyleDetails extends Component {
     };
     const options = [
       // <li key={0}>
-        // <label>
-          // <input {...checkboxProps} checked />
-          // Show Inherited
-        // </label>
+      // <label>
+      // <input {...checkboxProps} checked />
+      // Show Inherited
+      // </label>
       // </li>,
       <li className="StyleDetails__node-id" key={0}>
         Node ID: {nodeId}
-      </li>
+      </li>,
     ];
-    const tabsClassName = [
-      'uk-tab',
-      'StyleDetails__tabs',
-    ].join(' ');
-
+    const tabsClassName = ['uk-tab', 'StyleDetails__tabs'].join(' ');
     return (
       <ul className={tabsClassName}>
-          <li className="uk-active">
-            <a href="#">Computed</a>
-          </li>
-          <ul className="StyleDetails__options">
-            {options}
-          </ul>
+        <li className="uk-active">
+          <a href="#">Computed</a>
+        </li>
+        <ul className="StyleDetails__options">
+          {options}
+        </ul>
       </ul>
     );
   }
@@ -95,6 +104,7 @@ class StyleDetails extends Component {
        */
       const { computedStyle, parentComputedStyle } = styles;
       const cs = filterStyles(whitelist)(computedStyle);
+      /* const computed = cs; */
       const computed = parentComputedStyle
         ? ownStyles(cs, parentComputedStyle)
         : cs;
@@ -122,6 +132,6 @@ class StyleDetails extends Component {
       </div>
     );
   }
-};
+}
 
 export default StyleDetails;

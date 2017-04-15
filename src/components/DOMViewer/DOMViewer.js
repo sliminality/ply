@@ -5,8 +5,8 @@ import './DOMViewer.css';
 
 type Props = {
   rootNode: Element,
-  toggleSelected: (number) => void,
-  isSelected: (number) => void,
+  toggleSelected: number => void,
+  isSelected: number => void,
 };
 
 const DOMViewer = ({ rootNode, toggleSelected, isSelected }: Props) => {
@@ -15,7 +15,7 @@ const DOMViewer = ({ rootNode, toggleSelected, isSelected }: Props) => {
   if (rootNode) {
     rootItem = Element({ toggleSelected, isSelected })(rootNode);
   } else {
-    rootItem = (<span className="DOMViewer__loading">Loading...</span>);
+    rootItem = <span className="DOMViewer__loading">Loading...</span>;
   }
 
   return (

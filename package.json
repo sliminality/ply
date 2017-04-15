@@ -7,6 +7,7 @@
     "flow-bin": "^0.40.0",
     "node-sass": "^4.5.0",
     "npm-run-all": "^4.0.2",
+    "prettier": "^1.1.0",
     "react-scripts": "0.9.0"
   },
   "dependencies": {
@@ -25,6 +26,7 @@
     "start:js": "react-scripts start",
     "start:target": "open 'http://loremipsumgenerator.com'",
     "start": "npm-run-all -p watch:css start:js start:target",
+    "format": "prettier --single-quote --trailing-comma es5 --parser flow --print-width 80 --write '{src,decls}/**/*.js'",
     "build": "npm run build:css && react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",

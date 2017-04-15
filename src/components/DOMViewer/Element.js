@@ -22,14 +22,16 @@ const ElementLabel = ({ node, selectNode }) => {
     // Create a full label, including the node's name and
     // attributes.
     const { attributes, localName } = node;
-    const name =
+    const name = (
       <span className="Node__name">
         {localName}
-      </span>;
-    const attrs =
+      </span>
+    );
+    const attrs = (
       <ul className="Node__attr-list">
         {splitPairs(attributes).map(pairToAttr)}
-      </ul>;
+      </ul>
+    );
     let child = null;
 
     const sharedProps = {
@@ -39,15 +41,15 @@ const ElementLabel = ({ node, selectNode }) => {
 
     // If it's an inline leaf with a single text child
     // (e.g. an <h1>) we need to get the child's value.
-    const hasInlineChild = type === 'INLINE_LEAF'
-      && node.children[0];
+    const hasInlineChild = type === 'INLINE_LEAF' && node.children[0];
 
     if (hasInlineChild) {
       const childValue = node.children[0].nodeValue;
-      child =
+      child = (
         <span className="Node__child-value">
           {truncateText(childValue)}
-        </span>;
+        </span>
+      );
     }
 
     return (
@@ -70,9 +72,9 @@ const Element = ({ toggleSelected, isSelected }) => {
     // Compute className string.
     const type = nodeType(node);
     const nodeClass = {
-      'FORK': 'Node',
-      'INLINE_LEAF': 'Node Node--leaf',
-      'LEAF': 'Node Node--leaf',
+      FORK: 'Node',
+      INLINE_LEAF: 'Node Node--leaf',
+      LEAF: 'Node Node--leaf',
     }[type];
 
     const selected = isSelected(nodeId) ? 'Node--selected' : null;
@@ -80,13 +82,12 @@ const Element = ({ toggleSelected, isSelected }) => {
 
     // Props shared between leaf and fork nodes.
     const sharedProps = {
-      key: nodeId,  // for React
+      key: nodeId, // for React
     };
 
-    const isLeafNode = type === 'INLINE_LEAF'
-      || type === 'LEAF';
+    const isLeafNode = type === 'INLINE_LEAF' || type === 'LEAF';
     if (isLeafNode) {
-      const props = {...sharedProps, className};
+      const props = { ...sharedProps, className };
       return (
         <div {...props}>
           {label}

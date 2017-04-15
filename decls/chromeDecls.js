@@ -4,10 +4,14 @@
 declare type AttributeList = string[];
 
 ([
-  'class', 'my-awesome-class another-class',
-  'id', 'element-id',
-  'data-no-value', '',
-  'data-hello', 'hello-value',
+  'class',
+  'my-awesome-class another-class',
+  'id',
+  'element-id',
+  'data-no-value',
+  '',
+  'data-hello',
+  'hello-value',
 ]: AttributeList);
 
 declare type Node = {
@@ -41,7 +45,7 @@ declare type Node = {
       nodeType: 3,
       nodeName: '#text',
       localName: '',
-      nodeValue: 'Objectively innovate empowered manufactured products'
+      nodeValue: 'Objectively innovate empowered manufactured products',
     },
   ],
   attributes: ['class', 'grid-xs col'],
@@ -100,7 +104,11 @@ declare type StyleSheetId = string;
  * 'regular': for regular stylesheets
  * @type {String}
  */
-declare type StyleSheetOrigin = 'injected' | 'user-agent' | 'inspector' | 'regular';
+declare type StyleSheetOrigin =
+  | 'injected'
+  | 'user-agent'
+  | 'inspector'
+  | 'regular';
 
 /**
  * Text range within a resource. Zero-indexed, [) range.
@@ -164,7 +172,7 @@ declare type SelectorList = {
         endLine: 5,
         endColumn: 13,
       },
-    }
+    },
   ],
   text: '.test-element',
 }: SelectorList);
@@ -221,31 +229,34 @@ declare type CSSStyle = {
 
 ({
   styleSheetId: '83410.1',
-  cssProperties: [{
-    name: 'position',
-    value: 'absolute',
-    implicit: false,
-    text: 'position:absolute;',
-    disabled: false,
-    range: {
-      startLine: 6,
-      startColumn: 2,
-      endLine: 6,
-      endColumn: 21,
+  cssProperties: [
+    {
+      name: 'position',
+      value: 'absolute',
+      implicit: false,
+      text: 'position:absolute;',
+      disabled: false,
+      range: {
+        startLine: 6,
+        startColumn: 2,
+        endLine: 6,
+        endColumn: 21,
+      },
     },
-  }, {
-    name: 'left',
-    value: '50px',
-    implicit: false,
-    text: 'left:50px;',
-    disabled: false,
-    range: {
-      startLine: 7,
-      startColumn: 2,
-      endLine: 7,
-      endColumn: 13,
+    {
+      name: 'left',
+      value: '50px',
+      implicit: false,
+      text: 'left:50px;',
+      disabled: false,
+      range: {
+        startLine: 7,
+        startColumn: 2,
+        endLine: 7,
+        endColumn: 13,
+      },
     },
-  }],
+  ],
   shorthandEntries: [],
   cssText: 'position: absolute; left: 50px;',
   range: {
@@ -286,38 +297,41 @@ declare type CSSRule = {
           endLine: 5,
           endColumn: 13,
         },
-      }
+      },
     ],
     text: '.test-element',
   },
   origin: 'regular',
   style: {
     styleSheetId: '83410.1',
-    cssProperties: [{
-      name: 'position',
-      value: 'absolute',
-      implicit: false,
-      text: 'position:absolute;',
-      disabled: false,
-      range: {
-        startLine: 6,
-        startColumn: 2,
-        endLine: 6,
-        endColumn: 21,
+    cssProperties: [
+      {
+        name: 'position',
+        value: 'absolute',
+        implicit: false,
+        text: 'position:absolute;',
+        disabled: false,
+        range: {
+          startLine: 6,
+          startColumn: 2,
+          endLine: 6,
+          endColumn: 21,
+        },
       },
-    }, {
-      name: 'left',
-      value: '50px',
-      implicit: false,
-      text: 'left:50px;',
-      disabled: false,
-      range: {
-        startLine: 7,
-        startColumn: 2,
-        endLine: 7,
-        endColumn: 13,
+      {
+        name: 'left',
+        value: '50px',
+        implicit: false,
+        text: 'left:50px;',
+        disabled: false,
+        range: {
+          startLine: 7,
+          startColumn: 2,
+          endLine: 7,
+          endColumn: 13,
+        },
       },
-    }],
+    ],
     shorthandEntries: [],
     cssText: 'position: absolute; left: 50px;',
     range: {
@@ -361,38 +375,41 @@ declare type RuleMatch = {
             endLine: 5,
             endColumn: 13,
           },
-        }
+        },
       ],
       text: '.test-element',
     },
     origin: 'regular',
     style: {
       styleSheetId: '83410.1',
-      cssProperties: [{
-        name: 'position',
-        value: 'absolute',
-        implicit: false,
-        text: 'position:absolute;',
-        disabled: false,
-        range: {
-          startLine: 6,
-          startColumn: 2,
-          endLine: 6,
-          endColumn: 21,
+      cssProperties: [
+        {
+          name: 'position',
+          value: 'absolute',
+          implicit: false,
+          text: 'position:absolute;',
+          disabled: false,
+          range: {
+            startLine: 6,
+            startColumn: 2,
+            endLine: 6,
+            endColumn: 21,
+          },
         },
-      }, {
-        name: 'left',
-        value: '50px',
-        implicit: false,
-        text: 'left:50px;',
-        disabled: false,
-        range: {
-          startLine: 7,
-          startColumn: 2,
-          endLine: 7,
-          endColumn: 13,
+        {
+          name: 'left',
+          value: '50px',
+          implicit: false,
+          text: 'left:50px;',
+          disabled: false,
+          range: {
+            startLine: 7,
+            startColumn: 2,
+            endLine: 7,
+            endColumn: 13,
+          },
         },
-      }],
+      ],
       shorthandEntries: [],
       cssText: 'position: absolute; left: 50px;',
       range: {

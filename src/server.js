@@ -27,9 +27,9 @@ const logConnections = ({ connected, what, socketId, apps, browsers }) => {
     `Total browsers: ${browsers}`,
   ];
   const cols = process.stdout.columns;
-  const msg = lines.map(s =>
-    `| ${s}${' '.repeat(cols - s.length - 4)} |`
-  ).join('');
+  const msg = lines
+    .map(s => `| ${s}${' '.repeat(cols - s.length - 4)} |`)
+    .join('');
   log(msg);
 };
 

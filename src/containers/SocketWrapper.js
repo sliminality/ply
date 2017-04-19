@@ -4,10 +4,6 @@ import uuid from 'node-uuid';
 import io from 'socket.io-client';
 import { deleteIn } from '../utils/state';
 
-const SELECTOR =
-  // 'body';
-  'body > main > section:nth-child(3) > div:nth-child(2)';
-
 const logResult = (id: string, ...rest: any[]): void =>
   console.log(`[${id}]`, ...rest);
 
@@ -34,6 +30,7 @@ class SocketWrapper extends Component {
   state: {
     requests: Object,
     socketId: ?string,
+    selector: string,
     rootNode: ?Node,
     styles: { [nodeId: NodeId]: NodeStyles },
   };
@@ -52,6 +49,7 @@ class SocketWrapper extends Component {
       socketId: this.socket.id,
       rootNode: null,
       styles: {},
+      selector: 'body > main > section:nth-child(3) > div:nth-child(2)',
     };
   }
 
@@ -60,7 +58,7 @@ class SocketWrapper extends Component {
     this.socket.on('data.res', this._onSocketResponse);
     this.socket.on('data.err', this._onSocketError);
     this.socket.on('disconnect', this._onSocketDisconnect);
-    this.requestNode(SELECTOR);
+    this.requestNode(this.state.selector);
   }
 
   componentWillUnmount() {
@@ -73,6 +71,7 @@ class SocketWrapper extends Component {
     });
     console.log('Connected to socket:', this.state.socketId);
   };
+
   _onSocketResponse = (res: SocketMessage) => {
     const { requests } = this.state;
     if (!requests[res.id]) {
@@ -93,12 +92,14 @@ class SocketWrapper extends Component {
       requests: nextRequests,
     });
   };
+
   _onServerNode = ({ id, node }: SocketReceiveNode) => {
     logResult(id, 'Server responded with node:\n', node);
     this.setState({
       rootNode: node,
     });
   };
+
   _onServerStyles = (res: SocketReceiveStyles) => {
     const {
       id,
@@ -133,6 +134,7 @@ class SocketWrapper extends Component {
       styles: nextStyles,
     });
   };
+
   _onServerError = ({ id, message }: SocketServerError) => {
     logResult(id, 'Server responded with error:', message);
     const nextRequests = deleteIn(this.state.requests, id);
@@ -140,12 +142,14 @@ class SocketWrapper extends Component {
       requests: nextRequests,
     });
   };
+
   _onSocketDisconnect = () => {
     this.setState({
       socketId: null,
     });
     console.log('Disconnected from socket');
   };
+
   requestData = (req: Object) => {
     const id = uuid();
     const requests = {
@@ -158,38 +162,54 @@ class SocketWrapper extends Component {
       ...req,
     });
   };
+
   flushRequests = () => {
     this.setState({
       requests: {},
     });
   };
+
   requestStyles = (nodeId: number): void => {
     this.requestData({
       type: 'REQUEST_STYLES',
       nodeId,
     });
   };
+
   requestNode = (selector: string): void => {
     this.requestData({
       type: 'REQUEST_NODE',
       selector,
     });
   };
-  render() {
-    const { rootNode, styles } = this.state;
 
-    const requestRootNode = () => this.requestNode(SELECTOR);
+  renderUtilsBar() {
+    const buttonProps = {
+      className: 'utils-bar__btn uk-button-default uk-button-small',
+    };
+
+    const onSelectorChange = (evt: Event) => {
+      const { value } = evt.currentTarget;
+      this.setState({ selector: value });
+    };
+
+    const requestRootNode = () => {
+      this.requestNode(this.state.selector);
+    };
+
     const requestStyles = () =>
       this.state.rootNode
         ? this.requestStyles(this.state.rootNode.nodeId)
         : null;
 
-    const buttonProps = {
-      className: 'uk-button-default uk-button-small',
-    };
-
-    const utils = (
+    return (
       <div className="utils-bar">
+        <input
+          className="utils-bar__input uk-input uk-form-small"
+          onChange={onSelectorChange}
+          type="text"
+          value={this.state.selector}
+        />
         <button {...buttonProps} onClick={requestRootNode}>
           Request Node
         </button>
@@ -201,7 +221,12 @@ class SocketWrapper extends Component {
         </button>
       </div>
     );
+  }
 
+  render() {
+    const { rootNode, styles } = this.state;
+
+    const utils = this.renderUtilsBar();
     const childProps = {
       rootNode,
       styles,

@@ -15,14 +15,18 @@ type Props = {
   selected: { [NodeId]: Node },
 };
 
-const StyleDetailTree = (styleDetails: StyleDetails[]) => {
+/**
+ * Reduce an array of <StyleDetails /> components into a
+ * tree of <SplitPane /> components.
+ */
+const StyleDetailTree = (styleDetails) => {
   /**
    * To make all the panes evenly sized, compute
    * the size of the top pane in the current frame
    * as (100% / (TOTAL_NODES - NODES_PROCESSED).
    */
   const numStyles = styleDetails.length;
-  const reducer = (memo: StyleDetailTree, current: StyleDetails, i: number) => {
+  const reducer = (memo: SplitPane, current: StyleDetails, i: number) => {
     const props = {
       split: 'horizontal',
       minSize: 50,
@@ -55,7 +59,7 @@ const StyleViewer = (props: Props) => {
       const selectedNodeIds = Object.keys(selected).map(s => parseInt(s, 10));
       const styleDetails = selectedNodeIds
         .map(styleDetailsProps(styles))
-        .map(p => <StyleDetails {...p} />);
+        .map(props => <StyleDetails {...props} />);
       content = StyleDetailTree(styleDetails);
     } else {
       // There are selected nodes, but no styles yet.

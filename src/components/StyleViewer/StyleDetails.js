@@ -27,7 +27,6 @@ const whitelist = [
 
 class StyleDetails extends Component {
   props: {
-    key: number,
     styles: NodeStyles,
     nodeId: NodeId,
   };

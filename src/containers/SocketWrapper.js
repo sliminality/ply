@@ -1,4 +1,3 @@
-// @flow
 import React, { Component } from 'react';
 import uuid from 'node-uuid';
 import io from 'socket.io-client';

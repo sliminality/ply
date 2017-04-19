@@ -196,6 +196,13 @@ class SocketWrapper extends Component {
       this.requestNode(this.state.selector);
     };
 
+    const onSelectorKeyDown = (evt: Event) => {
+      if (evt.keyCode === 13) {
+        // Enter
+        requestRootNode();
+      }
+    };
+
     const requestStyles = () =>
       this.state.rootNode
         ? this.requestStyles(this.state.rootNode.nodeId)
@@ -205,7 +212,9 @@ class SocketWrapper extends Component {
       <div className="utils-bar">
         <input
           className="utils-bar__input uk-input uk-form-small"
+          autoFocus
           onChange={onSelectorChange}
+          onKeyDown={onSelectorKeyDown}
           type="text"
           value={this.state.selector}
         />

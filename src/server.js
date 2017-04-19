@@ -53,13 +53,15 @@ browsers.on('connect', browser => {
    * to the app clients.
    */
   browser.on('data.res', res => {
-    console.dir(res);
-    // Refactor this to support multiple clients.
+    const resString = JSON.stringify(res, null, 2);
+    log(resString);
+
+    // TODO: Refactor this to support multiple clients.
     apps.emit('data.res', res);
   });
 
   browser.on('data.err', err => {
-    console.error(err);
+    log(error);
     apps.emit('data.err', err);
   });
 
@@ -103,10 +105,11 @@ apps.on('connect', app => {
    */
   app.on('data.req', req => {
     if (browserConnections.size > 0) {
-      console.dir(req);
+      const reqStr = JSON.stringify(req, null, 2);
+      log(reqStr);
       browsers.emit('data.req', req);
     } else {
-      console.error('No available browser clients');
+      log('No available browser clients');
       // If there are no connected browser clients, return
       // an error to the requesting app.
       app.emit('server.err', {

@@ -1,7 +1,13 @@
 // @flow
 import React from 'react';
 import TreeView from 'react-treeview';
-import { nodeType, splitPairs, pairToAttr, truncate } from './nodeHelpers';
+import {
+  nodeType,
+  splitPairs,
+  pairToAttr,
+  truncate,
+  attrWhiteList,
+} from './nodeHelpers';
 
 const ElementLabel = ({ node, selectNode }) => {
   const type = nodeType(node);
@@ -27,9 +33,12 @@ const ElementLabel = ({ node, selectNode }) => {
         {localName}
       </span>
     );
+    const attrList = attributes &&
+      splitPairs(attributes).filter(attrWhiteList).map(pairToAttr);
+
     const attrs = (
       <ul className="Node__attr-list">
-        {attributes && splitPairs(attributes).map(pairToAttr)}
+        {attrList}
       </ul>
     );
     let child = null;

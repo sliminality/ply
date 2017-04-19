@@ -37,6 +37,18 @@ export const splitPairs = (arr: AttributeList): AttributeList[] =>
     []
   );
 
+const ATTRIBUTE_WHITELIST = new Set([
+  'class',
+  'id',
+  'name',
+  'value',
+  'str',
+  'href',
+]);
+
+export const attrWhiteList = ([attrName, _]: AttributeList): boolean =>
+  ATTRIBUTE_WHITELIST.has(attrName) || attrName.search(/^data-/) === -1;
+
 export const pairToAttr = ([name, value]: [string, string], i: number) =>
   new Set(['class', 'id']).has(name)
     ? <li key={i}>

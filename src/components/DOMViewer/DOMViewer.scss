@@ -6,6 +6,9 @@ $node-attr-value: #5581b9;
 $node-attr-value-background: #eaf2fc;
 $node-value: #111;
 
+$purple: #7653C1;
+$light-purple: #ece7f5;
+
 $hover-highlight: #fbf4b9;
 $select-highlight: #efefef;
 
@@ -80,7 +83,13 @@ $select-highlight: #efefef;
   }
 
   &__attr-value--id {
-    content: '#';
+    margin-left: 0.5em;
+    color: $purple;
+    background-color: $light-purple;
+
+      &::before {
+        content: '#';
+      }
   }
 
   &__value {

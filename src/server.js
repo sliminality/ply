@@ -34,6 +34,23 @@ const logConnections = ({ connected, what, socketId, apps, browsers }) => {
   log(msg);
 };
 
+// Used to push data.res and data.update.
+const emitToApps = evt => res => {
+  const resString = JSON.stringify(res, null, 2);
+  log(resString);
+
+  // TODO: Refactor this to support multiple clients.
+  apps.emit(evt, res);
+};
+
+// Store state to provide either client.
+const state = {
+  inspectedNode: null,
+};
+
+/**
+ * Browser clients (debugging pages).
+ */
 browsers.on('connect', browser => {
   const socketId = browser.id;
   if (browserConnections.has(socketId)) {
@@ -50,19 +67,26 @@ browsers.on('connect', browser => {
   });
 
   /**
-   * When browser clients provide responses, we need to forward
-   * to the app clients.
+   * When browser clients provide responses or updates,
+   * we need to forward to the app clients.
    */
-  browser.on('data.res', res => {
-    const resString = JSON.stringify(res, null, 2);
-    log(resString);
+  browser.on('data.res', emitToApps('data.res'));
+  browser.on('data.update', data => {
+    // Store locally before forwarding to any connected apps.
+    const dispatch = {
+      'INSPECTED_NODE': ({ node }) => {
+        state.inspectedNode = node;
+        log(`Inspecting node ${node.nodeId}`);
+      },
+    };
+    const action = dispatch[data.type];
+    if (action) { action(data); }
 
-    // TODO: Refactor this to support multiple clients.
-    apps.emit('data.res', res);
+    emitToApps('data.update')(data);
   });
 
   browser.on('data.err', err => {
-    log(error);
+    log(err);
     apps.emit('data.err', err);
   });
 
@@ -76,6 +100,9 @@ browsers.on('connect', browser => {
         apps: appConnections.size,
         browsers: browserConnections.size,
       });
+
+      // Clear any relevant state.
+      state.inspectedNode = null;
     } else {
       throw new Error('tried to disconnect a socket that didnt exist');
     }
@@ -99,6 +126,16 @@ apps.on('connect', app => {
     apps: appConnections.size,
     browsers: browserConnections.size,
   });
+
+  // Send any initial data.
+  if (state.inspectedNode) {
+    log('Sending inspected node...');
+    app.emit('data.update', {
+      type: 'INSPECTED_NODE',
+      id: uuid(),
+      node: state.inspectedNode,
+    });
+  }
 
   /**
    * When app clients send requests, we need to forward

@@ -48,16 +48,16 @@ class SocketWrapper extends Component {
       socketId: this.socket.id,
       rootNode: null,
       styles: {},
-      selector: 'body > main > section:nth-child(3) > div:nth-child(2)',
+      selector: __SELECTORS.APPLE,
     };
   }
 
   componentDidMount() {
     this.socket.on('connect', this._onSocketConnect);
     this.socket.on('data.res', this._onSocketResponse);
+    this.socket.on('data.update', this._onSocketResponse);
     this.socket.on('data.err', this._onSocketError);
     this.socket.on('disconnect', this._onSocketDisconnect);
-    this.requestNode(this.state.selector);
   }
 
   componentWillUnmount() {
@@ -73,10 +73,17 @@ class SocketWrapper extends Component {
 
   _onSocketResponse = (res: SocketMessage) => {
     const { requests } = this.state;
-    if (!requests[res.id]) {
+
+    // Only accept packets corresponding to
+    // a pushed update, or some request.
+    const accept: boolean = requests[res.id]
+      || res.type === 'INSPECTED_NODE';
+    if (!accept) {
       return;
     }
+
     const dispatch = {
+      INSPECTED_NODE: this._onServerNode,
       RECEIVE_NODE: this._onServerNode,
       RECEIVE_STYLES: this._onServerStyles,
       SERVER_ERROR: this._onServerError,

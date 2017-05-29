@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import uuid from 'node-uuid';
+import uuid from 'uuid';
 import io from 'socket.io-client';
 import { deleteIn } from '../utils/state';
 

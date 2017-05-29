@@ -9,14 +9,13 @@ import './Inspector.css';
 type Props = {
   requestData: Object => void,
   rootNode: Node,
-  styles: { [nodeId: string]: Object },
+  styles: { [NodeId]: Object },
 };
 
 class Inspector extends Component {
   props: Props;
-
   state: {
-    selected: { [nodeId: string]: Node },
+    selected: { [NodeId]: Node },
   };
 
   constructor(props: Props) {
@@ -43,14 +42,14 @@ class Inspector extends Component {
     }
   }
 
-  requestStyles(nodeId: number): void {
+  requestStyles(nodeId: NodeId): void {
     this.props.requestData({
       type: 'REQUEST_STYLES',
       nodeId,
     });
   }
 
-  resolveNode(nodeId: number): NodeWithParent {
+  resolveNode(nodeId: NodeId): Node {
     const { rootNode } = this.props;
     const queue = [rootNode];
     while (queue.length > 0) {
@@ -65,7 +64,7 @@ class Inspector extends Component {
     throw new Error('Could not resolve node for', nodeId);
   }
 
-  toggleSelected = (nodeId: number): void => {
+  toggleSelected = (nodeId: NodeId): void => {
     const { selected } = this.state;
     let nextState;
     if (this.isSelected(nodeId)) {
@@ -85,9 +84,11 @@ class Inspector extends Component {
     // TODO: This will get dicey if the request fails.
     this.setState(nextState);
   };
-  isSelected = (nodeId: number): boolean => {
+
+  isSelected = (nodeId: NodeId): boolean => {
     return !!this.state.selected[nodeId];
   };
+
   render() {
     const { rootNode, styles } = this.props;
     const { selected } = this.state;

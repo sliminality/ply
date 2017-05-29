@@ -1,13 +1,13 @@
 // @flow
 import React, { Component } from 'react';
+import omit from 'lodash/omit';
 import SplitPane from 'react-split-pane';
 import DOMViewer from '../components/DOMViewer/DOMViewer';
 import StyleViewer from '../components/StyleViewer/StyleViewer';
-import { deleteIn } from '../utils/state';
 import './Inspector.css';
 
 type Props = {
-  requestData: (Object) => void,
+  requestData: Object => void,
   rootNode: Node,
   styles: { [nodeId: string]: Object },
 };
@@ -70,7 +70,7 @@ class Inspector extends Component {
     let nextState;
     if (this.isSelected(nodeId)) {
       nextState = {
-        selected: deleteIn(selected, nodeId),
+        selected: omit(selected, ['nodeId']),
       };
     } else {
       const node = this.resolveNode(nodeId);

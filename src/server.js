@@ -2,6 +2,9 @@ const uuid = require('uuid');
 const port = 1111;
 const io = require('socket.io')().attach(port);
 
+const LOG_VERBOSE = false;
+const TRUNCATE_LENGTH = 50;
+
 /**
  * Namespaces
  *   /browser - for browser clients (Chrome extension)
@@ -37,7 +40,14 @@ const logConnections = ({ connected, what, socketId, apps, browsers }) => {
 // Used to push data.res and data.update.
 const emitToApps = evt => res => {
   const resString = JSON.stringify(res, null, 2);
-  log(resString);
+  if (LOG_VERBOSE) {
+    log(resString);
+  } else {
+    log(
+      evt, res.type,
+      `${resString.substring(0, TRUNCATE_LENGTH)}...`
+    );
+  }
 
   // TODO: Refactor this to support multiple clients.
   apps.emit(evt, res);

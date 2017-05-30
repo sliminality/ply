@@ -27,11 +27,12 @@ class SocketWrapper extends Component {
     socketId: ?string,
     selector: string,
     rootNode: ?Node,
+    nodes: NodeMap,
     styles: { [nodeId: NodeId]: NodeStyles },
   };
 
-  constructor(props) {
-    super(props);
+  constructor() {
+    super();
 
     const port = 1111;
     const socketURL = `http://localhost:${port}/apps`;
@@ -43,6 +44,7 @@ class SocketWrapper extends Component {
       requests: {},
       socketId: this.socket.id,
       rootNode: null,
+      nodes: {},
       styles: {},
       selector: __SELECTORS.APPLE,
     };
@@ -52,7 +54,7 @@ class SocketWrapper extends Component {
     this.socket.on('connect', this._onSocketConnect);
     this.socket.on('data.res', this._onSocketResponse);
     this.socket.on('data.update', this._onSocketResponse);
-    this.socket.on('data.err', this._onSocketError);
+    this.socket.on('data.err', this._onServerError);
     this.socket.on('disconnect', this._onSocketDisconnect);
   }
 
@@ -70,15 +72,8 @@ class SocketWrapper extends Component {
   _onSocketResponse = (res: SocketMessage) => {
     const { requests } = this.state;
 
-    // Only accept packets corresponding to
-    // a pushed update, or some request.
-    const accept: boolean = requests[res.id]
-      || res.type === 'UPDATE_ROOT';
-    if (!accept) {
-      return;
-    }
-
     const dispatch = {
+      UPDATE_DOCUMENT: this._updateDocument,
       UPDATE_ROOT: this._updateRoot,
       RECEIVE_NODE: this._updateRoot,
       RECEIVE_STYLES: this._onServerStyles,
@@ -93,6 +88,10 @@ class SocketWrapper extends Component {
     this.setState({
       requests: nextRequests,
     });
+  };
+
+  _updateDocument = ({ nodes }) => {
+    this.setState({ nodes });
   };
 
   _updateRoot = ({ id, nodeId, node, styles }) => {
@@ -114,7 +113,7 @@ class SocketWrapper extends Component {
     this.setState(nextState);
   };
 
-  _onServerStyles = (res: SocketReceiveStyles) => {
+  _onServerStyles = (res) => {
     const {
       id,
       nodeId,
@@ -247,12 +246,13 @@ class SocketWrapper extends Component {
   }
 
   render() {
-    const { rootNode, styles } = this.state;
+    const { rootNode, styles, nodes } = this.state;
 
     const utils = this.renderUtilsBar();
     const childProps = {
       rootNode,
       styles,
+      nodes,
       requestData: this.requestData,
     };
     const wrappedChild = React.cloneElement(this.props.children, childProps);

@@ -9,6 +9,7 @@ import './Inspector.css';
 type Props = {
   requestData: Object => void,
   rootNode: Node,
+  nodes: NodeMap,
   styles: { [NodeId]: Object },
 };
 
@@ -26,19 +27,27 @@ class Inspector extends Component {
     };
   }
 
-  componentWillReceiveProps() {
+  componentWillReceiveProps(nextProps: Props) {
     /**
      * Automatically select the received node,
      * if it's the only one selected.
      */
-    const { rootNode } = this.props;
-    const { selected } = this.state;
-    const noneSelected = Object.keys(selected).length === 0;
+    const noneSelected = Object.keys(this.state.selected)
+      .length === 0;
+    const isNewRoot = this.props.rootNode !== nextProps.rootNode;
 
-    if (noneSelected) {
-      if (rootNode) {
-        this.toggleSelected(rootNode.nodeId);
-      }
+    // Clear selected state, only select new root.
+    if (isNewRoot) {
+      const newRoot: Node = nextProps.rootNode;
+      this.setState({
+        selected: {},
+      });
+    }
+  }
+
+  componentDidUpdate(prevProps: Props) {
+    if (prevProps.rootNode !== this.props.rootNode) {
+      this.toggleSelected(this.props.rootNode.nodeId);
     }
   }
 
@@ -50,18 +59,7 @@ class Inspector extends Component {
   }
 
   resolveNode(nodeId: NodeId): Node {
-    const { rootNode } = this.props;
-    const queue = [rootNode];
-    while (queue.length > 0) {
-      const node = queue.shift();
-      if (node.nodeId === nodeId) {
-        return node;
-      }
-      if (node.children) {
-        queue.push(...node.children);
-      }
-    }
-    throw new Error('Could not resolve node for', nodeId);
+    return this.props.nodes[nodeId];
   }
 
   toggleSelected = (nodeId: NodeId): void => {
@@ -69,7 +67,7 @@ class Inspector extends Component {
     let nextState;
     if (this.isSelected(nodeId)) {
       nextState = {
-        selected: omit(selected, ['nodeId']),
+        selected: omit(selected, [nodeId]),
       };
     } else {
       const node = this.resolveNode(nodeId);
@@ -79,7 +77,10 @@ class Inspector extends Component {
           [nodeId]: node,
         },
       };
-      this.requestStyles(nodeId);
+      // Fetch styles for selected node if needed.
+      if (!this.props.styles[nodeId]) {
+        this.requestStyles(nodeId);
+      }
     }
     // TODO: This will get dicey if the request fails.
     this.setState(nextState);

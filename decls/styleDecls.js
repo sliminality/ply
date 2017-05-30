@@ -1,12 +1,8 @@
 // @flow
 /* eslint-disable no-unused-expressions, no-undef */
 
-/**
- * Since NodeIds are frequently used as keys of an object
- * (i.e. strings), we type them as a disjoint union.
- */
-declare type NodeId = number | string;
-
+declare type NodeId = number;
+declare type NodeMap = { [NodeId]: Node };
 declare type NodeType = 'FORK' | 'INLINE_LEAF' | 'LEAF';
 
 declare type NodeWithParent = Node & { parentId: NodeId };

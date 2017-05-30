@@ -24,7 +24,7 @@
     "build:css": "node-sass src/ -o src/",
     "watch:css": "npm run build:css && node-sass src/ -o src/ --watch --recursive",
     "start:js": "react-scripts start",
-    "start:target": "open 'http://loremipsumgenerator.com'",
+    "start:target": "open 'http://ideo.com'",
     "start": "npm-run-all -p watch:css start:js start:target",
     "format": "prettier --single-quote --trailing-comma es5 --parser flow --print-width 80 --write '{src,decls}/**/*.js'",
     "build": "npm run build:css && react-scripts build",

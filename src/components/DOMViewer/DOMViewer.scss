@@ -18,6 +18,10 @@ $select-highlight: #efefef;
 
 .tree-view {
   overflow: visible;
+
+  &_arrow {
+    vertical-align: top;
+  }
 }
 
 .Node {

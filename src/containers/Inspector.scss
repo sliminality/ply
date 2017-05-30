@@ -1,7 +1,7 @@
 @import '../../lib/css/split-pane.css';
 
 .Pane {
-  overflow: hidden;
+  overflow: scroll;
 
   &::-webkit-scrollbar {
     height: 5px;

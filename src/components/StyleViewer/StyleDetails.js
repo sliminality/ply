@@ -1,29 +1,8 @@
 // @flow
 import React, { Component } from 'react';
 import { filterStyles, ownStyles } from './styleHelpers';
-
-const whitelist = [
-  'box-sizing',
-  'display',
-  'position',
-  'margin-left',
-  'margin-right',
-  'margin-top',
-  'margin-bottom',
-  'padding-left',
-  'padding-right',
-  'padding-top',
-  'padding-bottom',
-  'height',
-  'width',
-  'line-height',
-  'top',
-  'left',
-  'right',
-  'bottom',
-  'z-index',
-  'vertical-align',
-];
+import { Filter, FILTERS, filterPred } from '../../models/filters.js';
+import { pairsToObject } from '../../utils/state';
 
 class StyleDetails extends Component {
   props: {
@@ -106,7 +85,13 @@ class StyleDetails extends Component {
        * computed styles.
        */
       const { computedStyle, parentComputedStyle } = styles;
-      const cs: ComputedStyle = filterStyles(whitelist)(computedStyle);
+
+      const layoutFilterPred = filterPred(FILTERS.layoutFilter);
+      const cs: ComputedStyle = Object.keys(computedStyle)
+        .map(k => [k, computedStyle[k]])
+        .filter(layoutFilterPred)
+        .reduce(pairsToObject, {});
+
       const computed: ComputedStyle = parentComputedStyle
         ? ownStyles(cs, parentComputedStyle)
         : cs;

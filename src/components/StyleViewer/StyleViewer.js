@@ -19,7 +19,7 @@ type Props = {
  * Reduce an array of <StyleDetails /> components into a
  * tree of <SplitPane /> components.
  */
-const StyleDetailTree = (styleDetails) => {
+const StyleDetailTree = styleDetails => {
   /**
    * To make all the panes evenly sized, compute
    * the size of the top pane in the current frame
@@ -45,7 +45,8 @@ const StyleDetailTree = (styleDetails) => {
 const StyleViewer = (props: Props) => {
   const { selected, styles } = props;
   let content;
-  const noneSelected = Object.keys(selected).length === 0;
+  const noneSelected: boolean = Object.keys(selected).length === 0;
+
   if (noneSelected) {
     content = (
       <span className="StyleViewer__none-selected">

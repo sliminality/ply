@@ -1,27 +1,23 @@
+// @flow
 import React, { Component } from 'react';
 import uuid from 'uuid';
 import io from 'socket.io-client';
-import { deleteIn } from '../utils/state';
+import omit from 'lodash/omit';
 
-const logResult = (id: string, ...rest: any[]): void =>
+const logResult = (id: number, ...rest: any[]): void =>
   console.log(`[${id}]`, ...rest);
 
-type SocketServerError = { id: string, type: 'SERVER_ERROR', message: string };
-type SocketReceiveStyles = { id: string, type: 'RECEIVE_STYLES' } & NodeStyles;
-type SocketReceiveNode = { id: string, type: 'RECEIVE_NODE', node: Node };
-type SocketRequestNode = { id: string, type: 'REQUEST_NODE', nodeId: NodeId };
-type SocketRequestStyles = {
-  id: string,
-  type: 'REQUEST_STYLES',
-  selector: string,
+const __SELECTORS = {
+  APPLE: '#ac-globalnav',
+  LOREMIPSUM: 'body > main > section:nth-child(3) > div:nth-child(2)',
 };
 
-type SocketMessage =
-  | SocketServerError
-  | SocketRequestStyles
-  | SocketRequestNode
-  | SocketReceiveNode
-  | SocketReceiveStyles;
+type SocketMessage = {
+  type: string,
+  id: number,
+};
+
+type NodeMap = { [NodeId]: Node };
 
 class SocketWrapper extends Component {
   socket: Object;
@@ -93,13 +89,13 @@ class SocketWrapper extends Component {
     const action = dispatch[res.type] || dispatch['DEFAULT'];
     action(res);
 
-    const nextRequests = deleteIn(requests, res.id);
+    const nextRequests = omit(requests, res.id);
     this.setState({
       requests: nextRequests,
     });
   };
 
-  _updateRoot = ({ id, nodeId, node, styles }: SocketReceiveNode) => {
+  _updateRoot = ({ id, nodeId, node, styles }) => {
     logResult(id, 'Server pushed new inspection root:\n', node);
     let nextState;
     if (styles) {
@@ -153,9 +149,9 @@ class SocketWrapper extends Component {
     });
   };
 
-  _onServerError = ({ id, message }: SocketServerError) => {
+  _onServerError = ({ id, message }) => {
     logResult(id, 'Server responded with error:', message);
-    const nextRequests = deleteIn(this.state.requests, id);
+    const nextRequests = omit(this.state.requests, id);
     this.setState({
       requests: nextRequests,
     });

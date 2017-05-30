@@ -45,7 +45,7 @@ const emitToApps = evt => res => {
 
 // Store state to provide either client.
 const state = {
-  inspectedNode: null,
+  inspected: null,
 };
 
 /**
@@ -71,12 +71,15 @@ browsers.on('connect', browser => {
    * we need to forward to the app clients.
    */
   browser.on('data.res', emitToApps('data.res'));
+
   browser.on('data.update', data => {
     // Store locally before forwarding to any connected apps.
     const dispatch = {
-      'INSPECTED_NODE': ({ node }) => {
-        state.inspectedNode = node;
-        log(`Inspecting node ${node.nodeId}`);
+      'UPDATE_ROOT': ({ node, nodeId, styles }) => {
+        state.inspected = {
+          node, nodeId, styles
+        };
+        log(`Inspecting node ${nodeId}`);
       },
     };
     const action = dispatch[data.type];
@@ -102,7 +105,7 @@ browsers.on('connect', browser => {
       });
 
       // Clear any relevant state.
-      state.inspectedNode = null;
+      state.inspected = null;
     } else {
       throw new Error('tried to disconnect a socket that didnt exist');
     }
@@ -128,12 +131,13 @@ apps.on('connect', app => {
   });
 
   // Send any initial data.
-  if (state.inspectedNode) {
+  if (state.inspected) {
     log('Sending inspected node...');
+    const { node, nodeId, styles } = state.inspected;
     app.emit('data.update', {
-      type: 'INSPECTED_NODE',
+      type: 'UPDATE_ROOT',
       id: uuid(),
-      node: state.inspectedNode,
+      node, nodeId, styles,
     });
   }
 

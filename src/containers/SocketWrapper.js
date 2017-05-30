@@ -77,14 +77,14 @@ class SocketWrapper extends Component {
     // Only accept packets corresponding to
     // a pushed update, or some request.
     const accept: boolean = requests[res.id]
-      || res.type === 'INSPECTED_NODE';
+      || res.type === 'UPDATE_ROOT';
     if (!accept) {
       return;
     }
 
     const dispatch = {
-      INSPECTED_NODE: this._onServerNode,
-      RECEIVE_NODE: this._onServerNode,
+      UPDATE_ROOT: this._updateRoot,
+      RECEIVE_NODE: this._updateRoot,
       RECEIVE_STYLES: this._onServerStyles,
       SERVER_ERROR: this._onServerError,
       DEFAULT: ({ id, type }) =>
@@ -99,11 +99,23 @@ class SocketWrapper extends Component {
     });
   };
 
-  _onServerNode = ({ id, node }: SocketReceiveNode) => {
-    logResult(id, 'Server responded with node:\n', node);
-    this.setState({
-      rootNode: node,
-    });
+  _updateRoot = ({ id, nodeId, node, styles }: SocketReceiveNode) => {
+    logResult(id, 'Server pushed new inspection root:\n', node);
+    let nextState;
+    if (styles) {
+      // New inspection root pushed with styles.
+      nextState = {
+        rootNode: node,
+        styles: {
+          ...this.state.styles,
+          [nodeId]: styles,
+        }
+      };
+    } else {
+      // No styles (legacy/testing, for now).
+      nextState = { rootNode: node };
+    }
+    this.setState(nextState);
   };
 
   _onServerStyles = (res: SocketReceiveStyles) => {

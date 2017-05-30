@@ -46,8 +46,11 @@ const ATTRIBUTE_WHITELIST = new Set([
   'href',
 ]);
 
-export const attrWhiteList = ([attrName, _]: AttributeList): boolean =>
-  ATTRIBUTE_WHITELIST.has(attrName) || attrName.search(/^data-/) === -1;
+const ATTRIBUTE_BLACKLIST = new Set(['lang', 'dir', 'aria-label']);
+
+export const attrWhiteList = ([attr, _]: AttributeList): boolean =>
+  !ATTRIBUTE_BLACKLIST.has(attr) &&
+  (ATTRIBUTE_WHITELIST.has(attr) || attr.search(/^data-/) === -1);
 
 export const pairToAttr = ([name, value]: [string, string], i: number) =>
   new Set(['class', 'id']).has(name)

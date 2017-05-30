@@ -56,6 +56,7 @@ const emitToApps = evt => res => {
 // Store state to provide either client.
 const state = {
   inspected: null,
+  document: null,
 };
 
 /**
@@ -91,11 +92,21 @@ browsers.on('connect', browser => {
         };
         log(`Inspecting node ${nodeId}`);
       },
+      'UPDATE_DOCUMENT': ({ nodes }) => {
+        state.nodes = nodes;
+        log('Updated state.nodes');
+      },
     };
     const action = dispatch[data.type];
     if (action) { action(data); }
 
-    emitToApps('data.update')(data);
+    // Updates need to be given a uuid, since they don't
+    // have one from a corresponding request.
+    const dataWithId = Object.assign({},
+      data,
+      { id: uuid() }
+    );
+    emitToApps('data.update')(dataWithId);
   });
 
   browser.on('data.err', err => {
@@ -148,6 +159,14 @@ apps.on('connect', app => {
       type: 'UPDATE_ROOT',
       id: uuid(),
       node, nodeId, styles,
+    });
+  }
+  if (state.nodes) {
+    log('Sending document nodes...');
+    app.emit('data.update', {
+      type: 'UPDATE_DOCUMENT',
+      id: uuid(),
+      nodes: state.nodes,
     });
   }
 

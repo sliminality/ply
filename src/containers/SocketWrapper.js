@@ -253,7 +253,7 @@ class SocketWrapper extends Component {
       rootNode,
       styles,
       nodes,
-      requestData: this.requestData,
+      requestStyles: this.requestStyles,
     };
     const wrappedChild = React.cloneElement(this.props.children, childProps);
 

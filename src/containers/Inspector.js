@@ -7,7 +7,7 @@ import StyleViewer from '../components/StyleViewer/StyleViewer';
 import './Inspector.css';
 
 type Props = {
-  requestData: Object => void,
+  requestStyles: ({ nodeId: NodeId }) => void,
   rootNode: Node,
   nodes: NodeMap,
   styles: { [NodeId]: Object },

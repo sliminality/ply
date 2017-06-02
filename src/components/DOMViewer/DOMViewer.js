@@ -5,15 +5,21 @@ import './DOMViewer.css';
 
 type Props = {
   rootNode: Node,
-  toggleSelected: (NodeId) => void,
-  isSelected: (NodeId) => boolean,
+  toggleSelected: NodeId => void,
+  isSelected: NodeId => boolean,
+  highlightNode: NodeId => void,
 };
 
-const DOMViewer = ({ rootNode, toggleSelected, isSelected }: Props) => {
+const DOMViewer = ({
+  rootNode,
+  toggleSelected,
+  isSelected,
+  highlightNode,
+}: Props) => {
   let rootItem;
 
   if (rootNode) {
-    rootItem = Element({ toggleSelected, isSelected })(rootNode);
+    rootItem = Element({ toggleSelected, isSelected, highlightNode })(rootNode);
   } else {
     rootItem = <span className="DOMViewer__loading">Loading...</span>;
   }

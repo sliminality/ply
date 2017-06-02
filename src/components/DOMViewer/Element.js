@@ -9,7 +9,7 @@ import {
   attrWhiteList,
 } from './nodeHelpers';
 
-const ElementLabel = ({ node, selectNode }) => {
+const ElementLabel = ({ node, selectNode, highlightNode }) => {
   const type = nodeType(node);
   const maxTextLength = 40;
   const truncateText = truncate(maxTextLength);
@@ -47,6 +47,7 @@ const ElementLabel = ({ node, selectNode }) => {
     const sharedProps = {
       className: 'Node__label',
       onClick: selectNode,
+      onMouseEnter: highlightNode,
     };
 
     // If it's an inline leaf with a single text child
@@ -77,12 +78,14 @@ type ElementProps = {
   isSelected: (nodeId: NodeId) => boolean,
 };
 
-const Element = ({ toggleSelected, isSelected }: ElementProps) => {
+const Element = ({
+  toggleSelected,
+  isSelected,
+  highlightNode,
+}: ElementProps) => {
   // Naming our inner function so that recursion, like, works
   const elWithActions = (node: Node) => {
     const { nodeId } = node;
-    const selectNode = () => toggleSelected(nodeId);
-    const label = ElementLabel({ node, selectNode });
 
     // Compute className string.
     const type = nodeType(node);
@@ -100,12 +103,18 @@ const Element = ({ toggleSelected, isSelected }: ElementProps) => {
       key: nodeId, // for React
     };
 
+    const labelProps = {
+      node,
+      highlightNode: () => highlightNode(nodeId),
+      selectNode: () => toggleSelected(nodeId),
+    };
+
     const isLeafNode = type === 'INLINE_LEAF' || type === 'LEAF';
     if (isLeafNode) {
       const props = { ...sharedProps, className };
       return (
         <div {...props}>
-          {label}
+          <ElementLabel {...labelProps} />
         </div>
       );
     }
@@ -115,7 +124,7 @@ const Element = ({ toggleSelected, isSelected }: ElementProps) => {
     const childNodes = children.map(elWithActions);
     const props = {
       ...sharedProps,
-      nodeLabel: label,
+      nodeLabel: ElementLabel(labelProps),
       itemClassName: className,
       defaultCollapsed: true,
     };

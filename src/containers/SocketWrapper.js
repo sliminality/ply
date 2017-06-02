@@ -163,6 +163,19 @@ class SocketWrapper extends Component {
     console.log('Disconnected from socket');
   };
 
+  /**
+   * Whereas requestData is used to request particular information
+   * from the browser, this function merely requests actions
+   * with no return value (e.g. highlighting nodes).
+   */
+  requestAction = (req: Object) => {
+    const id = uuid();
+    this.socket.emit('data.req', {
+      id,
+      ...req,
+    });
+  };
+
   requestData = (req: Object) => {
     const id = uuid();
     const requests = {
@@ -193,6 +206,13 @@ class SocketWrapper extends Component {
     this.requestData({
       type: 'REQUEST_NODE',
       selector,
+    });
+  };
+
+  requestHighlight = (nodeId: NodeId): void => {
+    this.requestAction({
+      type: 'HIGHLIGHT_NODE',
+      nodeId,
     });
   };
 
@@ -254,6 +274,7 @@ class SocketWrapper extends Component {
       styles,
       nodes,
       requestStyles: this.requestStyles,
+      requestHighlight: this.requestHighlight,
     };
     const wrappedChild = React.cloneElement(this.props.children, childProps);
 

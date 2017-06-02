@@ -104,7 +104,7 @@ class SocketWrapper extends Component {
         styles: {
           ...this.state.styles,
           [nodeId]: styles,
-        }
+        },
       };
     } else {
       // No styles (legacy/testing, for now).
@@ -113,7 +113,7 @@ class SocketWrapper extends Component {
     this.setState(nextState);
   };
 
-  _onServerStyles = (res) => {
+  _onServerStyles = res => {
     const {
       id,
       nodeId,
@@ -218,9 +218,9 @@ class SocketWrapper extends Component {
     };
 
     const requestStyles = () =>
-      this.state.rootNode
+      (this.state.rootNode
         ? this.requestStyles(this.state.rootNode.nodeId)
-        : null;
+        : null);
 
     return (
       <div className="utils-bar">

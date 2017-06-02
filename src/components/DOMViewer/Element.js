@@ -33,7 +33,8 @@ const ElementLabel = ({ node, selectNode }) => {
         {localName}
       </span>
     );
-    const attrList = attributes &&
+    const attrList =
+      attributes &&
       splitPairs(attributes).filter(attrWhiteList).map(pairToAttr);
 
     const attrs = (

@@ -51,13 +51,6 @@ class Inspector extends Component {
     }
   }
 
-  requestStyles(nodeId: NodeId): void {
-    this.props.requestData({
-      type: 'REQUEST_STYLES',
-      nodeId,
-    });
-  }
-
   resolveNode(nodeId: NodeId): Node {
     return this.props.nodes[nodeId];
   }
@@ -79,7 +72,7 @@ class Inspector extends Component {
       };
       // Fetch styles for selected node if needed.
       if (!this.props.styles[nodeId]) {
-        this.requestStyles(nodeId);
+        this.props.requestStyles(nodeId);
       }
     }
     // TODO: This will get dicey if the request fails.

@@ -1,7 +1,7 @@
 // @flow
 import React from 'react';
 import SplitPane from 'react-split-pane';
-import StyleDetails from './StyleDetails';
+import ComputedStylesPane from './ComputedStylesPane';
 import './StyleViewer.css';
 
 const styleDetailsProps = (styles: { [NodeId]: NodeStyles }) =>
@@ -16,17 +16,17 @@ type Props = {
 };
 
 /**
- * Reduce an array of <StyleDetails /> components into a
+ * Reduce an array of <ComputedStylesPane /> components into a
  * tree of <SplitPane /> components.
  */
-const StyleDetailTree = styleDetails => {
+const StyleDetailTree = computedStylesPane => {
   /**
    * To make all the panes evenly sized, compute
    * the size of the top pane in the current frame
    * as (100% / (TOTAL_NODES - NODES_PROCESSED).
    */
-  const numStyles = styleDetails.length;
-  const reducer = (memo: SplitPane, current: StyleDetails, i: number) => {
+  const numStyles = computedStylesPane.length;
+  const reducer = (memo: SplitPane, current: ComputedStylesPane, i: number) => {
     const props = {
       split: 'horizontal',
       minSize: 50,
@@ -39,7 +39,7 @@ const StyleDetailTree = styleDetails => {
       </SplitPane>
     );
   };
-  return styleDetails.reduceRight(reducer);
+  return computedStylesPane.reduceRight(reducer);
 };
 
 const StyleViewer = (props: Props) => {
@@ -58,10 +58,14 @@ const StyleViewer = (props: Props) => {
     // in the order elements were selected.
     if (styles) {
       const selectedNodeIds = Object.keys(selected).map(s => parseInt(s, 10));
-      const styleDetails = selectedNodeIds
-        .map(styleDetailsProps(styles))
-        .map(props => <StyleDetails {...props} />);
-      content = StyleDetailTree(styleDetails);
+      const computedStylesPane = selectedNodeIds.map(nodeId => {
+        const props = {
+          nodeId,
+          styles: styles[nodeId],
+        };
+        return <ComputedStylesPane {...props} />;
+      });
+      content = StyleDetailTree(computedStylesPane);
     } else {
       // There are selected nodes, but no styles yet.
       // Tell it like it is.

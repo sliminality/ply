@@ -22,7 +22,7 @@ $padding-sides: 12px;
   }
 }
 
-.StyleDetails {
+.ComputedStylesPane {
   width: 100%;  // parent is flex
   height: 100%;  // get last child to scroll
   position: relative;
@@ -105,3 +105,4 @@ $padding-sides: 12px;
     }
   }
 }
+

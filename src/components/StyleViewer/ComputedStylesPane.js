@@ -4,7 +4,7 @@ import { filterStyles, ownStyles } from './styleHelpers';
 import { Filter, FILTERS, filterPred } from '../../models/filters.js';
 import { pairsToObject } from '../../utils/state';
 
-class StyleDetails extends Component {
+class ComputedStylesPane extends Component {
   props: {
     styles: NodeStyles,
     nodeId: NodeId,
@@ -12,7 +12,7 @@ class StyleDetails extends Component {
 
   renderComputedStyleTable(cs: ComputedStyle) {
     const tableClassName = [
-      'StyleDetails__computed-list',
+      'ComputedStylesPane__computed-list',
       'uk-table',
       'uk-table-small',
       'uk-table-striped',
@@ -54,17 +54,17 @@ class StyleDetails extends Component {
       // Show Inherited
       // </label>
       // </li>,
-      <li className="StyleDetails__node-id" key={0}>
+      <li className="ComputedStylesPane__node-id" key={0}>
         Node ID: {nodeId}
       </li>,
     ];
-    const tabsClassName = ['uk-tab', 'StyleDetails__tabs'].join(' ');
+    const tabsClassName = ['uk-tab', 'ComputedStylesPane__tabs'].join(' ');
     return (
       <ul className={tabsClassName}>
         <li className="uk-active">
           <a href="#">Computed</a>
         </li>
-        <ul className="StyleDetails__options">
+        <ul className="ComputedStylesPane__options">
           {options}
         </ul>
       </ul>
@@ -98,14 +98,14 @@ class StyleDetails extends Component {
       content = this.renderComputedStyleTable(computed, null, 2);
     } else {
       content = (
-        <span className="StyleDetails__loading">
+        <span className="ComputedStylesPane__loading">
           Loading styles...;
         </span>
       );
     }
 
     const props = {
-      className: 'StyleDetails',
+      className: 'ComputedStylesPane',
       key: nodeId,
     };
     const toolbar = this.renderToolbar({ nodeId });
@@ -113,7 +113,7 @@ class StyleDetails extends Component {
     return (
       <div {...props}>
         {toolbar}
-        <div className="StyleDetails__content">
+        <div className="ComputedStylesPane__content">
           {content}
         </div>
       </div>
@@ -121,4 +121,4 @@ class StyleDetails extends Component {
   }
 }
 
-export default StyleDetails;
+export default ComputedStylesPane;

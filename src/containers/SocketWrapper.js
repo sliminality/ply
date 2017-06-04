@@ -209,7 +209,7 @@ class SocketWrapper extends Component {
     });
   };
 
-  requestHighlight = (nodeId: NodeId): void => {
+  requestHighlight = (nodeId: ?NodeId): void => {
     this.requestAction({
       type: 'HIGHLIGHT_NODE',
       nodeId,

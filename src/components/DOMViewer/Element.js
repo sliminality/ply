@@ -1,142 +1,89 @@
 // @flow
 import React from 'react';
 import TreeView from 'react-treeview';
-import {
-  nodeType,
-  splitPairs,
-  pairToAttr,
-  truncate,
-  attrWhiteList,
-} from './nodeHelpers';
+import { Label, nodeType } from './ElementLabel';
 
-const ElementLabel = ({ node, selectNode, highlightNode }) => {
+type ElementActions = {
+  toggleSelected: NodeId => void,
+  isSelected: NodeId => boolean,
+  requestHighlight: ?NodeId => void,
+};
+
+/**
+ * Generate the class name string for styling TreeView items.
+ */
+const getElementClassName = ({ node, isSelected }) => {
   const type = nodeType(node);
-  const maxTextLength = 40;
-  const truncateText = truncate(maxTextLength);
+  const nodeClass = {
+    FORK: 'Node',
+    INLINE_LEAF: 'Node Node--leaf',
+    LEAF: 'Node Node--leaf',
+  }[type];
 
-  if (type === 'LEAF') {
-    // Just need to get the current node's value.
-    const { nodeValue } = node;
-    return (
-      <div className="Node">
-        <span className="Node__value">
-          {truncateText(nodeValue)}
-        </span>
-      </div>
-    );
-  } else {
-    // Create a full label, including the node's name and
-    // attributes.
-    const { attributes, localName } = node;
-    const name = (
-      <span className="Node__name">
-        {localName}
-      </span>
-    );
-    const attrList =
-      attributes &&
-      splitPairs(attributes).filter(attrWhiteList).map(pairToAttr);
-
-    const attrs = (
-      <ul className="Node__attr-list">
-        {attrList}
-      </ul>
-    );
-    let child = null;
-
-    const sharedProps = {
-      className: 'Node__label',
-      onClick: selectNode,
-      onMouseEnter: highlightNode,
-    };
-
-    // If it's an inline leaf with a single text child
-    // (e.g. an <h1>) we need to get the child's value.
-    const hasInlineChild = type === 'INLINE_LEAF' && node.children[0];
-
-    if (hasInlineChild) {
-      const childValue = node.children[0].nodeValue;
-      child = (
-        <span className="Node__child-value">
-          {truncateText(childValue)}
-        </span>
-      );
-    }
-
-    return (
-      <div {...sharedProps}>
-        {name}
-        {attrs}
-        {child}
-      </div>
-    );
-  }
+  const selectedClass = isSelected ? 'Node--selected' : null;
+  const className = [nodeClass, selectedClass].join(' ');
+  return className;
 };
 
-type ElementProps = {
-  toggleSelected: (nodeId: NodeId) => void,
-  isSelected: (nodeId: NodeId) => boolean,
-};
-
-const Element = ({
-  toggleSelected,
-  isSelected,
-  highlightNode,
-}: ElementProps) => {
-  // Naming our inner function so that recursion, like, works
-  const elWithActions = (node: Node) => {
+/**
+ * Higher-order pure recursive component (I hate myself too)
+ * for rendering the DOMViewer tree.
+ *
+ * Basically, `actions` is a collection of functions passed
+ * down from the DOMViewer parent.
+ *
+ * In order to avoid passing `actions` down, we close over the
+ * argument and return a new function called `BoundElement`,
+ * a pure component.
+ *
+ * `BoundElement` is named (as opposed to anonymous)
+ * because it recursively maps over the children of each node.
+ */
+const withActions = (actions: ElementActions) => {
+  const BoundElement = (node: Node) => {
     const { nodeId } = node;
-
-    // Compute className string.
-    const type = nodeType(node);
-    const nodeClass = {
-      FORK: 'Node',
-      INLINE_LEAF: 'Node Node--leaf',
-      LEAF: 'Node Node--leaf',
-    }[type];
-
-    const selected = isSelected(nodeId) ? 'Node--selected' : null;
-    const className = [nodeClass, selected].join(' ');
-
-    // Props shared between leaf and fork nodes.
-    const sharedProps = {
-      key: nodeId, // for React
-    };
-
+    const className: string = getElementClassName({
+      node,
+      isSelected: actions.isSelected(node.nodeId),
+    });
     const labelProps = {
       node,
-      highlightNode: () => highlightNode(nodeId),
-      selectNode: () => toggleSelected(nodeId),
+      ...actions,
     };
+    const label = <Label {...labelProps} />;
+    const type: NodeType = nodeType(node);
+    const isTreeView: boolean = type === 'FORK';
 
-    const isLeafNode = type === 'INLINE_LEAF' || type === 'LEAF';
-    if (isLeafNode) {
-      const props = { ...sharedProps, className };
+    if (isTreeView) {
+      // Render children recursively.
+      const { children } = node;
+      const treeViewProps = {
+        key: node.nodeId,
+        nodeLabel: label,
+        itemClassName: className,
+        defaultCollapsed: true,
+      };
       return (
-        <div {...props}>
-          <ElementLabel {...labelProps} />
+        <TreeView {...treeViewProps}>
+          {children ? children.map(BoundElement) : null}
+        </TreeView>
+      );
+    } else {
+      // Leaf or inline leaf.
+      // Props shared between leaf and fork nodes.
+      const elementProps = {
+        key: nodeId, // for React
+        className,
+      };
+      return (
+        <div {...elementProps}>
+          {label}
         </div>
       );
     }
-
-    // Get children if it's a fork.
-    const { children } = node;
-    const childNodes = children.map(elWithActions);
-    const props = {
-      ...sharedProps,
-      nodeLabel: ElementLabel(labelProps),
-      itemClassName: className,
-      defaultCollapsed: true,
-    };
-
-    return (
-      <TreeView {...props}>
-        {childNodes}
-      </TreeView>
-    );
   };
 
-  return elWithActions;
+  return BoundElement;
 };
 
-export default Element;
+export default withActions;

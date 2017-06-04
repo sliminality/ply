@@ -7,8 +7,8 @@ import StyleViewer from '../components/StyleViewer/StyleViewer';
 import './Inspector.css';
 
 type Props = {
-  requestStyles: (nodeId: NodeId) => void,
-  requestHighlight: (nodeId: NodeId) => void,
+  requestStyles: NodeId => void,
+  requestHighlight: ?NodeId => void,
   rootNode: Node,
   nodes: NodeMap,
   styles: { [NodeId]: Object },
@@ -55,10 +55,6 @@ class Inspector extends Component {
     return this.props.nodes[nodeId];
   }
 
-  highlightNode = (nodeId: NodeId): void => {
-    this.props.requestHighlight(nodeId);
-  };
-
   toggleSelected = (nodeId: NodeId): void => {
     const { selected } = this.state;
     let nextState;
@@ -100,7 +96,7 @@ class Inspector extends Component {
       rootNode,
       toggleSelected: this.toggleSelected,
       isSelected: this.isSelected,
-      highlightNode: this.highlightNode,
+      requestHighlight: this.props.requestHighlight,
     };
     const cssViewerProps = {
       selected,

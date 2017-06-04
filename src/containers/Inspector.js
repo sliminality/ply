@@ -18,6 +18,9 @@ class Inspector extends Component {
   props: Props;
   state: {
     selected: { [NodeId]: Node },
+    settings: {
+      inspectMultiple: boolean,
+    },
   };
 
   constructor(props: Props) {
@@ -25,22 +28,10 @@ class Inspector extends Component {
 
     this.state = {
       selected: {},
+      settings: {
+        inspectMultiple: false,
+      },
     };
-  }
-
-  componentWillReceiveProps(nextProps: Props) {
-    /**
-     * Automatically select the received node,
-     * if it's the only one selected.
-     */
-    const isNewRoot = this.props.rootNode !== nextProps.rootNode;
-
-    // Clear selected state, only select new root.
-    if (isNewRoot) {
-      this.setState({
-        selected: {},
-      });
-    }
   }
 
   componentDidUpdate(prevProps: Props) {
@@ -54,26 +45,35 @@ class Inspector extends Component {
   }
 
   toggleSelected = (nodeId: NodeId): void => {
-    const { selected } = this.state;
+    const { selected, settings } = this.state;
     let nextState;
+
     if (this.isSelected(nodeId)) {
       nextState = {
-        selected: omit(selected, [nodeId]),
+        selected: omit({ ...selected }, [nodeId]),
       };
     } else {
-      const node = this.resolveNode(nodeId);
+      let node: Node;
+
+      if (nodeId === this.props.rootNode.nodeId) {
+        node = this.props.rootNode;
+      } else {
+        node = this.resolveNode(nodeId);
+      }
+
       nextState = {
         selected: {
-          ...selected,
+          ...(settings.inspectMultiple ? selected : null),
           [nodeId]: node,
         },
       };
+
       // Fetch styles for selected node if needed.
       if (!this.props.styles[nodeId]) {
         this.props.requestStyles(nodeId);
       }
     }
-    // TODO: This will get dicey if the request fails.
+
     this.setState(nextState);
   };
 

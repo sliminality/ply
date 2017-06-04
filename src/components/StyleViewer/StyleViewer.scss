@@ -22,7 +22,7 @@ $padding-sides: 12px;
   }
 }
 
-.ComputedStylesPane {
+.ElementStyles {
   width: 100%;  // parent is flex
   height: 100%;  // get last child to scroll
   position: relative;
@@ -31,21 +31,30 @@ $padding-sides: 12px;
   display: flex;
   flex-direction: column;
 
-  &__tabs {
-    @include small-caps;
-    width: 100%;
-    padding-top: 4px;
-    // Extend Uikit border bottom
-    padding-right: 20px;
-    margin-bottom: 0;
+  &__loading {
+    margin: 10px;
+  }
 
-    // Prevent header from getting crushed
-    flex-shrink: 0;
+  &__toolbar {
+    @include small-caps;
 
     // Display the header properties in a row
     display: flex;
     justify-content: space-between;
     align-items: baseline;
+
+    // Prevent header from getting crushed
+    flex-shrink: 0;
+
+    width: 100%;
+    padding-top: 4px;
+    padding-right: 20px;
+    margin-bottom: 0;
+    border-bottom: 1px solid #eaeaea;
+  }
+
+  &__tabs {
+    margin-bottom: 0;
   }
 
   &__options {
@@ -80,29 +89,25 @@ $padding-sides: 12px;
     height: 100%;
     overflow-y: auto;
   }
+}
 
-  &__loading {
-    margin: 10px;
+.ComputedStylesPane {
+  // Give the last element the same
+  // amount of padding.
+  margin-bottom: 2px;
+
+  thead {
+    @include a11y-hidden;
   }
 
-  &__computed-list {
-    // Give the last element the same
-    // amount of padding.
-    margin-bottom: 2px;
+  td {
+    padding: 2px $padding-sides;
+    font-family: 'Inconsolata', monospace;
+    letter-spacing: -0.01em;
 
-    th {
-      @include a11y-hidden;
-    }
-
-    td {
-      padding: 2px $padding-sides;
-      font-family: 'Inconsolata', monospace;
-      letter-spacing: -0.01em;
-
-      // Evenly space columns and text within them
-      width: 50%;
-      vertical-align: middle;
-    }
+    // Evenly space columns and text within them
+    width: 50%;
+    vertical-align: middle;
   }
 }
 

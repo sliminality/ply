@@ -5,7 +5,7 @@ import chunk from 'lodash/chunk';
 type AttributeName = string;
 type Attribute = [AttributeName, string];
 type AttributeListProps = {
-  attrs: Attribute[],
+  attrs: string[],
 };
 
 /**

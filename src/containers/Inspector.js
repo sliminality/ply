@@ -33,12 +33,10 @@ class Inspector extends Component {
      * Automatically select the received node,
      * if it's the only one selected.
      */
-    const noneSelected = Object.keys(this.state.selected).length === 0;
     const isNewRoot = this.props.rootNode !== nextProps.rootNode;
 
     // Clear selected state, only select new root.
     if (isNewRoot) {
-      const newRoot: Node = nextProps.rootNode;
       this.setState({
         selected: {},
       });

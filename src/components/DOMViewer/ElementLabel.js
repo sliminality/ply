@@ -2,6 +2,12 @@
 import React from 'react';
 import AttributeList from './AttributeList';
 
+type LabelProps = {
+  node: Node,
+  requestHighlight: ?NodeId => void,
+  toggleSelected: NodeId => void,
+};
+
 /**
  * Types of nodes.
  * - Fork: a node with regular children. May be expanded/collapsed.
@@ -27,12 +33,21 @@ const nodeType = (node: Node): NodeType => {
 /**
  * Label for a node, with event handlers.
  */
-const Label = ({ node, requestHighlight, toggleSelected }) => {
+const Label = ({ node, requestHighlight, toggleSelected }: LabelProps) => {
   const type: NodeType = nodeType(node);
 
   if (type === 'LEAF') {
     return <ValueLabel value={node.nodeValue} />;
   } else {
+    // If it's an inline leaf with a single text child
+    // (e.g. an <h1>) we need to get the child's value.
+    const value =
+      type === 'INLINE_LEAF' &&
+      node.children &&
+      node.children[0] &&
+      node.children[0].nodeValue;
+    const hasValue = typeof value === 'string';
+
     const labelProps = {
       node,
       toggleSelected: () => toggleSelected(node.nodeId),
@@ -41,11 +56,10 @@ const Label = ({ node, requestHighlight, toggleSelected }) => {
           ? requestHighlight(node.nodeId)
           : requestHighlight(null);
       },
+      ...(hasValue ? { value } : null),
     };
 
     if (type === 'INLINE_LEAF') {
-      // If it's an inline leaf with a single text child
-      // (e.g. an <h1>) we need to get the child's value.
       const firstChild = node.children && node.children[0];
       if (firstChild) {
         labelProps.value = firstChild.nodeValue;
@@ -87,12 +101,16 @@ const FullElementLabel = ({ node, toggleSelected, toggleHighlight, value }) => {
     onMouseLeave: toggleHighlight,
   };
 
+  const attributeListProps = {
+    attrs: node.attributes,
+  };
+
   return (
     <div {...labelProps}>
       <span className="Node__name">
         {node.localName}
       </span>
-      <AttributeList attrs={node.attributes} />
+      <AttributeList {...attributeListProps} />
       {labelValue}
     </div>
   );

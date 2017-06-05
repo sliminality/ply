@@ -2,7 +2,7 @@
 import React from 'react';
 import SplitPane from 'react-split-pane';
 import ElementStyles from './ElementStyles';
-import ComputedStylesPane from './ComputedStylesPane';
+import ComputedStylesView from './ComputedStylesView';
 import './StyleViewer.css';
 
 type Props = {
@@ -14,7 +14,7 @@ class StyleViewer extends React.Component {
   props: Props;
 
   /**
-   * Reduce an array of <ComputedStylesPane /> components into a
+   * Reduce an array of <ComputedStylesView /> components into a
    * tree of <SplitPane /> components.
    */
   renderSplits(selectedStyles: React.Element<any>[]) {
@@ -50,7 +50,7 @@ class StyleViewer extends React.Component {
     if (styles) {
       const props = {
         computedStylesView: {
-          name: 'Computed Styles',
+          name: 'Computed',
           parentComputedStyle: styles.parentComputedStyle,
           computedStyle: styles.computedStyle,
         },
@@ -58,7 +58,8 @@ class StyleViewer extends React.Component {
 
       return (
         <ElementStyles {...elementStylesProps}>
-          <ComputedStylesPane {...props.computedStylesView} />
+          <ComputedStylesView {...props.computedStylesView} />
+          <ComputedStylesView {...props.computedStylesView} />
         </ElementStyles>
       );
     }

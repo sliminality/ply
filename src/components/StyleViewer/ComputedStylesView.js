@@ -4,7 +4,7 @@ import { ownStyles } from './styleHelpers';
 import { FILTERS, filterPred } from '../../models/filters.js';
 import { pairsToObject } from '../../utils/state';
 
-class ComputedStylesPane extends Component {
+class ComputedStylesView extends Component {
   props: {
     computedStyle: ComputedStyle,
     parentComputedStyle: ComputedStyle,
@@ -33,7 +33,7 @@ class ComputedStylesPane extends Component {
 
   render() {
     const tableClassName = [
-      'ComputedStylesPane',
+      'ComputedStylesView',
       'uk-table',
       'uk-table-small',
       'uk-table-striped',
@@ -58,7 +58,7 @@ class ComputedStylesPane extends Component {
             <th>Computed</th>
           </tr>
         </thead>
-        <tbody className="ComputedStylesPane__content">
+        <tbody className="ComputedStylesView__content">
           {content}
         </tbody>
       </table>
@@ -66,4 +66,4 @@ class ComputedStylesPane extends Component {
   }
 }
 
-export default ComputedStylesPane;
+export default ComputedStylesView;

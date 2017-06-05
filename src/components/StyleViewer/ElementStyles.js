@@ -65,7 +65,8 @@ class ElementStyles extends Component {
         </span>
       );
     } else {
-      content = this.props.children;
+      const currentView: number = this.state.activeView;
+      content = this.props.children[currentView];
     }
 
     const props = {

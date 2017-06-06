@@ -74,6 +74,7 @@ class SocketWrapper extends Component {
 
     const dispatch = {
       UPDATE_DOCUMENT: this._updateDocument,
+      UPDATE_STYLES: this._onServerStyles,
       UPDATE_ROOT: this._updateRoot,
       RECEIVE_NODE: this._updateRoot,
       RECEIVE_STYLES: this._onServerStyles,
@@ -113,39 +114,20 @@ class SocketWrapper extends Component {
     this.setState(nextState);
   };
 
-  _onServerStyles = res => {
-    const {
-      id,
-      nodeId,
-      computedStyle,
-      parentComputedStyle,
-      inlineStyle,
-      attributesStyle,
-      matchedCSSRules,
-      inherited,
-      pseudoElements,
-      cssKeyframesRules,
-    } = res;
+  _onServerStyles = ({ id, updated }) => {
+    const nextStyles = Object.assign({}, this.state.styles);
 
-    const styles: NodeStyles = {
-      nodeId,
-      computedStyle,
-      parentComputedStyle,
-      inlineStyle,
-      attributesStyle,
-      matchedCSSRules,
-      inherited,
-      pseudoElements,
-      cssKeyframesRules,
-    };
+    for (const nodeId in updated) {
+      if (Object.hasOwnProperty.call(updated, nodeId)) {
+        nextStyles[nodeId] = updated[nodeId];
+      }
+    }
 
-    const nextStyles = Object.assign({}, this.state.styles, {
-      [nodeId]: styles,
-    });
-    logResult(id, 'Server responded with styles:\n', styles);
     this.setState({
       styles: nextStyles,
     });
+
+    logResult(id, 'Server responded with styles:\n', updated);
   };
 
   _onServerError = ({ id, message }) => {

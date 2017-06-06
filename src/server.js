@@ -96,6 +96,15 @@ browsers.on('connect', browser => {
         state.nodes = nodes;
         log('Updated state.nodes');
       },
+      'UPDATE_STYLES': ({ updated }) => {
+        // If the update contained updates to the currently selected
+        // node, update our cached styles for that node.
+        const { inspected } = state;
+        if (inspected && updated[inspected.nodeId]) {
+          inspected.styles = updated[inspected.nodeId];
+        }
+        log('Updated styles');
+      },
     };
     const action = dispatch[data.type];
     if (action) { action(data); }

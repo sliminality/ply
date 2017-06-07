@@ -1,16 +1,16 @@
 @import '../../../lib/css/tree-view';
+@import '../../globals.scss';
 
-$node-name: #668a36;
-$node-attr-name: #b7b7b7;
-$node-attr-value: #5581b9;
-$node-attr-value-background: #eaf2fc;
-$node-value: #111;
+$node-name: $green;
+$node-attr-name: $light-grey; 
+$node-class: $blue;
+$node-class-background: $light-blue;
+$node-value: $grey;
+$node-id: $purple;
+$node-id-background: $light-purple;
 
-$purple: #7653C1;
-$light-purple: #ece7f5;
-
-$hover-highlight: #fbf4b9;
-$select-highlight: #efefef;
+$select-highlight: $lightest-grey;
+$hover-highlight: $yellow;
 
 .DOMViewer {
   padding: 10px;
@@ -78,8 +78,8 @@ $select-highlight: #efefef;
 
   &__attr-value--class {
     margin-left: 0.5em;
-    color: $node-attr-value;
-    background-color: $node-attr-value-background;
+    color: $node-class;
+    background-color: $node-class-background;
 
     &::before {
       content: '.';
@@ -88,8 +88,8 @@ $select-highlight: #efefef;
 
   &__attr-value--id {
     margin-left: 0.5em;
-    color: $purple;
-    background-color: $light-purple;
+    color: $node-id;
+    background-color: $node-id-background;
 
       &::before {
         content: '#';

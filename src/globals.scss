@@ -1,0 +1,31 @@
+/* VARIABLES */
+
+$green: #668a36;
+$blue: #5581b9;
+$light-blue: #eaf2fc;
+$purple: #7653C1;
+$light-purple: #ece7f5;
+$yellow: #fbf4b9;
+
+$lightest-grey: #efefef;
+$light-grey: #b7b7b7;
+$grey: #111;
+
+$padding-sides: 12px;
+
+/* MIXINS */
+
+@mixin a11y-hidden {
+  position: absolute;
+  left: -10000px;
+  top: auto;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+@mixin small-caps {
+  text-transform: uppercase;
+  font-size: 0.9rem;
+  color: #999;
+}

@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import { ownStyles } from './styleHelpers';
 import { FILTERS, filterPred } from '../../models/filters.js';
 import { pairsToObject } from '../../utils/state';
+import './ComputedStylesView.css';
 
 class ComputedStylesView extends Component {
   props: {

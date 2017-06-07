@@ -1,0 +1,22 @@
+@import '../../globals';
+
+.ComputedStylesView {
+  // Give the last element the same
+  // amount of padding.
+  margin-bottom: 2px;
+
+  thead {
+    @include a11y-hidden;
+  }
+
+  td {
+    padding: 2px $padding-sides;
+    font-family: 'Inconsolata', monospace;
+    letter-spacing: -0.01em;
+
+    // Evenly space columns and text within them
+    width: 50%;
+    vertical-align: middle;
+  }
+}
+

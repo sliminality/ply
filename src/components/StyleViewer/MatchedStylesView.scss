@@ -1,0 +1,56 @@
+@import '../../globals.scss';
+
+$property-name: $purple;
+$property-value: $grey;
+$disabled-property: $light-grey;
+
+.MatchedStylesView {
+  padding: 0;
+  list-style: none;
+
+  &__property.disabled {
+    text-decoration: line-through;
+
+    > .MatchedStylesView__property-name,
+    > .MatchedStylesView__property-value {
+      color: $disabled-property;
+    } 
+  }
+
+  &__property-name {
+    color: $property-name;
+
+    &::after {
+      content: ':';
+      margin-right: 0.25em;
+    }
+  }
+
+  &__property-value {
+    color: $property-value;
+  }
+
+  &__selector-list,
+  &__property-list {
+    padding: 0;
+    list-style: none;
+  }
+
+  &__selector-list {
+    display: flex;
+
+    &::after {
+      content: '{';
+      margin-left: 0.5em;
+    }
+  }
+
+  &__property-list {
+    margin-left: 20px;
+
+    &::after {
+      content: '}';
+      margin-left: -20px;
+    } 
+  }
+}

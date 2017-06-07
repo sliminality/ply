@@ -1,19 +1,4 @@
-$padding-sides: 12px;
-
-@mixin a11y-hidden {
-  position: absolute;
-  left: -10000px;
-  top: auto;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-}
-
-@mixin small-caps {
-  text-transform: uppercase;
-  font-size: 0.9rem;
-  color: #999;
-}
+@import '../../globals.scss';
 
 .StyleViewer {
   &__none-selected {
@@ -88,26 +73,7 @@ $padding-sides: 12px;
   &__content {
     height: 100%;
     overflow-y: auto;
-  }
-}
-
-.ComputedStylesView {
-  // Give the last element the same
-  // amount of padding.
-  margin-bottom: 2px;
-
-  thead {
-    @include a11y-hidden;
-  }
-
-  td {
-    padding: 2px $padding-sides;
-    font-family: 'Inconsolata', monospace;
-    letter-spacing: -0.01em;
-
-    // Evenly space columns and text within them
-    width: 50%;
-    vertical-align: middle;
+    padding: ($padding-sides / 2) $padding-sides;
   }
 }
 

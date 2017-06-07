@@ -17,9 +17,7 @@ type PropertyListArgs = {
 };
 
 class MatchedStylesView extends Component {
-  constructor(props) {
-    super(props);
-  }
+  props: Props;
 
   renderRule(ruleMatch: MatchedCSSRule, ruleIndex: number): React.Element<any> {
     const { matchingSelectors, rule } = ruleMatch;
@@ -156,8 +154,8 @@ class MatchedStylesView extends Component {
   };
 
   render() {
-    const rules = this.props.matchedStyles.map((ruleMatch, i) =>
-      this.renderRule(ruleMatch, i)
+    const rules = this.props.matchedStyles.map((ruleMatch, ruleIndex) =>
+      this.renderRule(ruleMatch, ruleIndex)
     );
     return (
       <ul className="MatchedStylesView">

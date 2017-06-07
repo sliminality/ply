@@ -109,6 +109,10 @@ class MatchedStylesView extends Component {
         const propertyProps = {
           key: propIndex,
           className: 'MatchedStylesView__property',
+        };
+
+        // TODO: Use onMouseEnter, onMouseLeave with checkboxes.
+        const propertyEventHandlers = {
           onClick: () => toggleCSSPropertyForRule(propIndex),
         };
 
@@ -119,10 +123,16 @@ class MatchedStylesView extends Component {
 
         return (
           <li {...propertyProps}>
-            <span className="MatchedStylesView__property-name">
+            <span
+              className="MatchedStylesView__property-name"
+              {...propertyEventHandlers}
+            >
               {name}
             </span>
-            <span className="MatchedStylesView__property-value">
+            <span
+              className="MatchedStylesView__property-value"
+              {...propertyEventHandlers}
+            >
               {value}
             </span>
           </li>

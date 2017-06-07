@@ -9,6 +9,7 @@ import './Inspector.css';
 type Props = {
   requestStyles: NodeId => void,
   requestHighlight: ?NodeId => void,
+  toggleCSSProperty: NodeId => (number) => (number) => void,
   rootNode: Node,
   nodes: NodeMap,
   styles: { [NodeId]: Object },
@@ -99,6 +100,7 @@ class Inspector extends Component {
     const cssViewerProps = {
       selected,
       styles,
+      toggleCSSProperty: this.props.toggleCSSProperty,
     };
 
     return (

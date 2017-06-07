@@ -3,9 +3,11 @@ import React from 'react';
 import SplitPane from 'react-split-pane';
 import ElementStyles from './ElementStyles';
 import ComputedStylesView from './ComputedStylesView';
+import MatchedStylesView from './MatchedStylesView';
 import './StyleViewer.css';
 
 type Props = {
+  toggleCSSProperty: NodeId => (number) => (number) => void,
   styles: { [NodeId]: NodeStyles },
   selected: { [NodeId]: Node },
 };
@@ -54,10 +56,16 @@ class StyleViewer extends React.Component {
           parentComputedStyle: styles.parentComputedStyle,
           computedStyle: styles.computedStyle,
         },
+        matchedStylesView: {
+          name: 'Matched',
+          matchedStyles: styles.matchedCSSRules,
+          toggleCSSProperty: this.props.toggleCSSProperty(nodeId),
+        },
       };
 
       return (
         <ElementStyles {...elementStylesProps}>
+          <MatchedStylesView {...props.matchedStylesView} />
           <ComputedStylesView {...props.computedStylesView} />
           <ComputedStylesView {...props.computedStylesView} />
         </ElementStyles>

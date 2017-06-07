@@ -198,6 +198,17 @@ class SocketWrapper extends Component {
     });
   };
 
+  toggleCSSProperty = (nodeId: NodeId) => (ruleIndex: number) => (
+    propIndex: number
+  ): void => {
+    this.requestData({
+      type: 'TOGGLE_PROPERTY',
+      nodeId,
+      ruleIndex,
+      propIndex,
+    });
+  };
+
   renderUtilsBar() {
     const buttonProps = {
       className: 'utils-bar__btn uk-button-default uk-button-small',
@@ -257,6 +268,7 @@ class SocketWrapper extends Component {
       nodes,
       requestStyles: this.requestStyles,
       requestHighlight: this.requestHighlight,
+      toggleCSSProperty: this.toggleCSSProperty,
     };
     const wrappedChild = React.cloneElement(this.props.children, childProps);
 

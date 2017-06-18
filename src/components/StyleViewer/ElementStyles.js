@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 
 type Props = {
   styles: NodeStyles,
+  pruneNode: NodeId => void,
   nodeId: NodeId,
   children?: React.Element<any>[],
 };
@@ -24,6 +25,11 @@ class ElementStyles extends Component {
     this.setState({
       activeView: index,
     });
+  };
+
+  pruneStyles = () => {
+    const { nodeId } = this.props;
+    this.props.pruneNode(nodeId);
   };
 
   renderToolbar() {
@@ -73,6 +79,10 @@ class ElementStyles extends Component {
       className: 'ElementStyles',
       key: nodeId,
     };
+    const buttonProps = {
+      className: 'ElementStyles__prune-btn uk-button-default uk-button-small',
+      onClick: this.pruneStyles,
+    };
 
     return (
       <div {...props}>
@@ -80,6 +90,9 @@ class ElementStyles extends Component {
         <div className="ElementStyles__content">
           {content}
         </div>
+        <button {...buttonProps}>
+          Prune
+        </button>
       </div>
     );
   }

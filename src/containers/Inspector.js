@@ -10,6 +10,7 @@ type Props = {
   requestStyles: NodeId => void,
   requestHighlight: ?NodeId => void,
   toggleCSSProperty: NodeId => (number) => (number) => void,
+  pruneNode: NodeId => void,
   rootNode: Node,
   nodes: NodeMap,
   styles: { [NodeId]: Object },
@@ -101,6 +102,7 @@ class Inspector extends Component {
       selected,
       styles,
       toggleCSSProperty: this.props.toggleCSSProperty,
+      pruneNode: this.props.pruneNode,
     };
 
     return (

@@ -8,6 +8,7 @@ import './StyleViewer.css';
 
 type Props = {
   toggleCSSProperty: NodeId => (number) => (number) => void,
+  pruneNode: NodeId => void,
   styles: { [NodeId]: NodeStyles },
   selected: { [NodeId]: Node },
 };
@@ -47,6 +48,7 @@ class StyleViewer extends React.Component {
     const elementStylesProps = {
       nodeId,
       styles,
+      pruneNode: this.props.pruneNode,
     };
 
     if (styles) {

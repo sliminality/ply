@@ -75,5 +75,11 @@
     overflow-y: auto;
     padding: ($padding-sides / 2) $padding-sides;
   }
+
+  &__prune-btn {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+  }
 }
 

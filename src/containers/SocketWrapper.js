@@ -209,6 +209,13 @@ class SocketWrapper extends Component {
     });
   };
 
+  pruneNode = (nodeId: NodeId) => {
+    this.requestData({
+      type: 'PRUNE_STYLES',
+      nodeId,
+    });
+  };
+
   renderUtilsBar() {
     const buttonProps = {
       className: 'utils-bar__btn uk-button-default uk-button-small',
@@ -269,6 +276,7 @@ class SocketWrapper extends Component {
       requestStyles: this.requestStyles,
       requestHighlight: this.requestHighlight,
       toggleCSSProperty: this.toggleCSSProperty,
+      pruneNode: this.pruneNode,
     };
     const wrappedChild = React.cloneElement(this.props.children, childProps);
 

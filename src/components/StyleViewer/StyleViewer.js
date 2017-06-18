@@ -1,6 +1,7 @@
 // @flow
 import React from 'react';
 import SplitPane from 'react-split-pane';
+import JSONTree from 'react-json-tree';
 import ElementStyles from './ElementStyles';
 import ComputedStylesView from './ComputedStylesView';
 import MatchedStylesView from './MatchedStylesView';
@@ -68,8 +69,7 @@ class StyleViewer extends React.Component {
       return (
         <ElementStyles {...elementStylesProps}>
           <MatchedStylesView {...props.matchedStylesView} />
-          <ComputedStylesView {...props.computedStylesView} />
-          <ComputedStylesView {...props.computedStylesView} />
+          <JSONTree data={styles} name="JSONTree" />
         </ElementStyles>
       );
     }

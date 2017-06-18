@@ -1,5 +1,9 @@
 @import '../../lib/css/split-pane.css';
 
+.StyleViewer ul {
+  background-color: white !important;
+}
+
 .Pane {
   overflow: scroll;
 

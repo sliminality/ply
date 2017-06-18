@@ -1,13 +1,12 @@
 // @flow
 import React, { Component } from 'react';
-import JSONTree from 'react-json-tree';
 import has from 'lodash/has';
 import './MatchedStylesView.css';
 
 type Props = {
   toggleCSSProperty: (ruleIndex: number) => (propIndex: number) => void,
   name: string,
-  matchedStyles: MatchedCSSRules,
+  matchedStyles: RuleMatch[],
 };
 
 type PropertyListArgs = {
@@ -18,8 +17,24 @@ type PropertyListArgs = {
 
 class MatchedStylesView extends Component {
   props: Props;
+  state: {
+    hoverMode: boolean,
+  };
 
-  renderRule(ruleMatch: MatchedCSSRule, ruleIndex: number): React.Element<any> {
+  constructor(props: Props) {
+    super(props);
+    this.state = {
+      hoverMode: false,
+    };
+  }
+
+  toggleHoverMode = () => {
+    this.setState({
+      hoverMode: !this.state.hoverMode,
+    });
+  };
+
+  renderRule(ruleMatch: RuleMatch, ruleIndex: number): React.Element<any> {
     const { matchingSelectors, rule } = ruleMatch;
     const { selectorList, style, origin } = rule;
 
@@ -28,7 +43,7 @@ class MatchedStylesView extends Component {
       selectorList.selectors
     );
 
-    const propertyList = MatchedStylesView.renderPropertyList({
+    const propertyList = this.renderPropertyList({
       origin,
       properties: style.cssProperties,
       toggleCSSPropertyForRule: this.toggleCSSPropertyForNode(ruleIndex),
@@ -50,10 +65,10 @@ class MatchedStylesView extends Component {
   static renderSelectors(
     matchedIndices: number[],
     selectors: Value[]
-  ): React.Element<Any> {
+  ): React.Element<any> {
     // Only render the matched selectors on the style.
     const matched: Value[] = matchedIndices.map(i => selectors[i].text);
-    const selectorList: React.Element<Any>[] = matched.map((text, i) => (
+    const selectorList: React.Element<any>[] = matched.map((text, i) => (
       <li className="MatchedStylesView__selector" key={i}>{text}</li>
     ));
 
@@ -64,11 +79,11 @@ class MatchedStylesView extends Component {
     );
   }
 
-  static renderPropertyList({
+  renderPropertyList({
     properties,
     origin,
     toggleCSSPropertyForRule,
-  }: PropertyListArgs): React.Element<Any> {
+  }: PropertyListArgs): React.Element<any> {
     /**
      * This is a bit confusing, but it has to do with how the Chrome protocol returns
      * styles.
@@ -109,16 +124,27 @@ class MatchedStylesView extends Component {
         const propertyProps = {
           key: propIndex,
           className: 'MatchedStylesView__property',
+          cssProp: prop,
         };
 
-        // TODO: Use onMouseEnter, onMouseLeave with checkboxes.
+        const handleHover = () => {
+          if (this.state.hoverMode) {
+            toggleCSSPropertyForRule(propIndex);
+          }
+        };
+
         const propertyEventHandlers = {
           onClick: () => toggleCSSPropertyForRule(propIndex),
+          onMouseOver: handleHover,
+          onMouseLeave: handleHover,
         };
 
         // TODO: Optimistic UI change.
         if (has(prop, 'disabled') && prop.disabled) {
           propertyProps.className += ' disabled';
+        }
+        if (has(prop, 'parsedOk') && !prop.parsedOk) {
+          propertyProps.className += ' not-parsed-ok';
         }
 
         return (
@@ -142,7 +168,6 @@ class MatchedStylesView extends Component {
     return (
       <ul className="MatchedStylesView__property-list">
         {declared}
-        <JSONTree data={properties} />
       </ul>
     );
   }
@@ -167,9 +192,20 @@ class MatchedStylesView extends Component {
     const rules = this.props.matchedStyles.map((ruleMatch, ruleIndex) =>
       this.renderRule(ruleMatch, ruleIndex)
     );
+    const buttonProps = {
+      className: 'uk-button-default uk-button-small',
+      onClick: this.toggleHoverMode,
+    };
+    const toggleHoverModeButton = (
+      <button {...buttonProps}>
+        {this.state.hoverMode ? 'Disable hover mode' : 'Enable hover mode'}
+      </button>
+    );
+
     return (
       <ul className="MatchedStylesView">
         {rules}
+        {toggleHoverModeButton}
       </ul>
     );
   }

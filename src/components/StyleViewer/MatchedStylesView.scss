@@ -7,6 +7,12 @@ $disabled-property: $light-grey;
 .MatchedStylesView {
   padding: 0;
   list-style: none;
+  font-family: 'Inconsolata', monospace;
+  letter-spacing: -0.01em;
+
+  &__property {
+    cursor: pointer;
+  }
 
   &__property.disabled {
     text-decoration: line-through;
@@ -15,6 +21,10 @@ $disabled-property: $light-grey;
     > .MatchedStylesView__property-value {
       color: $disabled-property;
     } 
+  }
+  
+  &__property.not-parsed-ok {
+    display: none;
   }
 
   &__property-name {

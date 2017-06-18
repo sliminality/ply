@@ -100,7 +100,11 @@ class StyleViewer extends React.Component {
         content = this.renderSplits(selectedStyles);
       } else {
         // There are selected nodes, but no styles yet.
-        content = 'No styles loaded yet';
+        content = (
+          <span className="StyleViewer__none-selected">
+            No styles loaded yet.
+          </span>
+        );
       }
     }
 

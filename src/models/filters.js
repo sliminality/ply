@@ -1,5 +1,5 @@
 // @flow
-import getDefaultValue, { CSSProperty } from './defaults';
+import type { CSSProperty } from './defaults';
 
 /**
  * Allow users to define their own computed property filters

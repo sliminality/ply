@@ -25,7 +25,7 @@
     "build:css": "node-sass-chokidar src/ -o src/",
     "watch:css": "npm run build:css && node-sass-chokidar src/ -o src/ --watch --recursive",
     "start:js": "react-scripts start",
-    "start": "npm-run-all -p watch:css start:js server",
+    "start": "npm-run-all -p watch:css start:js",
     "format": "prettier --single-quote --trailing-comma es5 --parser flow --print-width 80 --write '{src,decls}/**/*.js'",
     "build": "npm run build:css && react-scripts build",
     "test": "react-scripts test --env=jsdom",

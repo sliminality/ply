@@ -16,6 +16,12 @@ const apps = io.of('/apps');
 let browserConnections = new Set();
 let appConnections = new Set();
 
+// Store state to provide either client.
+const state = {
+  inspected: null,
+  document: null,
+};
+
 const log = msg => {
   const cols = process.stdout.columns;
   const divider = '-'.repeat(cols);
@@ -43,31 +49,21 @@ const emitToApps = evt => res => {
   if (LOG_VERBOSE) {
     log(resString);
   } else {
-    log(
-      evt, res.type,
-      `${resString.substring(0, TRUNCATE_LENGTH)}...`
-    );
+    log(evt, res.type, `${resString.substring(0, TRUNCATE_LENGTH)}...`);
   }
 
   // TODO: Refactor this to support multiple clients.
   apps.emit(evt, res);
 };
 
-// Store state to provide either client.
-const state = {
-  inspected: null,
-  document: null,
-};
-
 /**
  * Browser clients (debugging pages).
  */
-browsers.on('connect', browser => {
+function onBrowserConnect(browser) {
   const socketId = browser.id;
   if (browserConnections.has(socketId)) {
     throw new Error('tried to connect a socket already added');
   }
-
   browserConnections.add(socketId);
   logConnections({
     connected: true,
@@ -77,53 +73,58 @@ browsers.on('connect', browser => {
     browsers: browserConnections.size,
   });
 
-  /**
-   * When browser clients provide responses or updates,
-   * we need to forward to the app clients.
-   */
+  // Forward updates and responses from browser to the app clients.
   browser.on('data.res', emitToApps('data.res'));
 
-  browser.on('data.update', data => {
-    // Store locally before forwarding to any connected apps.
-    const dispatch = {
-      'UPDATE_ROOT': ({ node, nodeId, styles }) => {
-        state.inspected = {
-          node, nodeId, styles
-        };
-        log(`Inspecting node ${nodeId}`);
-      },
-      'UPDATE_DOCUMENT': ({ nodes }) => {
-        state.nodes = nodes;
-        log('Updated state.nodes');
-      },
-      'UPDATE_STYLES': ({ updated }) => {
-        // If the update contained updates to the currently selected
-        // node, update our cached styles for that node.
-        const { inspected } = state;
-        if (inspected && updated[inspected.nodeId]) {
-          inspected.styles = updated[inspected.nodeId];
-        }
-        log('Updated styles');
-      },
-    };
-    const action = dispatch[data.type];
-    if (action) { action(data); }
+  browser.on('data.update', onBrowserUpdate);
+  browser.on('data.err', onBrowserError);
+  browser.on('disconnect', onBrowserDisconnect(socketId));
+}
 
-    // Updates need to be given a uuid, since they don't
-    // have one from a corresponding request.
-    const dataWithId = Object.assign({},
-      data,
-      { id: uuid() }
-    );
-    emitToApps('data.update')(dataWithId);
-  });
+function onBrowserError(err) {
+  log(err);
+  apps.emit('data.err', err);
+}
 
-  browser.on('data.err', err => {
-    log(err);
-    apps.emit('data.err', err);
-  });
+function onBrowserUpdate(data) {
+  // Store locally before forwarding to any connected apps.
+  const dispatch = {
+    UPDATE_ROOT: ({ node, nodeId, styles }) => {
+      state.inspected = {
+        node,
+        nodeId,
+        styles,
+      };
+      log(`Inspecting node ${nodeId}`);
+    },
+    UPDATE_DOCUMENT: ({ nodes }) => {
+      state.nodes = nodes;
+      log('Updated state.nodes');
+    },
+    UPDATE_STYLES: ({ updated }) => {
+      // If the update contained updates to the currently selected
+      // node, update our cached styles for that node.
+      const { inspected } = state;
+      if (inspected && updated[inspected.nodeId]) {
+        inspected.styles = updated[inspected.nodeId];
+      }
+      log('Updated styles');
+    },
+  };
+  const action = dispatch[data.type];
+  if (action) {
+    action(data);
+  }
 
-  browser.on('disconnect', () => {
+  // Updates need to be given a uuid, since they don't
+  // have one from a corresponding request.
+  const dataWithId = Object.assign({}, data, { id: uuid() });
+  emitToApps('data.update')(dataWithId);
+}
+
+// TODO(slim): Should eventually refactor so that this doesn't need to be curried.
+function onBrowserDisconnect(socketId) {
+  return function() {
     if (browserConnections.has(socketId)) {
       browserConnections.delete(socketId);
       logConnections({
@@ -139,14 +140,17 @@ browsers.on('connect', browser => {
     } else {
       throw new Error('tried to disconnect a socket that didnt exist');
     }
-  });
-});
+  };
+}
+
+browsers.on('connect', onBrowserConnect);
 
 /**
  * When app clients send requests, we need to forward
  * to the browser client.
  */
-apps.on('connect', app => {
+
+function onClientConnect(app) {
   const socketId = app.id;
   if (appConnections.has(socketId)) {
     throw new Error('tried to connect a app already added');
@@ -167,7 +171,9 @@ apps.on('connect', app => {
     app.emit('data.update', {
       type: 'UPDATE_ROOT',
       id: uuid(),
-      node, nodeId, styles,
+      node,
+      nodeId,
+      styles,
     });
   }
   if (state.nodes) {
@@ -179,28 +185,33 @@ apps.on('connect', app => {
     });
   }
 
-  /**
-   * When app clients send requests, we need to forward
-   * to the browser clients.
-   */
-  app.on('data.req', req => {
-    if (browserConnections.size > 0) {
-      const reqStr = JSON.stringify(req, null, 2);
-      log(reqStr);
-      browsers.emit('data.req', req);
-    } else {
-      log('No available browser clients');
-      // If there are no connected browser clients, return
-      // an error to the requesting app.
-      app.emit('server.err', {
-        type: 'SERVER_ERROR',
-        id: req.id,
-        message: 'No available browsers',
-      });
-    }
-  });
+  // Forward requests from app clients to browsers.
+  app.on('data.req', onClientRequest);
 
-  app.on('disconnect', () => {
+  app.on('disconnect', onClientDisconnect(socketId));
+}
+
+function onClientRequest(req) {
+  if (browserConnections.size > 0) {
+    const reqStr = JSON.stringify(req, null, 2);
+    log(reqStr);
+    browsers.emit('data.req', req);
+  } else {
+    log('No available browser clients');
+
+    // If there are no connected browser clients, return
+    // an error to the requesting app.
+    // TODO(slim): Should this use the main `emitToApps` function?
+    apps.emit('server.err', {
+      type: 'SERVER_ERROR',
+      id: req.id,
+      message: 'No available browsers',
+    });
+  }
+}
+
+function onClientDisconnect(socketId) {
+  return function() {
     if (appConnections.has(socketId)) {
       appConnections.delete(socketId);
       logConnections({
@@ -213,5 +224,7 @@ apps.on('connect', app => {
     } else {
       throw new Error('tried to disconnect a app that didnt exist');
     }
-  });
-});
+  };
+}
+
+apps.on('connect', onClientConnect);

@@ -1,4 +1,3 @@
-// @flow
 import React, { Component } from 'react';
 import uuid from 'uuid';
 import io from 'socket.io-client';
@@ -19,17 +18,19 @@ type SocketMessage = {
 
 type NodeMap = { [NodeId]: Node };
 
-class SocketWrapper extends Component {
+type State = {
+  requests: Object,
+  socketId: ?string,
+  selector: string,
+  rootNode: ?Node,
+  nodes: NodeMap,
+  styles: { [nodeId: NodeId]: NodeStyles },
+};
+
+class SocketWrapper extends Component<{}, State> {
   socket: Object;
 
-  state: {
-    requests: Object,
-    socketId: ?string,
-    selector: string,
-    rootNode: ?Node,
-    nodes: NodeMap,
-    styles: { [nodeId: NodeId]: NodeStyles },
-  };
+  state: State;
 
   constructor() {
     super();
@@ -238,9 +239,9 @@ class SocketWrapper extends Component {
     };
 
     const requestStyles = () =>
-      (this.state.rootNode
+      this.state.rootNode
         ? this.requestStyles(this.state.rootNode.nodeId)
-        : null);
+        : null;
 
     return (
       <div className="utils-bar">

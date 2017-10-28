@@ -1,0 +1,32 @@
+// @flow
+
+const actionTypes = {
+  // socket.io-client API events
+  CONNECT: 'CONNECT',
+  DISCONNECT: 'DISCONNECT',
+  RECONNECT: 'RECONNECT',
+  RECONNECT_ATTEMPT: 'RECONNECT_ATTEMPT',
+  RECONNECT_FAILED: 'RECONNECT_FAILED',
+
+  // Updates from server, dispatched to store
+  TARGET_CONNECTED: 'TARGET_CONNECTED',
+  TARGET_DISCONNECTED: 'TARGET_DISCONNECTED',
+  PRUNE_NODE_RESULT: 'PRUNE_NODE_RESULT',
+  SET_DOCUMENT: 'SET_DOCUMENT',
+  SET_STYLES: 'SET_STYLES',
+
+  // Can originate on server or client
+  SET_INSPECTION_ROOT: 'SET_INSPECTION_ROOT',
+
+  // Dispatched to store, also pushed to server
+  PRUNE_NODE: 'PRUNE_NODE',
+  TOGGLE_SELECT_NODE: 'TOGGLE_SELECT_NODE',
+
+  // Handled completely by server, never dispatched
+  CLEAR_HIGHLIGHT: 'CLEAR_HIGHLIGHT',
+  HIGHLIGHT_NODE: 'HIGHLIGHT_NODE',
+  REQUEST_STYLE_FOR_NODE: 'REQUEST_STYLE_FOR_NODE',
+  TOGGLE_CSS_PROPERTY: 'TOGGLE_CSS_PROPERTY',
+};
+
+export default actionTypes;

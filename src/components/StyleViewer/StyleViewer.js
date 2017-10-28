@@ -1,119 +1,112 @@
 // @flow
-import React from 'react';
+import * as React from 'react';
 import SplitPane from 'react-split-pane';
 import JSONTree from 'react-json-tree';
 import ElementStyles from './ElementStyles';
 import ComputedStylesView from './ComputedStylesView';
 import MatchedStylesView from './MatchedStylesView';
+import { connect } from 'react-redux';
+import {
+  getStyles,
+  getSelectedNodes,
+  filterSelectedNodes,
+} from '../../selectors';
+import { pruneNode, toggleCSSProperty } from '../../actions';
 import './StyleViewer.css';
 
+import type { State as ReduxState, Dispatch, NodeStyleMap } from '../../types';
+import type { CRDP$NodeId } from 'devtools-typed/domain/DOM';
+
 type Props = {
-  toggleCSSProperty: NodeId => (number) => (number) => void,
-  pruneNode: NodeId => void,
-  styles: { [NodeId]: NodeStyles },
-  selected: { [NodeId]: Node },
+  styles: NodeStyleMap,
+  selectedNodes: { [CRDP$NodeId]: boolean },
+
+  toggleCSSProperty: CRDP$NodeId => number => number => void,
+  pruneNode: CRDP$NodeId => void,
 };
 
-class StyleViewer extends React.Component {
+class StyleViewer extends React.Component<Props> {
   props: Props;
 
   /**
    * Reduce an array of <ComputedStylesView /> components into a
    * tree of <SplitPane /> components.
    */
-  renderSplits(selectedStyles: React.Element<any>[]) {
+  renderSplits(selectedStyles: Array<React.Node>) {
     /**
      * To make all the panes evenly sized, compute
      * the size of the top pane in the current frame
      * as (100% / (TOTAL_NODES - NODES_PROCESSED).
      */
     const numStyles = selectedStyles.length;
-    const reducer = (memo: SplitPane, current: ElementStyles, i: number) => {
-      const props = {
-        split: 'horizontal',
-        minSize: 50,
-        defaultSize: `${100 / (numStyles - i)}%`,
-      };
+    const reducer = (
+      prev: React.Node,
+      current: React.Node,
+      i: number
+    ): React.Element<typeof SplitPane> => {
       return (
-        <SplitPane {...props}>
+        <SplitPane
+          split="horizontal"
+          minSize={50}
+          defaultSize={`${100 / (numStyles - i)}%`}
+        >
           {current}
-          {memo}
+          {prev}
         </SplitPane>
       );
     };
     return selectedStyles.reduceRight(reducer);
   }
 
-  renderStylesForNode = (nodeId: NodeId): React.Element<any> => {
-    const styles = this.props.styles[nodeId];
-    const elementStylesProps = {
-      nodeId,
-      styles,
-      pruneNode: this.props.pruneNode,
-    };
-
-    if (styles) {
-      const props = {
-        computedStylesView: {
-          name: 'Computed',
-          parentComputedStyle: styles.parentComputedStyle,
-          computedStyle: styles.computedStyle,
-        },
-        matchedStylesView: {
-          name: 'Matched',
-          matchedStyles: styles.matchedCSSRules,
-          toggleCSSProperty: this.props.toggleCSSProperty(nodeId),
-        },
-      };
-
-      return (
-        <ElementStyles {...elementStylesProps}>
-          <MatchedStylesView {...props.matchedStylesView} />
-          <JSONTree data={styles} name="JSONTree" />
-        </ElementStyles>
-      );
+  renderNodeStyle = (nodeId: CRDP$NodeId): React.Element<any> => {
+    const { styles, pruneNode, toggleCSSProperty } = this.props;
+    const nodeStyle = styles[nodeId];
+    if (!nodeStyle) {
+      // Styles haven't landed yet for this particular node.
+      return <span>Loading styles...</span>;
     }
-
-    // Styles haven't landed yet for this particular node.
-    return <span>Loading styles...</span>;
+    const { parentComputedStyle, computedStyle, matchedCSSRules } = nodeStyle;
+    return (
+      <ElementStyles nodeId={nodeId} style={nodeStyle} pruneNode={pruneNode}>
+        <MatchedStylesView
+          name="Matched"
+          matchedStyles={matchedCSSRules}
+          toggleCSSProperty={toggleCSSProperty(nodeId)}
+        />
+        <ComputedStylesView
+          name="Computed"
+          parentComputedStyle={parentComputedStyle}
+          computedStyle={computedStyle}
+        />
+        <JSONTree data={styles} name="JSONTree" />
+      </ElementStyles>
+    );
   };
 
   render() {
-    const { selected } = this.props;
-    let content;
-    const noneSelected: boolean = Object.keys(selected).length === 0;
-
-    if (noneSelected) {
-      content = (
-        <span className="StyleViewer__none-selected">
-          No styles selected.
-        </span>
-      );
-    } else {
-      // Construct a nested series of SplitPanes,
-      // in the order elements were selected.
-      if (this.props.styles) {
-        const selectedNodeIds = Object.keys(selected).map(s => parseInt(s, 10));
-        const selectedStyles: React.Element<any>[] = selectedNodeIds.map(
-          this.renderStylesForNode
-        );
-        content = this.renderSplits(selectedStyles);
-      } else {
-        // There are selected nodes, but no styles yet.
-        content = (
-          <span className="StyleViewer__none-selected">
-            No styles loaded yet.
-          </span>
-        );
-      }
-    }
-
+    const { selectedNodes } = this.props;
+    const selected = filterSelectedNodes(selectedNodes);
     return (
       <div className="StyleViewer">
-        {content}
+        {selected.length > 0 ? (
+          this.renderSplits(selected.map(this.renderNodeStyle))
+        ) : (
+          <span className="StyleViewer__none-selected">No nodes selected.</span>
+        )}
       </div>
     );
   }
 }
 
-export default StyleViewer;
+const mapStateToProps = (state: ReduxState) => ({
+  styles: getStyles(state),
+  selectedNodes: getSelectedNodes(state),
+});
+
+const mapDispatchToProps = (dispatch: Dispatch) => ({
+  pruneNode: nodeId => dispatch(pruneNode(nodeId)),
+  toggleCSSProperty: nodeId => ruleIdx => propIdx =>
+    dispatch(toggleCSSProperty(nodeId, ruleIdx, propIdx)),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(StyleViewer);

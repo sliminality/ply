@@ -1,18 +1,22 @@
 // @flow
-import React, { Component } from 'react';
+import * as React from 'react';
+import type { NodeStyle } from '../../types';
+import type { CRDP$NodeId } from 'devtools-typed/domain/DOM';
 
 type Props = {
-  styles: NodeStyles,
-  pruneNode: NodeId => void,
-  nodeId: NodeId,
-  children?: React.Element<any>[],
+  nodeId: CRDP$NodeId,
+  style: NodeStyle,
+  pruneNode: CRDP$NodeId => void,
+  children?: Array<React.Node>,
 };
 
-class ElementStyles extends Component {
+type State = {
+  activeView: number,
+};
+
+class ElementStyles extends React.Component<Props, State> {
   props: Props;
-  state: {
-    activeView: number,
-  };
+  state: State;
 
   constructor(props: Props) {
     super(props);
@@ -27,33 +31,21 @@ class ElementStyles extends Component {
     });
   };
 
-  pruneStyles = () => {
-    const { nodeId } = this.props;
-    this.props.pruneNode(nodeId);
-  };
-
   renderToolbar() {
     const { children } = this.props;
-    const tabs = React.Children.map(children, (child, i) => {
-      const tabProps = {
-        key: i,
-        className: this.state.activeView === i ? 'uk-active' : null,
-        onClick: () => this.switchView(i),
-      };
-
-      return (
-        <li {...tabProps}>
-          <a href="#">{child.props.name}</a>
-        </li>
-      );
-    });
-    const tabsClassName = ['uk-tab', 'ElementStyles__tabs'].join(' ');
-
+    const { activeView } = this.state;
+    const tabs = React.Children.map(children, (child, i) => (
+      <li
+        key={i}
+        className={activeView === i && 'uk-active'}
+        onClick={() => this.switchView(i)}
+      >
+        <a href="#">{child.props.name}</a>
+      </li>
+    ));
     return (
       <div className="ElementStyles__toolbar">
-        <ul className={tabsClassName}>
-          {tabs}
-        </ul>
+        <ul className="uk-tab ElementStyles__tabs">{tabs}</ul>
         <span className="ElementStyles__node-id">
           Node ID: {this.props.nodeId}
         </span>
@@ -62,35 +54,21 @@ class ElementStyles extends Component {
   }
 
   render() {
-    const { styles, nodeId } = this.props;
-    let content = null;
-    if (!styles) {
-      content = (
-        <span className="ElementStyles__loading">
-          Loading styles...;
-        </span>
-      );
-    } else {
-      const currentView: number = this.state.activeView;
-      content = this.props.children[currentView];
-    }
-
-    const props = {
-      className: 'ElementStyles',
-      key: nodeId,
-    };
-    const buttonProps = {
-      className: 'ElementStyles__prune-btn uk-button-default uk-button-small',
-      onClick: this.pruneStyles,
-    };
-
+    const { style, nodeId, children, pruneNode } = this.props;
+    const { activeView } = this.state;
     return (
-      <div {...props}>
+      <div className="ElementStyles" key={nodeId}>
         {this.renderToolbar()}
         <div className="ElementStyles__content">
-          {content}
+          {!style && (
+            <span className="ElementStyles__loading">Loading styles...;</span>
+          )}
+          {children && children[activeView]}
         </div>
-        <button {...buttonProps}>
+        <button
+          className="ElementStyles__prune-btn uk-button-default uk-button-small"
+          onClick={() => pruneNode(nodeId)}
+        >
           Prune
         </button>
       </div>

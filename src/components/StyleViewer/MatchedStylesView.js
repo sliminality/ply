@@ -1,25 +1,34 @@
 // @flow
-import React, { Component } from 'react';
+import * as React from 'react';
 import has from 'lodash/has';
 import './MatchedStylesView.css';
 
+import type {
+  CRDP$CSSProperty,
+  CRDP$StyleSheetOrigin,
+  CRDP$RuleMatch,
+  CRDP$Value,
+} from 'devtools-typed/domain/CSS';
+
 type Props = {
-  toggleCSSProperty: (ruleIndex: number) => (propIndex: number) => void,
   name: string,
-  matchedStyles: RuleMatch[],
+  matchedStyles: CRDP$RuleMatch[],
+  toggleCSSProperty: (ruleIdx: number) => (propIdx: number) => void,
+};
+
+type State = {
+  hoverMode: boolean,
 };
 
 type PropertyListArgs = {
-  properties: CSSProperty[],
-  origin: StyleSheetOrigin,
+  properties: CRDP$CSSProperty[],
+  origin: CRDP$StyleSheetOrigin,
   toggleCSSPropertyForRule: (propIndex: number) => void,
 };
 
-class MatchedStylesView extends Component {
+class MatchedStylesView extends React.Component<Props, State> {
   props: Props;
-  state: {
-    hoverMode: boolean,
-  };
+  state: State;
 
   constructor(props: Props) {
     super(props);
@@ -29,12 +38,13 @@ class MatchedStylesView extends Component {
   }
 
   toggleHoverMode = () => {
+    const { hoverMode } = this.state;
     this.setState({
-      hoverMode: !this.state.hoverMode,
+      hoverMode: !hoverMode,
     });
   };
 
-  renderRule(ruleMatch: RuleMatch, ruleIndex: number): React.Element<any> {
+  renderRule(ruleMatch: CRDP$RuleMatch, ruleIndex: number): React.Node {
     const { matchingSelectors, rule } = ruleMatch;
     const { selectorList, style, origin } = rule;
 
@@ -64,17 +74,16 @@ class MatchedStylesView extends Component {
 
   static renderSelectors(
     matchedIndices: number[],
-    selectors: Value[]
-  ): React.Element<any> {
+    selectors: CRDP$Value[]
+  ): React.Node {
     // Only render the matched selectors on the style.
-    const matched: Value[] = matchedIndices.map(i => selectors[i].text);
-    const selectorList: React.Element<any>[] = matched.map((text, i) => (
-      <li className="MatchedStylesView__selector" key={i}>{text}</li>
-    ));
-
     return (
       <ul className="MatchedStylesView__selector-list">
-        {selectorList}
+        {matchedIndices.map(i => selectors[i].text).map((text, i) => (
+          <li className="MatchedStylesView__selector" key={i}>
+            {text}
+          </li>
+        ))}
       </ul>
     );
   }
@@ -83,7 +92,7 @@ class MatchedStylesView extends Component {
     properties,
     origin,
     toggleCSSPropertyForRule,
-  }: PropertyListArgs): React.Element<any> {
+  }: PropertyListArgs): React.Node {
     /**
      * This is a bit confusing, but it has to do with how the Chrome protocol returns
      * styles.
@@ -108,7 +117,7 @@ class MatchedStylesView extends Component {
      * Basically, we want to only render declared properties (those with SourceRanges
      * and 'normal' origins).
      */
-    const allowPropsFilter = (prop: CSSProperty): boolean => {
+    const allowPropsFilter = (prop: CRDP$CSSProperty): boolean => {
       if (origin === 'user-agent') {
         return true;
       } else {
@@ -165,11 +174,7 @@ class MatchedStylesView extends Component {
         );
       });
 
-    return (
-      <ul className="MatchedStylesView__property-list">
-        {declared}
-      </ul>
-    );
+    return <ul className="MatchedStylesView__property-list">{declared}</ul>;
   }
 
   /**

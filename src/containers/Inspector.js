@@ -1,119 +1,95 @@
 // @flow
 import React, { Component } from 'react';
-import omit from 'lodash/omit';
+import { connect } from 'react-redux';
+import { getConnection } from '../selectors';
+
 import SplitPane from 'react-split-pane';
 import DOMViewer from '../components/DOMViewer/DOMViewer';
 import StyleViewer from '../components/StyleViewer/StyleViewer';
 import './Inspector.css';
 
+import type { State as ReduxState, Connection } from '../types';
+
 type Props = {
-  requestStyles: NodeId => void,
-  requestHighlight: ?NodeId => void,
-  toggleCSSProperty: NodeId => (number) => (number) => void,
-  pruneNode: NodeId => void,
-  rootNode: Node,
-  nodes: NodeMap,
-  styles: { [NodeId]: Object },
+  connection: Connection,
 };
 
-class Inspector extends Component {
+type State = {
+  settings: {
+    inspectMultiple: boolean,
+  },
+};
+
+class Inspector extends Component<Props, State> {
   props: Props;
-  state: {
-    selected: { [NodeId]: Node },
-    settings: {
-      inspectMultiple: boolean,
-    },
-  };
+  state: State;
 
   constructor(props: Props) {
     super(props);
-
     this.state = {
-      selected: {},
       settings: {
         inspectMultiple: false,
       },
     };
   }
 
-  componentDidUpdate(prevProps: Props) {
-    if (prevProps.rootNode !== this.props.rootNode) {
-      this.toggleSelected(this.props.rootNode.nodeId);
-    }
-  }
+  // toggleSelected = (nodeId: NodeId): void => {
+  //   const { selected, settings } = this.state;
+  //   let nextState;
 
-  resolveNode(nodeId: NodeId): Node {
-    return this.props.nodes[nodeId];
-  }
+  //   if (this.isSelected(nodeId)) {
+  //     nextState = {
+  //       selected: omit({ ...selected }, [nodeId]),
+  //     };
+  //   } else {
+  //     let node: Node;
 
-  toggleSelected = (nodeId: NodeId): void => {
-    const { selected, settings } = this.state;
-    let nextState;
+  //     if (nodeId === this.props.rootNode.nodeId) {
+  //       node = this.props.rootNode;
+  //     } else {
+  //       node = this.resolveNode(nodeId);
+  //     }
 
-    if (this.isSelected(nodeId)) {
-      nextState = {
-        selected: omit({ ...selected }, [nodeId]),
-      };
-    } else {
-      let node: Node;
+  //     nextState = {
+  //       selected: {
+  //         ...(settings.inspectMultiple ? selected : null),
+  //         [nodeId]: node,
+  //       },
+  //     };
 
-      if (nodeId === this.props.rootNode.nodeId) {
-        node = this.props.rootNode;
-      } else {
-        node = this.resolveNode(nodeId);
-      }
+  //     // Fetch styles for selected node if needed.
+  //     if (!this.props.styles[nodeId]) {
+  //       this.props.requestStyles(nodeId);
+  //     }
+  //   }
 
-      nextState = {
-        selected: {
-          ...(settings.inspectMultiple ? selected : null),
-          [nodeId]: node,
-        },
-      };
+  //   this.setState(nextState);
+  // };
 
-      // Fetch styles for selected node if needed.
-      if (!this.props.styles[nodeId]) {
-        this.props.requestStyles(nodeId);
-      }
-    }
-
-    this.setState(nextState);
-  };
-
-  isSelected = (nodeId: NodeId): boolean => {
-    return !!this.state.selected[nodeId];
-  };
+  // isSelected = (nodeId: NodeId): boolean => {
+  //   return !!this.state.selected[nodeId];
+  // };
 
   render() {
-    const { rootNode, styles } = this.props;
-    const { selected } = this.state;
-    const splitPaneProps = {
-      split: 'vertical',
-      minSize: 250,
-      defaultSize: '33%',
-      primary: 'second',
-    };
-    const domViewerProps = {
-      rootNode,
-      toggleSelected: this.toggleSelected,
-      isSelected: this.isSelected,
-      requestHighlight: this.props.requestHighlight,
-    };
-    const cssViewerProps = {
-      selected,
-      styles,
-      toggleCSSProperty: this.props.toggleCSSProperty,
-      pruneNode: this.props.pruneNode,
-    };
-
+    // TODO: connection info
     return (
       <div className="Inspector">
-        <SplitPane {...splitPaneProps}>
-          <DOMViewer {...domViewerProps} />
-          <StyleViewer {...cssViewerProps} />
+        <SplitPane
+          split="vertical"
+          minSize={250}
+          defaultSize="33%"
+          primary="second"
+        >
+          <DOMViewer />
+          <StyleViewer />
         </SplitPane>
       </div>
     );
   }
 }
 
-export default Inspector;
+const mapStateToProps = (state: ReduxState) => ({
+  connection: getConnection(state),
+});
+
+export default connect(mapStateToProps)(Inspector);

@@ -5,7 +5,7 @@ import chunk from 'lodash/chunk';
 type AttributeName = string;
 type Attribute = [AttributeName, string];
 type AttributeListProps = {
-  attrs: string[],
+  attrs?: string[],
 };
 
 /**
@@ -44,9 +44,7 @@ const ClassIdAttribute = ([name, value]: Attribute, i: number) => {
   const className = `Node__attr-value--${name}`;
   return (
     <li key={i}>
-      <span className={className}>
-        {value}
-      </span>
+      <span className={className}>{value}</span>
     </li>
   );
 };
@@ -56,12 +54,8 @@ const ClassIdAttribute = ([name, value]: Attribute, i: number) => {
  */
 const NormalAttribue = ([name, value]: Attribute, i: number) => (
   <li key={i}>
-    <span className="Node__attr-name">
-      {name}
-    </span>
-    <span className="Node__attr-value">
-      {value}
-    </span>
+    <span className="Node__attr-name">{name}</span>
+    <span className="Node__attr-value">{value}</span>
   </li>
 );
 
@@ -74,16 +68,12 @@ const AttributeList = ({ attrs }: AttributeListProps) => {
     .filter(attributeFilter)
     .map(
       ([name, value], i) =>
-        (name === 'class' || name === 'id'
+        name === 'class' || name === 'id'
           ? ClassIdAttribute([name, value], i)
-          : NormalAttribue([name, value], i))
+          : NormalAttribue([name, value], i)
     );
 
-  return (
-    <ul className="Node__attr-list">
-      {attrList}
-    </ul>
-  );
+  return <ul className="Node__attr-list">{attrList}</ul>;
 };
 
 export default AttributeList;

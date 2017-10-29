@@ -31,17 +31,18 @@ const INITIAL_STATE = {
 };
 
 let state = INITIAL_STATE;
-const connections = {};
-const namespaces = {};
+const connections = {
+  browsers: new Set(),
+  apps: new Set(),
+};
+const namespaces = {
+  // /browser - for browser clients (Chrome extension)
+  browsers: io.of('/browsers'),
+  // /app - for clients requesting info from browsers
+  apps: io.of('/apps'),
+};
 
-connections.browsers = new Set();
-connections.apps = new Set();
-
-// /browser - for browser clients (Chrome extension)
-namespaces.browsers = io.of('/browsers');
 namespaces.browsers.on(socketio.connect, onBrowserConnect);
-// /app - for clients requesting info from browsers
-namespaces.apps = io.of('/apps');
 namespaces.apps.on(socketio.connect, onClientConnect);
 
 /**
@@ -50,9 +51,7 @@ namespaces.apps.on(socketio.connect, onClientConnect);
 function onBrowserConnect(browser) {
   registerConnection(browser.id, 'browsers');
   emitToApps({ type: incoming.TARGET_CONNECTED });
-  browser.on(socketio.disconnect, () =>
-    registerDisconnect(browser.id, 'browsers')
-  );
+  browser.on(socketio.disconnect, registerDisconnect(browser.id, 'browsers'));
 
   for (const message of Object.keys(incoming)) {
     browser.on(message, data => {
@@ -63,7 +62,7 @@ function onBrowserConnect(browser) {
 }
 
 function onClientConnect(app) {
-  registerConnection(app.id, 'browsers');
+  registerConnection(app.id, 'apps');
 
   // Push info about connections and initial data.
   if (connections.browsers.size > 1) {
@@ -91,7 +90,7 @@ function onClientConnect(app) {
   for (const type of Object.keys(outgoing)) {
     app.on(type, data => onClientRequest({ type, data }));
   }
-  app.on(socketio.disconnect, () => registerDisconnect(app.id, 'apps'));
+  app.on(socketio.disconnect, registerDisconnect(app.id, 'apps'));
 }
 
 function emitToApps({ type, data } /*: Action */) {
@@ -107,7 +106,7 @@ function emitToApps({ type, data } /*: Action */) {
   namespaces.apps.emit(type, data);
 }
 
-function maybeUpdateState(message /*: IncomingMessageType */, data /*?: Object */) {
+function maybeUpdateState(message /*: IncomingMessage */, data /*?: Object */) {
   switch (message) {
     case incoming.SET_DOCUMENT:
       // Update nodes and styles.

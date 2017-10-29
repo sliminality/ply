@@ -7,7 +7,7 @@ import { getStyleForNode } from '../selectors';
 import { requestStyleForNode } from '../actions';
 
 import type { Store, Dispatch } from 'redux';
-import type { OutgoingMessageType } from './types';
+import type { OutgoingMessage } from './types';
 import type { Action } from '../actions/types';
 
 const _url = config.socketURL(config.socketPort);
@@ -30,7 +30,7 @@ function init(store: Store) {
   }
 }
 
-function emit(message: OutgoingMessageType, data?: Object) {
+function emit(message: OutgoingMessage, data?: Object) {
   _socket.emit(message, data);
 }
 

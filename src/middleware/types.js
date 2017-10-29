@@ -1,6 +1,6 @@
-// @flow
+// @flow @format
 import messageTypes from './messageTypes';
 
-export type SocketIOMessageType = $Keys<typeof messageTypes.outgoing>;
-export type OutgoingMessageType = $Keys<typeof messageTypes.outgoing>;
-export type IncomingMessageType = $Keys<typeof messageTypes.incoming>;
+export type SocketIOMessage = $Keys<typeof messageTypes.outgoing>;
+export type OutgoingMessage = $Keys<typeof messageTypes.outgoing>;
+export type IncomingMessage = $Keys<typeof messageTypes.incoming>;

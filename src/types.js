@@ -42,7 +42,6 @@ type CommonNodeProps = {|
   attributes?: CRDP$AttributeList,
   name?: string,
   pseudoType?: string,
-  pseudoElements?: CRDP$Node[],
 
   // Added properties
   offsetParent?: CRDP$NodeId,
@@ -50,6 +49,7 @@ type CommonNodeProps = {|
 
 export type NormalizedNode = {|
   ...CommonNodeProps,
+  pseudoElements?: CRDP$NodeId[],
   children?: CRDP$NodeId[],
 |};
 

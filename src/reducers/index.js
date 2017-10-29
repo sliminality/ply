@@ -1,4 +1,4 @@
-// @format @flow
+// @flow @format
 import { combineReducers } from 'redux';
 import actionTypes from '../actions/actionTypes';
 
@@ -64,7 +64,7 @@ function styles(state: NodeStyleMap = {}, action: Action): NodeStyleMap {
   switch (action.type) {
     case actionTypes.SET_DOCUMENT:
       // Completely replace styles when document is changed.
-      return action.data.styles;
+      return {};
     case actionTypes.SET_STYLES:
       // TODO: should we ever delete old state?
       // like if nodes no longer exist
@@ -116,9 +116,11 @@ function selectedNodes(
   }
 }
 
-function error(state: string = '', action): string {
+function error(state: ?string = null, action: Action): ?string {
   switch (action.type) {
     case actionTypes.ERROR:
+      return action.data.error;
+    case actionTypes.PRUNE_NODE_RESULT:
       return action.data.error;
     default:
       return state;

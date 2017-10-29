@@ -1,4 +1,4 @@
-// @flow
+//
 const config = require('./middleware/config');
 const io = require('socket.io')().attach(config.socketPort);
 const messageTypes = require('./middleware/messageTypes');

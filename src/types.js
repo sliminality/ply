@@ -12,7 +12,7 @@ export type Dispatch = (action: Action) => any;
 
 export type State = {
   connection: Connection,
-  error: string,
+  error: ?string,
   inspectionRoot: ?CRDP$NodeId,
   styles: NodeStyleMap,
   isPruning: boolean,

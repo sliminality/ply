@@ -18,7 +18,7 @@ export type ErrorAction = { type: 'ERROR', data: { error: string } };
 export type SetDocumentAction = {
   type: 'SET_DOCUMENT',
   data: {
-    styles: NodeStyleMap,
+    styles?: NodeStyleMap,
     entities: {
       nodes: NormalizedNodeMap,
     },
@@ -42,7 +42,7 @@ export type SetStylesAction = {
 export type PruneNodeResultAction = {
   type: 'PRUNE_NODE_RESULT',
   data: {
-    errors: Error[],
+    error?: string,
   },
 };
 

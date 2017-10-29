@@ -1,35 +1,53 @@
-// @flow
+// @flow ; @format
+const actionTypes = require('../actions/actionTypes');
+
+const {
+  TARGET_CONNECTED,
+  TARGET_DISCONNECTED,
+  ERROR,
+  PRUNE_NODE_RESULT,
+  SET_DOCUMENT,
+  SET_STYLES,
+  SET_INSPECTION_ROOT,
+
+  PRUNE_NODE,
+  CLEAR_HIGHLIGHT,
+  HIGHLIGHT_NODE,
+  REQUEST_STYLE_FOR_NODE,
+  TOGGLE_CSS_PROPERTY,
+} = actionTypes;
 
 // TODO: test that every action defined in actions/actionTypes.js has
 // a corresponding messageType here.
 
 const messageTypes = {
-  incoming: {
-    // socket.io API
+  socketio: {
     connect: 'connect',
     disconnect: 'disconnect',
     reconnect: 'reconnect',
     reconnect_attempt: 'reconnect_attempt',
     reconnect_failed: 'reconnect_failed',
-
+  },
+  incoming: {
     // Server -> Client
-    target_connected: 'target_connected',
-    target_disconnected: 'target_disconnected',
-    prune_node_result: 'prune_node_result',
-    set_document: 'set_document',
-    set_styles: 'set_styles',
-    set_inspection_root: 'set_inspection_root',
+    TARGET_CONNECTED,
+    TARGET_DISCONNECTED,
+    ERROR,
+    PRUNE_NODE_RESULT,
+    SET_DOCUMENT,
+    SET_STYLES,
+    SET_INSPECTION_ROOT,
   },
   outgoing: {
     // Dispatched to store AND pushed to server
-    prune_node: 'prune_node',
+    PRUNE_NODE,
 
     // Pushed to server only
-    clear_highlight: 'clear_highlight',
-    highlight_node: 'highlight_node',
-    request_style_for_node: 'request_style_for_node',
-    toggle_css_property: 'toggle_css_property',
+    CLEAR_HIGHLIGHT,
+    HIGHLIGHT_NODE,
+    REQUEST_STYLE_FOR_NODE,
+    TOGGLE_CSS_PROPERTY,
   },
 };
 
-export default messageTypes;
+module.exports = messageTypes;

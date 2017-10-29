@@ -1,15 +1,18 @@
-// @flow
+// @flow @format
 import type { CRDP$NodeId } from 'devtools-typed/domain/DOM';
 import type { NodeStyleMap, NormalizedNodeMap } from '../types';
 
+// Socket.io Events
 export type ConnectAction = { type: 'CONNECT' };
 export type DisconnectAction = { type: 'DISCONNECT' };
 export type ReconnectAction = { type: 'RECONNECT' };
 export type ReconnectAttemptAction = { type: 'RECONNECT_ATTEMPT_ACTION' };
 export type ReconnectFailedAction = { type: 'RECONNECT_FAILED_ACTION' };
 
+// Server-to-client
 export type TargetConnectedAction = { type: 'TARGET_CONNECTED' };
 export type TargetDisconnectedAction = { type: 'TARGET_DISCONNECTED' };
+export type ErrorAction = { type: 'ERROR', data: { error: string } };
 
 // Represents a new inspection target (nodes, styles, inspection root?).
 export type SetDocumentAction = {

@@ -1,11 +1,16 @@
-// @flow
+// @flow @format
 
 const config = {
   socketPort: 1111,
-  socketURL: (port: number) => `http://localhost:${port}/apps`,
+  // $FlowFixMe - no annotation so we can import from server
+  socketURL: port => `http://localhost:${port}/apps`,
   socketOptions: {
     reconnectionAttempts: 5,
   },
+  server: {
+    logVerbose: false,
+    truncateLength: 50,
+  },
 };
 
-export default config;
+module.exports = config;

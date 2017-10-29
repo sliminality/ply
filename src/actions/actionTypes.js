@@ -14,6 +14,7 @@ const actionTypes = {
   PRUNE_NODE_RESULT: 'PRUNE_NODE_RESULT',
   SET_DOCUMENT: 'SET_DOCUMENT',
   SET_STYLES: 'SET_STYLES',
+  ERROR: 'ERROR',
 
   // Can originate on server or client
   SET_INSPECTION_ROOT: 'SET_INSPECTION_ROOT',
@@ -29,4 +30,4 @@ const actionTypes = {
   TOGGLE_CSS_PROPERTY: 'TOGGLE_CSS_PROPERTY',
 };
 
-export default actionTypes;
+module.exports = actionTypes;

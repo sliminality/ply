@@ -10,6 +10,7 @@ import type {
 import type { CRDP$NodeId } from 'devtools-typed/domain/DOM';
 
 export const getConnection = (state: State): Connection => state.connection;
+export const getError = (state: State): ?string => state.error;
 export const getInspectionRoot = (state: State): ?CRDP$NodeId =>
   state.inspectionRoot;
 export const getStyles = (state: State): NodeStyleMap => state.styles;

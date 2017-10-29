@@ -6,11 +6,25 @@ import type {
 } from 'devtools-typed/domain/DOM';
 import type { CRDP$MatchedStyles } from 'devtools-typed/domain/CSS';
 import type { Action } from './actions/types';
+import type { CSSProperty } from './components/StyleViewer/types';
 
 export type Dispatch = (action: Action) => any;
 
+export type State = {
+  connection: Connection,
+  error: string,
+  inspectionRoot: ?CRDP$NodeId,
+  styles: NodeStyleMap,
+  isPruning: boolean,
+  selectedNodes: { [CRDP$NodeId]: boolean },
+  entities: {
+    // Output from Normalizr
+    nodes?: NormalizedNodeMap,
+  },
+};
+
 // TODO: add this to main styles repo
-export type ComputedStyle = { [string]: string };
+export type ComputedStyle = { [CSSProperty]: string };
 
 // TODO: figure out why the $Diff definition doesn't work
 // export type NormalizedNode = $Diff<CRDP$Node, { children?: CRDP$Node[] }> & {
@@ -51,15 +65,3 @@ export type NodeStyle = {
 } & CRDP$MatchedStyles;
 export type NodeStyleMap = { [CRDP$NodeId]: NodeStyle };
 export type NormalizedNodeMap = { [CRDP$NodeId]: NormalizedNode };
-
-export type State = {
-  connection: Connection,
-  inspectionRoot: ?CRDP$NodeId,
-  styles: NodeStyleMap,
-  isPruning: boolean,
-  selectedNodes: { [CRDP$NodeId]: boolean },
-  entities: {
-    // Output from Normalizr
-    nodes?: NormalizedNodeMap,
-  },
-};

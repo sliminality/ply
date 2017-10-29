@@ -1,3 +1,4 @@
+// @format
 import React from 'react';
 import ReactDOM from 'react-dom';
 import Inspector from './containers/Inspector';
@@ -30,7 +31,7 @@ function setupStore() {
   const store = createStore(
     rootReducer,
     initialState,
-    composeEnhancers(applyMiddleware(socketMiddleware))
+    composeEnhancers(applyMiddleware(socketMiddleware)),
   );
   socketInit(store);
   return store;
@@ -40,5 +41,5 @@ ReactDOM.render(
   <Provider store={setupStore()}>
     <Inspector />
   </Provider>,
-  document.getElementById('root')
+  document.getElementById('root'),
 );

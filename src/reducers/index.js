@@ -1,4 +1,4 @@
-// @flow
+// @format @flow
 import { combineReducers } from 'redux';
 import actionTypes from '../actions/actionTypes';
 
@@ -12,7 +12,7 @@ function connection(
     targetConnected: false,
     reconnecting: false,
   },
-  action: Action
+  action: Action,
 ): Connection {
   switch (action.type) {
     case actionTypes.CONNECT:
@@ -93,7 +93,7 @@ function isPruning(state: boolean = false, action: Action): boolean {
 // `nodes` reducer inside the `entities` object.
 function entities(
   state: { nodes: NormalizedNodeMap } = { nodes: {} },
-  action: Action
+  action: Action,
 ): { nodes: NormalizedNodeMap } {
   switch (action.type) {
     case actionTypes.SET_DOCUMENT:
@@ -105,7 +105,7 @@ function entities(
 
 function selectedNodes(
   state: { [CRDP$NodeId]: boolean } = {},
-  action: Action
+  action: Action,
 ): { [CRDP$NodeId]: boolean } {
   switch (action.type) {
     case actionTypes.TOGGLE_SELECT_NODE:
@@ -116,8 +116,18 @@ function selectedNodes(
   }
 }
 
+function error(state: string = '', action): string {
+  switch (action.type) {
+    case actionTypes.ERROR:
+      return action.data.error;
+    default:
+      return state;
+  }
+}
+
 export default combineReducers({
   connection,
+  error,
   inspectionRoot,
   selectedNodes,
   styles,

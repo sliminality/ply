@@ -1,7 +1,7 @@
 // @flow
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { getConnection } from '../selectors';
+import { getConnection, getError } from '../selectors';
 
 import SplitPane from 'react-split-pane';
 import DOMViewer from '../components/DOMViewer/DOMViewer';
@@ -12,6 +12,7 @@ import type { State as ReduxState, Connection } from '../types';
 
 type Props = {
   connection: Connection,
+  error: string,
 };
 
 type State = {
@@ -90,6 +91,7 @@ class Inspector extends Component<Props, State> {
 
 const mapStateToProps = (state: ReduxState) => ({
   connection: getConnection(state),
+  error: getError(state),
 });
 
 export default connect(mapStateToProps)(Inspector);

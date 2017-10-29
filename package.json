@@ -7,7 +7,7 @@
     "devtools-typed": "https://github.com/sarahlim/devtools-typed",
     "flow-bin": "^0.57.0",
     "npm-run-all": "^4.0.2",
-    "prettier": "^1.1.0",
+    "prettier": "^1.7.4",
     "react-scripts": "0.9.0"
   },
   "dependencies": {
@@ -22,6 +22,7 @@
     "react-treeview": "^0.4.6",
     "redux": "^3.7.2",
     "socket.io": "^2.0.1",
+    "socket.io-client": "^2.0.4",
     "uuid": "^3.0.1"
   },
   "scripts": {

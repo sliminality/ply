@@ -46,7 +46,10 @@ $hover-highlight: $yellow;
     text-indent: -1.5em;
     padding-left: 1.5em;
     cursor: pointer;
-    width: 90%;  // click (mostly) anywhere on the line to toggle
+
+    // click (mostly) anywhere on the line to toggle
+    // but allow enough room for arrow
+    width: calc(100% - 25px);  
   }
 
   &__attr-list {

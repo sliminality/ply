@@ -9,7 +9,7 @@
 
 .ElementStyles {
   width: 100%;  // parent is flex
-  height: 100%;  // get last child to scroll
+  // height: 100%;  // get last child to scroll
   position: relative;
 
   // Let computed styles scroll correctly
@@ -31,7 +31,6 @@
     // Prevent header from getting crushed
     flex-shrink: 0;
 
-    width: 100%;
     padding-top: 4px;
     padding-right: 20px;
     margin-bottom: 0;
@@ -69,15 +68,13 @@
     }
   }
 
-  // Enable scrolling.
   &__content {
-    height: 100%;
-    overflow-y: auto;
     padding: ($padding-sides / 2) $padding-sides;
   }
 
   &__prune-btn {
-    position: fixed;
+    position: absolute;
+    background-color: white;
     bottom: 0;
     right: 0;
   }

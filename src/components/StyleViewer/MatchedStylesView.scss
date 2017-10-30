@@ -15,6 +15,7 @@ $disabled-property: $light-grey;
   }
 
   &__property.disabled {
+    // display: none;
     text-decoration: line-through;
 
     > .MatchedStylesView__property-name,

@@ -60,7 +60,6 @@ const socketMiddleware = (store: Store) => (next: Dispatch) => (
       emit(outgoing.PRUNE_NODE, action.data);
       return next(action);
     case actionTypes.TOGGLE_SELECT_NODE:
-      // Request styles if they don't exist.
       const { nodeId } = action.data;
       const style = getStyleForNode(store.getState(), nodeId);
       if (!style) {

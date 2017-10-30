@@ -48,10 +48,12 @@ function connection(
   }
 }
 
-function inspectionRoot(state: ?CRDP$NodeId = null, action: Action) {
+function inspectionRoot(
+  state: ?CRDP$NodeId = null,
+  action: Action,
+): ?CRDP$NodeId {
   switch (action.type) {
     case actionTypes.SET_DOCUMENT:
-      // Clear inspection root for a new document.
       return null;
     case actionTypes.SET_INSPECTION_ROOT:
       return action.data.nodeId;
@@ -108,9 +110,13 @@ function selectedNodes(
   action: Action,
 ): { [CRDP$NodeId]: boolean } {
   switch (action.type) {
+    case actionTypes.SET_INSPECTION_ROOT:
+      return { [action.data.nodeId]: true };
     case actionTypes.TOGGLE_SELECT_NODE:
       const { nodeId } = action.data;
-      return { ...state, [nodeId]: !state[nodeId] };
+      // HACK: Disabling multiple inspection.
+      // return { ...state, [nodeId]: !state[nodeId] };
+      return { [nodeId]: !state[nodeId] };
     default:
       return state;
   }
@@ -121,7 +127,7 @@ function error(state: ?string = null, action: Action): ?string {
     case actionTypes.ERROR:
       return action.data.error;
     case actionTypes.PRUNE_NODE_RESULT:
-      return action.data.error;
+      return action.data.error || null;
     default:
       return state;
   }

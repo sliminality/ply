@@ -65,28 +65,31 @@ function onClientConnect(app) {
   registerConnection(app.id, 'apps');
 
   // Push info about connections and initial data.
-  if (connections.browsers.size > 1) {
+  if (connections.browsers.size > 0) {
     emitToApps({ type: incoming.TARGET_CONNECTED });
   } else {
     emitToApps({ type: incoming.TARGET_DISCONNECTED });
   }
-  if (state.inspectionRoot) {
-    emitToApps({
-      type: incoming.SET_INSPECTION_ROOT,
-      data: { nodeId: state.inspectionRoot },
-    });
-  }
-  if (state.nodes) {
-    emitToApps({
-      type: incoming.SET_DOCUMENT,
-      data: {
-        styles: state.styles,
-        entities: {
-          nodes: state.nodes,
-        },
+  emitToApps({
+    type: incoming.SET_DOCUMENT,
+    data: {
+      entities: {
+        nodes: state.nodes,
       },
-    });
-  }
+    },
+  });
+  emitToApps({
+    type: incoming.SET_STYLES,
+    data: {
+      styles: state.styles,
+    },
+  });
+  emitToApps({
+    type: incoming.SET_INSPECTION_ROOT,
+    data: {
+      nodeId: state.inspectionRoot,
+    },
+  });
   for (const type of Object.keys(outgoing)) {
     app.on(type, data => onClientRequest({ type, data }));
   }
@@ -110,17 +113,15 @@ function maybeUpdateState(message /*: IncomingMessage */, data /*?: Object */) {
   switch (message) {
     case incoming.SET_DOCUMENT:
       // Update nodes and styles.
-      state.nodes = data.nodes;
+      state.nodes = data.entities.nodes;
       state.styles = data.styles;
       break;
     case incoming.SET_STYLES:
       // TODO: think about pruning stale styles
-      if (state) {
-        state.styles = Object.assign({}, state.styles, data.styles);
-      }
+      state.styles = Object.assign({}, state.styles, data.styles);
       break;
     case incoming.SET_INSPECTION_ROOT:
-      state.inspectionRoot = data.inspectionRoot;
+      state.inspectionRoot = data.nodeId;
       break;
     default:
       break;

@@ -158,6 +158,7 @@ class DOMViewer extends Component<Props, State> {
             nodeLabel={label}
             itemClassName={className}
             collapsed={!this.isExpanded(nodeId)}
+            onClick={() => this.toggleExpandNode(nodeId)}
           >
             {children && children.map(this.renderDOMNode)}
           </TreeView>

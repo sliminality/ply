@@ -133,7 +133,6 @@ class MatchedStylesView extends React.Component<Props, State> {
         const propertyProps = {
           key: propIndex,
           className: 'MatchedStylesView__property',
-          cssProp: prop,
         };
 
         const handleHover = () => {

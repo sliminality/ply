@@ -3,8 +3,7 @@ import io from 'socket.io-client';
 import actionTypes from '../actions/actionTypes';
 import config from './config';
 import messageTypes from './messageTypes';
-import { getStyleForNode } from '../selectors';
-import { requestStyleForNode } from '../actions';
+import { getStyles, getStyleForNode, getSelectedNodes } from '../selectors';
 
 import type { Store, Dispatch } from 'redux';
 import type { OutgoingMessage } from './types';
@@ -61,9 +60,18 @@ const socketMiddleware = (store: Store) => (next: Dispatch) => (
       return next(action);
     case actionTypes.TOGGLE_SELECT_NODE:
       const { nodeId } = action.data;
-      const style = getStyleForNode(store.getState(), nodeId);
-      if (!style) {
-        next(requestStyleForNode(nodeId));
+      const state = store.getState();
+      const selectedNodes = getSelectedNodes(state);
+
+      // If the node is not currently selected, that means we are
+      // about to display it.
+      if (!selectedNodes[nodeId]) {
+        // Request styles if they don't exist.
+        const styles = getStyles(state);
+        const style = getStyleForNode(styles, nodeId);
+        if (!style) {
+          emit(outgoing.REQUEST_STYLE_FOR_NODE, action.data);
+        }
       }
       return next(action);
 

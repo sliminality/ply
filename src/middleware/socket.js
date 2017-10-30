@@ -3,11 +3,18 @@ import io from 'socket.io-client';
 import actionTypes from '../actions/actionTypes';
 import config from './config';
 import messageTypes from './messageTypes';
-import { getStyles, getStyleForNode, getSelectedNodes } from '../selectors';
+import {
+  getIsPruning,
+  getStyles,
+  getStyleForNode,
+  getSelectedNodes,
+} from '../selectors';
 
 import type { Store, Dispatch } from 'redux';
 import type { OutgoingMessage } from './types';
 import type { Action } from '../actions/types';
+
+const { outgoing } = messageTypes;
 
 const _url = config.socketURL(config.socketPort);
 const _socket = io.connect(_url, config.socketOptions);
@@ -36,7 +43,8 @@ function emit(message: OutgoingMessage, data?: Object) {
 const socketMiddleware = (store: Store) => (next: Dispatch) => (
   action: Action,
 ) => {
-  const { outgoing } = messageTypes;
+  const state = store.getState();
+  const isPruning = getIsPruning(state);
   switch (action.type) {
     // Certain actionTypes are only intended to be sent to the server,
     // never reduced.
@@ -44,13 +52,19 @@ const socketMiddleware = (store: Store) => (next: Dispatch) => (
       emit(outgoing.CLEAR_HIGHLIGHT);
       break;
     case actionTypes.HIGHLIGHT_NODE:
-      emit(outgoing.HIGHLIGHT_NODE, action.data);
+      // If pruning is happening, we can't highlight nodes.
+      if (!isPruning) {
+        emit(outgoing.HIGHLIGHT_NODE, action.data);
+      }
       break;
     case actionTypes.REQUEST_STYLE_FOR_NODE:
       emit(outgoing.REQUEST_STYLE_FOR_NODE, action.data);
       break;
     case actionTypes.TOGGLE_CSS_PROPERTY:
-      emit(outgoing.TOGGLE_CSS_PROPERTY, action.data);
+      // If pruning is happening, we can't toggle properties.
+      if (!isPruning) {
+        emit(outgoing.TOGGLE_CSS_PROPERTY, action.data);
+      }
       break;
 
     // Some actionTypes trigger local state updates (usually for UI changes),
@@ -60,7 +74,6 @@ const socketMiddleware = (store: Store) => (next: Dispatch) => (
       return next(action);
     case actionTypes.TOGGLE_SELECT_NODE:
       const { nodeId } = action.data;
-      const state = store.getState();
       const selectedNodes = getSelectedNodes(state);
 
       // If the node is not currently selected, that means we are

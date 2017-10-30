@@ -14,6 +14,7 @@ export const getError = (state: State): ?string => state.error;
 export const getInspectionRoot = (state: State): ?CRDP$NodeId =>
   state.inspectionRoot;
 export const getStyles = (state: State): NodeStyleMap => state.styles;
+export const getIsPruning = (state: State): bool => state.isPruning;
 export const getSelectedNodes = (state: State): { [CRDP$NodeId]: boolean } =>
   state.selectedNodes;
 export const getNodes = (state: State): NormalizedNodeMap =>

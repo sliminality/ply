@@ -14,11 +14,9 @@ export type TargetConnectedAction = { type: 'TARGET_CONNECTED' };
 export type TargetDisconnectedAction = { type: 'TARGET_DISCONNECTED' };
 export type ErrorAction = { type: 'ERROR', data: { error: string } };
 
-// Represents a new inspection target (nodes, styles, inspection root?).
 export type SetDocumentAction = {
   type: 'SET_DOCUMENT',
   data: {
-    styles?: NodeStyleMap,
     entities: {
       nodes: NormalizedNodeMap,
     },

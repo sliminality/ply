@@ -40,7 +40,7 @@ class ElementStyles extends React.Component<Props, State> {
         className={activeView === i && 'uk-active'}
         onClick={() => this.switchView(i)}
       >
-        <a href="#">{child.props.name}</a>
+        <a href="#">{child && child.props.name}</a>
       </li>
     ));
     return (

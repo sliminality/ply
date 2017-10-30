@@ -1,4 +1,5 @@
 // @flow @format
+/* eslint-disable no-use-before-define */
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { getConnection, getError } from '../selectors';
@@ -10,23 +11,39 @@ import './Inspector.css';
 
 import type { State as ReduxState, Connection } from '../types';
 
+export type InspectorSettings = {
+  inspectMultiple: boolean,
+  showDevControls: boolean,
+};
+
 type Props = {
   connection: Connection,
   error: string,
 };
 
 type State = {
-  settings: {
-    inspectMultiple: boolean,
-  },
+  showSettings: boolean,
+  settings: InspectorSettings,
 };
 
 class Inspector extends Component<Props, State> {
   props: Props;
   state: State = {
+    showSettings: false,
     settings: {
       inspectMultiple: false,
+      showDevControls: false,
     },
+  };
+
+  toggleShowSettings = () => {
+    const { showSettings } = this.state;
+    this.setState({ showSettings: !showSettings });
+  };
+
+  toggleSetting = (item: string) => {
+    const { settings } = this.state;
+    this.setState({ settings: { ...settings, [item]: !settings[item] } });
   };
 
   renderConnectionStatus() {
@@ -62,11 +79,50 @@ class Inspector extends Component<Props, State> {
     );
   }
 
+  renderSettings() {
+    const { showSettings, settings } = this.state;
+    return (
+      <div className={css(styles.settingsWrapper)}>
+        <button
+          className="uk-button-default uk-button-small"
+          onClick={this.toggleShowSettings}
+        >
+          Settings
+        </button>
+        {showSettings && (
+          <div className={css(styles.settings)}>
+            <ul className={css(styles.settingsList)}>
+              {Object.keys(settings).map((item: string, i: number) => (
+                <li key={i} className={css(styles.settingsListItem)}>
+                  <input
+                    type="checkbox"
+                    className={`uk-checkbox ${css(styles.settingsCheck)}`}
+                    checked={settings[item]}
+                    onClick={() => this.toggleSetting(item)}
+                  />
+                  {item.replace(/([A-Z])/g, ' $1').toLowerCase()}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  renderToolbar() {
+    return (
+      <div className={css(styles.toolbar)}>
+        {this.renderConnectionStatus()}
+        {this.renderSettings()}
+      </div>
+    );
+  }
+
   render() {
-    // TODO: connection info
+    const { settings } = this.state;
     return (
       <div className={`Inspector ${css(styles.wrapper)}`}>
-        {this.renderConnectionStatus()}
         <div className={css(styles.splitPaneWrapper)}>
           <SplitPane
             split="vertical"
@@ -75,9 +131,10 @@ class Inspector extends Component<Props, State> {
             primary="second"
           >
             <DOMViewer />
-            <StyleViewer />
+            <StyleViewer settings={settings} />
           </SplitPane>
         </div>
+        {this.renderToolbar()}
       </div>
     );
   }
@@ -97,10 +154,41 @@ const styles = StyleSheet.create({
     height: '100%',
     width: '100%',
   },
+
+  toolbar: {
+    display: 'flex',
+  },
+
+  settingsWrapper: {
+    position: 'relative',
+  },
+  settings: {
+    position: 'absolute',
+    bottom: '100%',
+    right: 0,
+    backgroundColor: 'white',
+    width: 200,
+    zIndex: 5,
+    outline: '1px solid rgba(0, 0, 0, 0.3)',
+    borderRadius: 8,
+    padding: 10,
+  },
+  settingsList: {
+    listStyleType: 'none',
+    padding: 0,
+    margin: 0,
+  },
+  settingsListItem: {
+    marginBottom: 5,
+  },
+  settingsCheck: {
+    marginRight: 5,
+  },
+
   connectionStatus: {
     textAlign: 'center',
-    height: 25,
     padding: 5,
+    flex: 1,
   },
   reconnecting: {
     backgroundColor: styleConstants.yellow,
@@ -109,6 +197,7 @@ const styles = StyleSheet.create({
   noServer: { backgroundColor: styleConstants.red, color: 'white' },
   noTarget: { backgroundColor: styleConstants.red, color: 'white' },
   ok: { backgroundColor: styleConstants.green, color: 'white' },
+
   splitPaneWrapper: {
     position: 'relative',
     flex: 1,

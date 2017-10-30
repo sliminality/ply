@@ -1,4 +1,4 @@
-// @flow
+// @flow @format
 import * as React from 'react';
 import SplitPane from 'react-split-pane';
 import JSONTree from 'react-json-tree';
@@ -16,10 +16,12 @@ import './StyleViewer.css';
 
 import type { State as ReduxState, Dispatch, NodeStyleMap } from '../../types';
 import type { CRDP$NodeId } from 'devtools-typed/domain/DOM';
+import type { InspectorSettings } from '../../containers/Inspector';
 
 type Props = {
   styles: NodeStyleMap,
   selectedNodes: { [CRDP$NodeId]: boolean },
+  settings: InspectorSettings,
 
   toggleCSSProperty: CRDP$NodeId => number => number => void,
   pruneNode: CRDP$NodeId => void,
@@ -42,7 +44,7 @@ class StyleViewer extends React.Component<Props> {
     const reducer = (
       prev: React.Node,
       current: React.Node,
-      i: number
+      i: number,
     ): React.Element<typeof SplitPane> => {
       return (
         <SplitPane
@@ -59,12 +61,13 @@ class StyleViewer extends React.Component<Props> {
   }
 
   renderNodeStyle = (nodeId: CRDP$NodeId): React.Element<any> => {
-    const { styles, pruneNode, toggleCSSProperty } = this.props;
+    const { styles, pruneNode, toggleCSSProperty, settings } = this.props;
     const nodeStyle = styles[nodeId];
     if (!nodeStyle) {
       // Styles haven't landed yet for this particular node.
       return <span>Loading styles...</span>;
     }
+    const { showDevControls } = settings;
     const { parentComputedStyle, computedStyle, matchedCSSRules } = nodeStyle;
     return (
       <ElementStyles nodeId={nodeId} style={nodeStyle} pruneNode={pruneNode}>
@@ -73,23 +76,27 @@ class StyleViewer extends React.Component<Props> {
           matchedStyles={matchedCSSRules}
           toggleCSSProperty={toggleCSSProperty(nodeId)}
         />
-        <ComputedStylesView
-          name="Computed"
-          parentComputedStyle={parentComputedStyle}
-          computedStyle={computedStyle}
-        />
-        <JSONTree data={styles} name="JSONTree" />
+        {showDevControls && (
+          <ComputedStylesView
+            name="Computed"
+            parentComputedStyle={parentComputedStyle}
+            computedStyle={computedStyle}
+          />
+        )}
+        {showDevControls && <JSONTree data={styles} name="JSONTree" />}
       </ElementStyles>
     );
   };
 
   render() {
-    const { selectedNodes } = this.props;
+    const { selectedNodes, settings } = this.props;
     const selected = filterSelectedNodes(selectedNodes);
+    const { inspectMultiple } = settings;
+    const stylesToRender = inspectMultiple ? selected : selected.slice(0, 1);
     return (
       <div className="StyleViewer">
-        {selected.length > 0 ? (
-          this.renderSplits(selected.map(this.renderNodeStyle))
+        {stylesToRender.length > 0 ? (
+          this.renderSplits(stylesToRender.map(this.renderNodeStyle))
         ) : (
           <span className="StyleViewer__none-selected">No nodes selected.</span>
         )}

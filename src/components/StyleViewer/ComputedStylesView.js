@@ -1,7 +1,7 @@
-// @flow
+// @flow @format
 import React, { Component } from 'react';
 import { ownStyles } from './styleHelpers';
-import { pairsToObject } from '../../utils/state';
+import fromPairs from 'lodash/fromPairs';
 import './ComputedStylesView.css';
 
 import type { ComputedStyle } from '../../types';
@@ -41,11 +41,13 @@ class ComputedStylesView extends Component<Props> {
   */
   filterComputedStyles() {
     const { computedStyle, parentComputedStyle } = this.props;
-    const cs: ComputedStyle = Object.keys(computedStyle)
-      // Flow doesn't know that all the keys will be valid CSSProperties.
-      .filter(createFilter(layoutFilter))
-      .map((prop: string) => [prop, computedStyle[prop]])
-      .reduce(pairsToObject, {});
+    const cs: ComputedStyle = fromPairs(
+      Object.keys(computedStyle)
+        // Flow doesn't know that all the keys will be valid CSSProperties.
+        .filter(createFilter(layoutFilter))
+        // $FlowFixMe - `prop` is guaranteed to be a CSS property because of the preceding filter.
+        .map(prop => [prop, computedStyle[prop]]),
+    );
 
     const computed: ComputedStyle = parentComputedStyle
       ? ownStyles(cs, parentComputedStyle)

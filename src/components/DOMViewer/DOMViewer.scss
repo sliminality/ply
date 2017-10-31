@@ -98,13 +98,4 @@ $hover-highlight: $yellow;
         content: '#';
       }
   }
-
-  &__value {
-    color: $node-value;
-  }
-
-  &__child-value {
-    color: $node-value;
-    margin-left: 0.5em;
-  }
 }

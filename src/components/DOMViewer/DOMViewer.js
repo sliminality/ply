@@ -19,7 +19,7 @@ import type {
   NormalizedNode,
   NormalizedNodeMap,
 } from '../../types';
-import type { DOMViewerNodeType } from './ElementLabel';
+import type { NodeDisplayType } from './ElementLabel';
 import type { CRDP$NodeId } from 'devtools-typed/domain/DOM';
 
 // TODO: deprecate this in favor of inline styling
@@ -27,7 +27,7 @@ const nodeClassName = ({
   type,
   isSelected,
 }: {
-  type: DOMViewerNodeType,
+  type: NodeDisplayType,
   isSelected: boolean,
 }): string => {
   let result = ['Node'];
@@ -79,7 +79,7 @@ class DOMViewer extends Component<Props, State> {
     });
   };
 
-  nodeType(nodeId: CRDP$NodeId): DOMViewerNodeType {
+  nodeDisplayType(nodeId: CRDP$NodeId): NodeDisplayType {
     // Types of nodes.
     // - Fork: a node with regular children. May be expanded/collapsed.
     // - Inline Leaf: a node with one child, a Value. Rendered with content inline.
@@ -134,7 +134,7 @@ class DOMViewer extends Component<Props, State> {
       );
       return;
     }
-    const type: DOMViewerNodeType = this.nodeType(nodeId);
+    const type: NodeDisplayType = this.nodeDisplayType(nodeId);
     const className = nodeClassName({
       type,
       isSelected: !!selectedNodes[nodeId],
@@ -142,7 +142,7 @@ class DOMViewer extends Component<Props, State> {
     const label = (
       <Label
         node={node}
-        nodeType={type}
+        nodeDisplayType={type}
         firstChild={this.resolveFirstChild(node)}
         toggleSelectNode={toggleSelectNode}
         highlightNode={highlightNode}

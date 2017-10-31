@@ -4,8 +4,8 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { getConnection, getError } from '../selectors';
 import SplitPane from 'react-split-pane';
-import DOMViewer from '../components/DOMViewer/DOMViewer';
-import StyleViewer from '../components/StyleViewer/StyleViewer';
+import DOMViewer from './DOMViewer/DOMViewer';
+import StyleViewer from './StyleViewer/StyleViewer';
 import { StyleSheet, css } from 'aphrodite';
 import '../../lib/css/split-pane.css';
 

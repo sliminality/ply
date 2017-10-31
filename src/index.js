@@ -1,7 +1,7 @@
 // @format
 import React from 'react';
 import ReactDOM from 'react-dom';
-import Inspector from './containers/Inspector';
+import Inspector from './components/Inspector';
 import './index.css';
 
 // Redux stuff

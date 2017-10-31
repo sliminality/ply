@@ -25,7 +25,7 @@ type Props = {
   selectedNodes: { [CRDP$NodeId]: boolean },
   settings: InspectorSettings,
 
-  toggleCSSProperty: CRDP$NodeId => number => number => void,
+  toggleCSSProperty: CRDP$NodeId => number => number => () => void,
   pruneNode: CRDP$NodeId => void,
 };
 
@@ -126,7 +126,7 @@ const mapStateToProps = (state: ReduxState) => ({
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
   pruneNode: nodeId => dispatch(pruneNode(nodeId)),
-  toggleCSSProperty: nodeId => ruleIdx => propIdx =>
+  toggleCSSProperty: nodeId => ruleIdx => propIdx => () =>
     dispatch(toggleCSSProperty(nodeId, ruleIdx, propIdx)),
 });
 

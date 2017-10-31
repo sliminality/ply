@@ -26,6 +26,7 @@ export type State = {
 export type InspectorSettings = {
   inspectMultiple: boolean,
   showDevControls: boolean,
+  deepExpandNodes: boolean,
 };
 
 // TODO: add this to main styles repo

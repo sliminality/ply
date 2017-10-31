@@ -33,6 +33,7 @@ class Inspector extends Component<Props, State> {
     settings: {
       inspectMultiple: false,
       showDevControls: false,
+      deepExpandNodes: true,
     },
   };
 
@@ -130,7 +131,7 @@ class Inspector extends Component<Props, State> {
             defaultSize="33%"
             primary="second"
           >
-            <DOMViewer />
+            <DOMViewer settings={settings} />
             <StyleViewer settings={settings} />
           </SplitPane>
         </div>

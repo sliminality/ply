@@ -1,7 +1,8 @@
-// @flow
+// @flow @format
 import React, { Component } from 'react';
 import TreeView from 'react-treeview';
 import Label from './ElementLabel';
+import fromPairs from 'lodash/fromPairs';
 import './DOMViewer.css';
 
 import { connect } from 'react-redux';
@@ -18,6 +19,7 @@ import type {
   Dispatch,
   NormalizedNode,
   NormalizedNodeMap,
+  InspectorSettings,
 } from '../../types';
 import type { NodeDisplayType } from './ElementLabel';
 import type { CRDP$NodeId } from 'devtools-typed/domain/DOM';
@@ -44,6 +46,7 @@ type Props = {
   rootNode: Node,
   nodes: NormalizedNodeMap,
   selectedNodes: { [CRDP$NodeId]: boolean },
+  settings: InspectorSettings,
   resolveNode: CRDP$NodeId => ?NormalizedNode,
 
   toggleSelectNode: CRDP$NodeId => void,
@@ -57,14 +60,9 @@ type State = {
 
 class DOMViewer extends Component<Props, State> {
   props: Props;
-  state: State;
-
-  constructor(props: Props) {
-    super(props);
-    this.state = {
-      expandedNodes: {},
-    };
-  }
+  state: State = {
+    expandedNodes: {},
+  };
 
   isExpanded = (nodeId: CRDP$NodeId): boolean => {
     const { expandedNodes } = this.state;
@@ -76,6 +74,28 @@ class DOMViewer extends Component<Props, State> {
     const isExpanded = this.isExpanded(nodeId);
     this.setState({
       expandedNodes: { ...expandedNodes, [nodeId]: !isExpanded },
+    });
+  };
+
+  deepToggleExpandNode = (nodeId: CRDP$NodeId) => {
+    const { resolveNode } = this.props;
+    const { expandedNodes } = this.state;
+    const toExpand = [nodeId];
+    let node = resolveNode(nodeId);
+    while (node && node.children && node.children.length === 1) {
+      const firstChild = this.resolveFirstChild(node);
+      if (!firstChild) {
+        break; // This should never happen...
+      }
+      toExpand.push(firstChild.nodeId);
+      node = firstChild;
+    }
+    const isMainNodeExpanded = this.isExpanded(nodeId);
+    this.setState({
+      expandedNodes: {
+        ...expandedNodes,
+        ...fromPairs(toExpand.map(nodeId => [nodeId, !isMainNodeExpanded])),
+      },
     });
   };
 
@@ -123,14 +143,16 @@ class DOMViewer extends Component<Props, State> {
       clearHighlight,
       highlightNode,
       toggleSelectNode,
+      settings,
     } = this.props;
+    const { deepExpandNodes } = settings;
     const node = nodes[nodeId];
     if (!node) {
       console.error(
         'renderDOMNode: failed to resolve node',
         nodeId,
         'with node map',
-        nodes
+        nodes,
       );
       return;
     }
@@ -158,7 +180,11 @@ class DOMViewer extends Component<Props, State> {
             nodeLabel={label}
             itemClassName={className}
             collapsed={!this.isExpanded(nodeId)}
-            onClick={() => this.toggleExpandNode(nodeId)}
+            onClick={
+              deepExpandNodes
+                ? () => this.deepToggleExpandNode(nodeId)
+                : () => this.toggleExpandNode(nodeId)
+            }
           >
             {children && children.map(this.renderDOMNode)}
           </TreeView>

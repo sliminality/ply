@@ -110,6 +110,9 @@ function selectedNodes(
   action: Action,
 ): { [CRDP$NodeId]: boolean } {
   switch (action.type) {
+    case actionTypes.SET_DOCUMENT:
+      // Clear all selections when a new document is pushed.
+      return {};
     case actionTypes.SET_INSPECTION_ROOT:
       return { [action.data.nodeId]: true };
     case actionTypes.TOGGLE_SELECT_NODE:

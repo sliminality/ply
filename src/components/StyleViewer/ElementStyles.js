@@ -6,6 +6,7 @@ import type { CRDP$NodeId } from 'devtools-typed/domain/DOM';
 type Props = {
   nodeId: CRDP$NodeId,
   style: NodeStyle,
+  isPruning: bool,
   pruneNode: CRDP$NodeId => void,
   children?: Array<React.Node>,
 };
@@ -54,7 +55,7 @@ class ElementStyles extends React.Component<Props, State> {
   }
 
   render() {
-    const { style, nodeId, children, pruneNode } = this.props;
+    const { style, nodeId, isPruning, children, pruneNode } = this.props;
     const { activeView } = this.state;
     return (
       <div className="ElementStyles" key={nodeId}>
@@ -69,7 +70,7 @@ class ElementStyles extends React.Component<Props, State> {
           className="ElementStyles__prune-btn uk-button-default uk-button-small"
           onClick={() => pruneNode(nodeId)}
         >
-          Prune
+          {isPruning ? 'Pruning...' : 'Prune'}
         </button>
       </div>
     );

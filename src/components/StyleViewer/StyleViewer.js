@@ -8,6 +8,7 @@ import MatchedStylesView from './MatchedStylesView';
 import { connect } from 'react-redux';
 import {
   getStyles,
+  getIsPruning,
   getSelectedNodes,
   filterSelectedNodes,
 } from '../../selectors';
@@ -20,6 +21,7 @@ import type { InspectorSettings } from '../../containers/Inspector';
 
 type Props = {
   styles: NodeStyleMap,
+  isPruning: boolean,
   selectedNodes: { [CRDP$NodeId]: boolean },
   settings: InspectorSettings,
 
@@ -61,7 +63,13 @@ class StyleViewer extends React.Component<Props> {
   }
 
   renderNodeStyle = (nodeId: CRDP$NodeId): React.Element<any> => {
-    const { styles, pruneNode, toggleCSSProperty, settings } = this.props;
+    const {
+      styles,
+      isPruning,
+      settings,
+      pruneNode,
+      toggleCSSProperty,
+    } = this.props;
     const nodeStyle = styles[nodeId];
     if (!nodeStyle) {
       // Styles haven't landed yet for this particular node.
@@ -70,7 +78,12 @@ class StyleViewer extends React.Component<Props> {
     const { showDevControls } = settings;
     const { parentComputedStyle, computedStyle, matchedCSSRules } = nodeStyle;
     return (
-      <ElementStyles nodeId={nodeId} style={nodeStyle} pruneNode={pruneNode}>
+      <ElementStyles
+        nodeId={nodeId}
+        style={nodeStyle}
+        pruneNode={pruneNode}
+        isPruning={isPruning}
+      >
         <MatchedStylesView
           name="Matched"
           matchedStyles={matchedCSSRules}
@@ -108,6 +121,7 @@ class StyleViewer extends React.Component<Props> {
 const mapStateToProps = (state: ReduxState) => ({
   styles: getStyles(state),
   selectedNodes: getSelectedNodes(state),
+  isPruning: getIsPruning(state),
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({

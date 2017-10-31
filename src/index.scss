@@ -1,3 +1,7 @@
+* {
+  box-sizing: border-box;
+}
+
 ::-webkit-scrollbar {
   width: 0.5em;
 }
@@ -6,7 +10,12 @@
   background-color: #ccc;
 }
 
-* {
-  box-sizing: border-box;
-}
+// Overrides for react-split-pane
+.Pane {
+  overflow: scroll;
 
+  &::-webkit-scrollbar {
+    height: 5px;
+    width: 5px;
+  }
+}

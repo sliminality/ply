@@ -7,7 +7,7 @@ import SplitPane from 'react-split-pane';
 import DOMViewer from '../components/DOMViewer/DOMViewer';
 import StyleViewer from '../components/StyleViewer/StyleViewer';
 import { StyleSheet, css } from 'aphrodite';
-import './Inspector.css';
+import '../../lib/css/split-pane.css';
 
 import type { State as ReduxState, Connection } from '../types';
 

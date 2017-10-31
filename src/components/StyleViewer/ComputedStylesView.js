@@ -68,6 +68,8 @@ class ComputedStylesView extends Component<Props> {
     const rows = Object.keys(cs).map((prop: string) => (
       <tr className="Style__computed-style" key={prop}>
         <td className="Style__prop-name">{prop}</td>
+        {/* $FlowFixMe - `prop` is guaranteed to be a CSS property,
+          due to the preceding filter. */}
         <td className="Style__prop-value">{cs[prop]}</td>
       </tr>
     ));

@@ -7,14 +7,14 @@ import SplitPane from 'react-split-pane';
 import DOMViewer from './DOMViewer/DOMViewer';
 import StyleViewer from './StyleViewer/StyleViewer';
 import { StyleSheet, css } from 'aphrodite';
+import { colors } from '../styles';
 import '../../lib/css/split-pane.css';
 
-import type { State as ReduxState, Connection } from '../types';
-
-export type InspectorSettings = {
-  inspectMultiple: boolean,
-  showDevControls: boolean,
-};
+import type {
+  State as ReduxState,
+  Connection,
+  InspectorSettings,
+} from '../types';
 
 type Props = {
   connection: Connection,
@@ -169,7 +169,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     width: 200,
     zIndex: 5,
-    outline: '1px solid rgba(0, 0, 0, 0.3)',
+    outline: `1px solid ${colors.lightestGrey}`,
     borderRadius: 8,
     padding: 10,
   },

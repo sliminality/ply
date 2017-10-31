@@ -72,8 +72,10 @@ $hover-highlight: $yellow;
     color: $node-attr-name;
     margin-left: 0.5em;
     font-style: italic;
+  }
 
-    &::after {
+  &__attr-value {
+    &::before {
       content: '=';
       color: lightgrey;
     }

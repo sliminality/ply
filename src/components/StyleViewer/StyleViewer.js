@@ -15,9 +15,13 @@ import {
 import { pruneNode, toggleCSSProperty } from '../../actions';
 import './StyleViewer.css';
 
-import type { State as ReduxState, Dispatch, NodeStyleMap } from '../../types';
+import type {
+  State as ReduxState,
+  Dispatch,
+  NodeStyleMap,
+  InspectorSettings,
+} from '../../types';
 import type { CRDP$NodeId } from 'devtools-typed/domain/DOM';
-import type { InspectorSettings } from '../Inspector';
 
 type Props = {
   styles: NodeStyleMap,
@@ -83,6 +87,7 @@ class StyleViewer extends React.Component<Props> {
         style={nodeStyle}
         pruneNode={pruneNode}
         isPruning={isPruning}
+        settings={settings}
       >
         <MatchedStylesView
           name="Matched"

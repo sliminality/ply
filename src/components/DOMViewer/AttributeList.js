@@ -55,7 +55,7 @@ const ClassIdAttribute = ([name, value]: Attribute, i: number) => {
 const NormalAttribue = ([name, value]: Attribute, i: number) => (
   <li key={i}>
     <span className="Node__attr-name">{name}</span>
-    <span className="Node__attr-value">{value}</span>
+    {value && <span className="Node__attr-value">{value}</span>}
   </li>
 );
 

@@ -23,6 +23,11 @@ export type State = {
   },
 };
 
+export type InspectorSettings = {
+  inspectMultiple: boolean,
+  showDevControls: boolean,
+};
+
 // TODO: add this to main styles repo
 export type ComputedStyle = { [CSSProperty]: string };
 

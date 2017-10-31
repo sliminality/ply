@@ -20,27 +20,6 @@
     margin: 10px;
   }
 
-  &__toolbar {
-    @include small-caps;
-
-    // Display the header properties in a row
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-
-    // Prevent header from getting crushed
-    flex-shrink: 0;
-
-    padding-top: 4px;
-    padding-right: 20px;
-    margin-bottom: 0;
-    border-bottom: 1px solid #eaeaea;
-  }
-
-  &__tabs {
-    margin-bottom: 0;
-  }
-
   &__options {
     // Remove default list styles.
     margin: 0;
@@ -70,13 +49,6 @@
 
   &__content {
     padding: ($padding-sides / 2) $padding-sides;
-  }
-
-  &__prune-btn {
-    position: absolute;
-    background-color: white;
-    bottom: 0;
-    right: 0;
   }
 }
 

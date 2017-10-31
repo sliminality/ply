@@ -1,13 +1,18 @@
-// @flow
+// @flow @format
+/* eslint-disable no-use-before-define */
 import * as React from 'react';
-import type { NodeStyle } from '../../types';
+import { StyleSheet, css } from 'aphrodite';
+import { colors, mixins } from '../../styles';
+
+import type { NodeStyle, InspectorSettings } from '../../types';
 import type { CRDP$NodeId } from 'devtools-typed/domain/DOM';
 
 type Props = {
   nodeId: CRDP$NodeId,
   style: NodeStyle,
-  isPruning: bool,
+  isPruning: boolean,
   pruneNode: CRDP$NodeId => void,
+  settings: InspectorSettings,
   children?: Array<React.Node>,
 };
 
@@ -17,14 +22,9 @@ type State = {
 
 class ElementStyles extends React.Component<Props, State> {
   props: Props;
-  state: State;
-
-  constructor(props: Props) {
-    super(props);
-    this.state = {
-      activeView: 0,
-    };
-  }
+  state: State = {
+    activeView: 0,
+  };
 
   switchView = (index: number) => {
     this.setState({
@@ -33,29 +33,38 @@ class ElementStyles extends React.Component<Props, State> {
   };
 
   renderToolbar() {
-    const { children } = this.props;
+    const { nodeId, pruneNode, isPruning, settings, children } = this.props;
     const { activeView } = this.state;
+    const { showDevControls } = settings;
     const tabs = React.Children.map(children, (child, i) => (
       <li
         key={i}
-        className={activeView === i && 'uk-active'}
+        className={css(styles.tab, activeView === i && styles.tabActive)}
         onClick={() => this.switchView(i)}
       >
-        <a href="#">{child && child.props.name}</a>
+        {child && child.props.name}
       </li>
     ));
     return (
-      <div className="ElementStyles__toolbar">
-        <ul className="uk-tab ElementStyles__tabs">{tabs}</ul>
-        <span className="ElementStyles__node-id">
-          Node ID: {this.props.nodeId}
-        </span>
+      <div className={css(styles.toolbar)}>
+        <ul className={css(styles.tabs)}>{tabs}</ul>
+        {showDevControls && (
+          <span className="ElementStyles__node-id">
+            Node ID: {this.props.nodeId}
+          </span>
+        )}
+        <button
+          className="uk-button-default uk-button-small"
+          onClick={() => pruneNode(nodeId)}
+        >
+          {isPruning ? 'Pruning...' : 'Prune'}
+        </button>
       </div>
     );
   }
 
   render() {
-    const { style, nodeId, isPruning, children, pruneNode } = this.props;
+    const { style, nodeId, children } = this.props;
     const { activeView } = this.state;
     return (
       <div className="ElementStyles" key={nodeId}>
@@ -66,15 +75,57 @@ class ElementStyles extends React.Component<Props, State> {
           )}
           {children && children[activeView]}
         </div>
-        <button
-          className="ElementStyles__prune-btn uk-button-default uk-button-small"
-          onClick={() => pruneNode(nodeId)}
-        >
-          {isPruning ? 'Pruning...' : 'Prune'}
-        </button>
       </div>
     );
   }
 }
+
+const styles = StyleSheet.create({
+  toolbar: {
+    ...mixins.smallCaps,
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    flexShrink: 0,
+    borderBottom: `1px solid ${colors.lightestGrey}`,
+  },
+  tabs: {
+    alignSelf: 'flex-end',
+    listStyle: 'none',
+    margin: 0,
+    padding: 0,
+    display: 'flex',
+    flexWrap: 'wrap',
+    // This looks weird with the rest of the header.
+    // borderBottom: `1px solid ${colors.lightestGrey}`,
+  },
+  tab: {
+    margin: 0, // Reset
+    marginTop: 2,
+    padding: '5px 10px',
+    color: colors.lightGrey,
+
+    // For the underline
+    position: 'relative',
+
+    ':hover': {
+      color: colors.medGrey,
+      transition: 'color .1s ease-in-out',
+    },
+  },
+  tabActive: {
+    color: 'black',
+    '::after': {
+      content: '""',
+      width: '100%',
+      height: 2,
+      backgroundColor: colors.uiBlue,
+      position: 'absolute',
+      left: 0,
+      bottom: 0,
+      transform: 'translateY(1px)',
+    },
+  },
+});
 
 export default ElementStyles;

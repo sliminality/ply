@@ -1,6 +1,7 @@
 // @flow @format
 
 const colors = {
+  uiBlue: 'hsl(210, 87%, 53%)',
   green: '#668a36',
   blue: '#5581b9',
   lightBlue: '#eaf2fc',
@@ -13,6 +14,7 @@ const colors = {
   lightPink: 'hsl(315, 50%, 94%)',
   lightestGrey: '#efefef',
   lightGrey: '#b7b7b7',
+  medGrey: '#666',
   grey: '#111',
 };
 

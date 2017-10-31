@@ -27,47 +27,9 @@ type PropertyListArgs = {
 class MatchedStylesView extends React.Component<Props> {
   props: Props;
 
-  renderSelectors(
-    matchedIndices: number[],
-    selectors: CRDP$Value[],
-  ): React.Node {
-    // return matchedIndices
-    // .map(i => selectors[i].text)
-    return selectors
-      .map(x => x.text)
-      .join(', ')
-      .concat(' {');
-  }
-
-  renderRule = (ruleMatch: CRDP$RuleMatch, ruleIdx: number): React.Node => {
-    const { toggleCSSProperty } = this.props;
-    const { matchingSelectors, rule } = ruleMatch;
-    const { selectorList, style, origin } = rule;
-
-    const selectors = this.renderSelectors(
-      matchingSelectors,
-      selectorList.selectors,
-    );
-    const propertyList = this.renderPropertyList({
-      origin,
-      properties: style.cssProperties,
-      toggleCSSPropertyForRule: toggleCSSProperty(ruleIdx),
-    });
-
-    return (
-      <li key={ruleIdx}>
-        {selectors}
-        {propertyList}
-        {'}'}
-      </li>
-    );
-  };
-
-  renderPropertyList({
-    properties,
-    origin,
-    toggleCSSPropertyForRule,
-  }: PropertyListArgs): React.Node {
+  isDeclaredProperty = (origin: CRDP$StyleSheetOrigin) => (
+    prop: CRDP$CSSProperty,
+  ): boolean => {
     // If RuleMatch origin is 'user-agent', then none of the style's
     // properties will have SourceRanges.
     //
@@ -84,52 +46,100 @@ class MatchedStylesView extends React.Component<Props> {
     //
     // We want to only render declared properties <=>
     //    those with SourceRanges and 'normal' origins.
-    const declared = properties
-      .filter((prop: CRDP$CSSProperty) => {
-        if (origin === 'user-agent') {
-          return true;
-        } else {
-          return has(prop, 'range');
-        }
-      })
-      .map((prop, propIdx) => {
-        const { name, value } = prop;
-        const isDisabled = typeof prop.disabled === 'boolean' && prop.disabled;
-        const isNotParsedOk =
-          typeof prop.parsedOk === 'boolean' && !prop.parsedOk;
-        return (
-          <li
-            key={propIdx}
-            className={css(
-              styles.cssProperty,
-              isDisabled && styles.cssPropertyDisabled,
-              isNotParsedOk && styles.cssPropertyNotParsedOk,
-            )}
-            onClick={toggleCSSPropertyForRule(propIdx)}
-          >
-            <span className={css(styles.clipboardOnly)}>{'  '}</span>
-            <span
-              className={css(
-                styles.cssPropertyName,
-                isDisabled && styles.cssPropertyDisabled,
-              )}
-            >
-              {`${name}:`}
-            </span>{' '}
-            <span
-              className={css(
-                styles.cssPropertyValue,
-                isDisabled && styles.cssPropertyDisabled,
-              )}
-            >
-              {value}
-            </span>
-            {';'}
-          </li>
-        );
-      });
+    if (origin === 'user-agent') {
+      return true;
+    } else {
+      return has(prop, 'range');
+    }
+  };
 
-    return <ul className={css(styles.cssPropertyList)}>{declared}</ul>;
+  renderSelectors(
+    matchedIndices: number[],
+    selectors: CRDP$Value[],
+  ): React.Node {
+    // return matchedIndices
+    // .map(i => selectors[i].text)
+    return selectors
+      .map(x => x.text)
+      .join(', ')
+      .concat(' {');
+  }
+
+  renderRule = (ruleMatch: CRDP$RuleMatch, ruleIdx: number): ?React.Node => {
+    const { toggleCSSProperty } = this.props;
+    const { matchingSelectors, rule } = ruleMatch;
+    const { selectorList, style, origin } = rule;
+
+    const declaredProperties = style.cssProperties.filter(
+      this.isDeclaredProperty(origin),
+    );
+    const selectors = this.renderSelectors(
+      matchingSelectors,
+      selectorList.selectors,
+    );
+    const propertyList = this.renderPropertyList({
+      origin,
+      properties: declaredProperties,
+      toggleCSSPropertyForRule: toggleCSSProperty(ruleIdx),
+    });
+
+    if (declaredProperties.length > 0) {
+      return (
+        <li className={css(styles.cssRule)} key={ruleIdx}>
+          {selectors}
+          {propertyList}
+          {'}'}
+        </li>
+      );
+    }
+  };
+
+  renderPropertyList({
+    properties,
+    origin,
+    toggleCSSPropertyForRule,
+  }: PropertyListArgs): React.Element<'ul'> {
+    return (
+      <ul className={css(styles.cssPropertyList)}>
+        {properties.map((prop, propIdx) => {
+          const { name, value } = prop;
+          const isDisabled =
+            typeof prop.disabled === 'boolean' && prop.disabled;
+          const isNotParsedOk =
+            typeof prop.parsedOk === 'boolean' && !prop.parsedOk;
+          return (
+            <li
+              key={propIdx}
+              className={css(
+                styles.cssProperty,
+                isDisabled && styles.cssPropertyDisabled,
+                isNotParsedOk && styles.cssPropertyNotParsedOk,
+              )}
+              onClick={toggleCSSPropertyForRule(propIdx)}
+            >
+              <span className={css(styles.clipboardOnly)}>{'  '}</span>
+              <span
+                className={css(
+                  styles.cssPropertyName,
+                  isDisabled && styles.cssPropertyDisabled,
+                )}
+              >
+                {`${name}:`}
+              </span>{' '}
+              <span
+                className={css(
+                  styles.cssPropertyValue,
+                  isDisabled && styles.cssPropertyDisabled,
+                )}
+              >
+                {value}
+              </span>
+              {';'}
+            </li>
+          );
+        })}
+      </ul>
+    );
   }
 
   render() {
@@ -148,6 +158,9 @@ const styles = StyleSheet.create({
     listStyle: 'none',
     fontFamily: `'Inconsolata', monospace`,
     letterSpacing: '-0.01em',
+  },
+  cssRule: {
+    marginBottom: 10,
   },
   cssPropertyList: {
     listStyle: 'none',

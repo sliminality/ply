@@ -9,7 +9,10 @@ import type {
   CRDP$CSSProperty,
   CRDP$StyleSheetOrigin,
   CRDP$RuleMatch,
+  CRDP$CSSMedia,
+  CRDP$MediaQuery,
   CRDP$Value,
+  CRDP$SelectorList,
 } from 'devtools-typed/domain/CSS';
 
 type Props = {
@@ -24,8 +27,62 @@ type PropertyListArgs = {
   toggleCSSPropertyForRule: (propIdx: number) => () => void,
 };
 
+const Selectors = ({
+  matchedIndices,
+  selectors,
+}: {
+  matchedIndices: number[],
+  selectors: Array<CRDP$Value>,
+}): React.Node => (
+  <span>
+    {matchedIndices
+      .map(i => selectors[i].text)
+      // return selectors
+      //   .map(x => x.text)
+      .join(', ')}
+  </span>
+);
+
+const MediaQuery = ({
+  children,
+  media,
+}: {
+  media: Array<CRDP$CSSMedia>,
+  children?: React.Fragment,
+}): React.Node => {
+  // Filter out @import, inline/linked sheets, etc.
+  const mediaQueries = media.filter(md => md.source === 'mediaRule');
+  const mQ = mediaQueries[0];
+  if (!mQ || !mQ.mediaList) {
+    return <React.Fragment>{children}</React.Fragment>;
+  }
+  // TODO: Handle > 1 media query.
+  const mediaList: Array<CRDP$MediaQuery> = mQ.mediaList;
+  const texts = mediaList
+    .filter(mq => mq.active)
+    .map(({ expressions }) =>
+      expressions
+        .map(({ feature, value, unit }) => `(${feature}: ${value}${unit})`)
+        .join(' and '),
+    )
+    .join(' '); // TODO: Not sure what it means to have N > 2 mediaList items.
+  const mediaRule = `@media ${texts} {`;
+  return (
+    <div>
+      {mediaRule}
+      <div className={css(styles.mediaRuleContents)}>{children}</div>
+      {'}'}
+    </div>
+  );
+};
+
 class MatchedStylesView extends React.Component<Props> {
   props: Props;
+
+  componentDidUpdate() {
+    console.timeEnd('FROM RECEIVED TO COMPONENT');
+    console.groupEnd();
+  }
 
   isDeclaredProperty = (origin: CRDP$StyleSheetOrigin) => (
     prop: CRDP$CSSProperty,
@@ -53,18 +110,6 @@ class MatchedStylesView extends React.Component<Props> {
     }
   };
 
-  renderSelectors(
-    matchedIndices: number[],
-    selectors: CRDP$Value[],
-  ): React.Node {
-    // return matchedIndices
-    // .map(i => selectors[i].text)
-    return selectors
-      .map(x => x.text)
-      .join(', ')
-      .concat(' {');
-  }
-
   renderRule = (ruleMatch: CRDP$RuleMatch, ruleIdx: number): ?React.Node => {
     const { toggleCSSProperty } = this.props;
     const { matchingSelectors, rule } = ruleMatch;
@@ -73,22 +118,31 @@ class MatchedStylesView extends React.Component<Props> {
     const declaredProperties = style.cssProperties.filter(
       this.isDeclaredProperty(origin),
     );
-    const selectors = this.renderSelectors(
-      matchingSelectors,
-      selectorList.selectors,
-    );
     const propertyList = this.renderPropertyList({
       origin,
       properties: declaredProperties,
       toggleCSSPropertyForRule: toggleCSSProperty(ruleIdx),
     });
+    const ruleComponent = (
+      <div className={css(styles.cssRule)}>
+        <Selectors
+          matchedIndices={matchingSelectors}
+          selectors={selectorList.selectors}
+        />
+        {' {'}
+        {propertyList}
+        {'}'}
+      </div>
+    );
 
     if (declaredProperties.length > 0) {
       return (
-        <li className={css(styles.cssRule)} key={ruleIdx}>
-          {selectors}
-          {propertyList}
-          {'}'}
+        <li className={css(styles.cssDeclaration)} key={ruleIdx}>
+          {rule.media ? (
+            <MediaQuery media={rule.media}>{ruleComponent}</MediaQuery>
+          ) : (
+            ruleComponent
+          )}
         </li>
       );
     }
@@ -159,12 +213,16 @@ const styles = StyleSheet.create({
     fontFamily: `'Inconsolata', monospace`,
     letterSpacing: '-0.01em',
   },
-  cssRule: {
+  cssDeclaration: {
     marginBottom: 10,
+  },
+  mediaRuleContents: {
+    paddingLeft: 10,
   },
   cssPropertyList: {
     listStyle: 'none',
     padding: 0,
+    margin: 0,
     marginLeft: 20,
   },
   cssProperty: {

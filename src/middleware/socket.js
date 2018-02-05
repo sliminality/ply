@@ -14,25 +14,37 @@ import type { Store, Dispatch } from 'redux';
 import type { OutgoingMessage } from './types';
 import type { Action } from '../actions/types';
 
-const { outgoing } = messageTypes;
+const { incoming, outgoing, socketio } = messageTypes;
 
 const _url = config.socketURL(config.socketPort);
 const _socket = io.connect(_url, config.socketOptions);
+
+let hasStyles = false;
 
 function init(store: Store) {
   // Add listeners to socket messages, so they can be re-dispatched
   // as actionTypes.
   // https://github.com/maxnachlinger/redux-websocket-example/
-  const { socketio, incoming } = messageTypes;
   const messagesToBind = [...Object.keys(socketio), ...Object.keys(incoming)];
+
+  // Action creator for all socket incoming messages.
+  const onIncomingMessage = messageType => data => {
+    if (messageType === incoming.SET_STYLES) {
+      if (hasStyles) {
+        console.timeEnd('REQUEST TOGGLE');
+        console.time('FROM RECEIVED TO COMPONENT');
+      } else {
+        hasStyles = true;
+      }
+    }
+    store.dispatch({
+      type: messageType.toUpperCase(),
+      data,
+    });
+  };
+
   for (const messageType of messagesToBind) {
-    _socket.on(messageType, data =>
-      // Action creator for all socket incoming messages.
-      store.dispatch({
-        type: messageType.toUpperCase(),
-        data,
-      }),
-    );
+    _socket.on(messageType, onIncomingMessage(messageType));
   }
 }
 
@@ -58,11 +70,15 @@ const socketMiddleware = (store: Store) => (next: Dispatch) => (
       }
       break;
     case actionTypes.REQUEST_STYLE_FOR_NODE:
+      console.group();
+      console.time(incoming.SET_STYLES);
       emit(outgoing.REQUEST_STYLE_FOR_NODE, action.data);
       break;
     case actionTypes.TOGGLE_CSS_PROPERTY:
       // If pruning is happening, we can't toggle properties.
       if (!isPruning) {
+        console.group();
+        console.time('REQUEST TOGGLE');
         emit(outgoing.TOGGLE_CSS_PROPERTY, action.data);
       }
       break;
@@ -72,6 +88,8 @@ const socketMiddleware = (store: Store) => (next: Dispatch) => (
     case actionTypes.PRUNE_NODE:
       emit(outgoing.PRUNE_NODE, action.data);
       return next(action);
+
+    case actionTypes.SET_INSPECTION_ROOT:
     case actionTypes.TOGGLE_SELECT_NODE:
       const { nodeId } = action.data;
       const selectedNodes = getSelectedNodes(state);
@@ -80,11 +98,12 @@ const socketMiddleware = (store: Store) => (next: Dispatch) => (
       // about to display it.
       if (!selectedNodes[nodeId]) {
         // Request styles if they don't exist.
-        const styles = getStyles(state);
-        const style = getStyleForNode(styles, nodeId);
-        if (!style) {
-          emit(outgoing.REQUEST_STYLE_FOR_NODE, action.data);
-        }
+        // HACK: Don't cache styles at all. Always request new ones.
+        // const styles = getStyles(state);
+        // const style = getStyleForNode(styles, nodeId);
+        // if (!style) {
+        emit(outgoing.REQUEST_STYLE_FOR_NODE, action.data);
+        // }
       }
       return next(action);
 

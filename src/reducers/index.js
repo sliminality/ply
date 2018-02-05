@@ -55,8 +55,10 @@ function inspectionRoot(
   switch (action.type) {
     case actionTypes.SET_DOCUMENT:
       return null;
+
     case actionTypes.SET_INSPECTION_ROOT:
       return action.data.nodeId;
+
     default:
       return state;
   }
@@ -67,6 +69,7 @@ function styles(state: NodeStyleMap = {}, action: Action): NodeStyleMap {
     case actionTypes.SET_DOCUMENT:
       // Completely replace styles when document is changed.
       return {};
+
     case actionTypes.SET_STYLES:
       // TODO: should we ever delete old state?
       // like if nodes no longer exist
@@ -74,6 +77,7 @@ function styles(state: NodeStyleMap = {}, action: Action): NodeStyleMap {
         ...state,
         ...action.data.styles,
       };
+
     default:
       return state;
   }
@@ -83,8 +87,10 @@ function isPruning(state: boolean = false, action: Action): boolean {
   switch (action.type) {
     case actionTypes.PRUNE_NODE:
       return true;
+
     case actionTypes.PRUNE_NODE_RESULT:
       return false;
+
     default:
       return state;
   }
@@ -113,13 +119,16 @@ function selectedNodes(
     case actionTypes.SET_DOCUMENT:
       // Clear all selections when a new document is pushed.
       return {};
+
     case actionTypes.SET_INSPECTION_ROOT:
       return { [action.data.nodeId]: true };
+
     case actionTypes.TOGGLE_SELECT_NODE:
       const { nodeId } = action.data;
       // HACK: Disabling multiple inspection.
       // return { ...state, [nodeId]: !state[nodeId] };
       return { [nodeId]: !state[nodeId] };
+
     default:
       return state;
   }
@@ -129,8 +138,10 @@ function error(state: ?string = null, action: Action): ?string {
   switch (action.type) {
     case actionTypes.ERROR:
       return action.data.error;
+
     case actionTypes.PRUNE_NODE_RESULT:
       return action.data.error || null;
+
     default:
       return state;
   }

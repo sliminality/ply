@@ -16,6 +16,7 @@ export type NodeDisplayType = 'FORK' | 'LEAF' | 'INLINE_LEAF';
 
 // DOM node types, as defined by:
 // https://developer.mozilla.org/en-US/docs/Web/API/Node/nodeType
+// eslint-disable-next-line
 const NODE_TYPE = {
   '1': 'ELEMENT_NODE',
   '3': 'TEXT_NODE',

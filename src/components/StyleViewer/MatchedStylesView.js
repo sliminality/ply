@@ -21,6 +21,8 @@ type Props = {
   matchedStyles: Array<CRDP$RuleMatch>,
   ruleAnnotations?: Array<?CSSRuleAnnotation>,
   toggleCSSProperty: (ruleIdx: number) => (propIdx: number) => () => void,
+  highlightSelectorAll: string => void,
+  clearHighlight: () => void,
 };
 
 type PropertyListArgs = {
@@ -33,18 +35,28 @@ type PropertyListArgs = {
 const Selectors = ({
   matchedIndices,
   selectors,
+  highlightSelectorAll,
+  clearHighlight,
 }: {
   matchedIndices: number[],
   selectors: Array<CRDP$Value>,
-}): React.Node => (
-  <span>
-    {matchedIndices
-      .map(i => selectors[i].text)
-      // return selectors
-      //   .map(x => x.text)
-      .join(', ')}
-  </span>
-);
+  highlightSelectorAll: string => void,
+  clearHighlight: () => void,
+}): React.Node => {
+  const selectorList = matchedIndices
+    .map(i => selectors[i].text)
+    // return selectors
+    //   .map(x => x.text)
+    .join(', ');
+  return (
+    <span
+      onMouseEnter={() => highlightSelectorAll(selectorList)}
+      onMouseLeave={clearHighlight}
+    >
+      {selectorList}
+    </span>
+  );
+};
 
 const MediaQuery = ({
   children,
@@ -120,6 +132,8 @@ class MatchedStylesView extends React.Component<Props> {
   ): ?React.Node => {
     const {
       toggleCSSProperty,
+      highlightSelectorAll,
+      clearHighlight,
     } = this.props;
     const { matchingSelectors, rule } = ruleMatch;
     const { selectorList, style, origin } = rule;
@@ -138,6 +152,8 @@ class MatchedStylesView extends React.Component<Props> {
         <Selectors
           matchedIndices={matchingSelectors}
           selectors={selectorList.selectors}
+          highlightSelectorAll={highlightSelectorAll}
+          clearHighlight={clearHighlight}
         />
         {' {'}
         {propertyList}

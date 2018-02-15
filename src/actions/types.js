@@ -64,8 +64,8 @@ export type PruneNodeAction = {
 export type HighlightNodeAction = {
   type: 'HIGHLIGHT_NODE',
   data: {
-    // If `nodeId` is null, the highlight will be cleared.
     nodeId: CRDP$NodeId,
+    selectorList?: string,
   },
 };
 

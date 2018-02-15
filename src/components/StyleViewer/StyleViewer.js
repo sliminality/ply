@@ -12,7 +12,12 @@ import {
   getSelectedNodes,
   filterSelectedNodes,
 } from '../../selectors';
-import { pruneNode, toggleCSSProperty } from '../../actions';
+import {
+  pruneNode,
+  toggleCSSProperty,
+  highlightNode,
+  clearHighlight,
+} from '../../actions';
 import './StyleViewer.css';
 
 import type {
@@ -30,7 +35,9 @@ type Props = {
   settings: InspectorSettings,
 
   toggleCSSProperty: CRDP$NodeId => number => number => () => void,
+  highlightSelectorAll: CRDP$NodeId => string => void,
   pruneNode: CRDP$NodeId => void,
+  clearHighlight: () => void,
 };
 
 class StyleViewer extends React.Component<Props> {
@@ -73,6 +80,8 @@ class StyleViewer extends React.Component<Props> {
       settings,
       pruneNode,
       toggleCSSProperty,
+      highlightSelectorAll,
+      clearHighlight,
     } = this.props;
     const nodeStyle = styles[nodeId];
     if (!nodeStyle) {
@@ -98,6 +107,8 @@ class StyleViewer extends React.Component<Props> {
           name="Matched"
           matchedStyles={matchedCSSRules}
           ruleAnnotations={ruleAnnotations}
+          highlightSelectorAll={highlightSelectorAll(nodeId)}
+          clearHighlight={clearHighlight}
           toggleCSSProperty={toggleCSSProperty(nodeId)}
         />
         {showDevControls && (
@@ -137,8 +148,11 @@ const mapStateToProps = (state: ReduxState) => ({
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
   pruneNode: nodeId => dispatch(pruneNode(nodeId)),
+  highlightSelectorAll: nodeId => selectorList =>
+    dispatch(highlightNode(nodeId, selectorList)),
   toggleCSSProperty: nodeId => ruleIdx => propIdx => () =>
     dispatch(toggleCSSProperty(nodeId, ruleIdx, propIdx)),
+  clearHighlight: () => dispatch(clearHighlight()),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(StyleViewer);

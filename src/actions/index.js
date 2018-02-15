@@ -37,10 +37,13 @@ export function pruneNode(nodeId: CRDP$NodeId): PruneNodeAction {
   };
 }
 
-export function highlightNode(nodeId: CRDP$NodeId): HighlightNodeAction {
+export function highlightNode(
+  nodeId: CRDP$NodeId,
+  selectorList?: string,
+): HighlightNodeAction {
   return {
     type: actions.HIGHLIGHT_NODE,
-    data: { nodeId: toInt(nodeId) },
+    data: { nodeId: toInt(nodeId), selectorList },
   };
 }
 

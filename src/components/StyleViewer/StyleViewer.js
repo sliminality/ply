@@ -80,7 +80,12 @@ class StyleViewer extends React.Component<Props> {
       return <span>Loading styles...</span>;
     }
     const { showDevControls } = settings;
-    const { parentComputedStyle, computedStyle, matchedCSSRules } = nodeStyle;
+    const {
+      parentComputedStyle,
+      computedStyle,
+      matchedCSSRules,
+      ruleAnnotations,
+    } = nodeStyle;
     return (
       <ElementStyles
         nodeId={nodeId}
@@ -92,6 +97,7 @@ class StyleViewer extends React.Component<Props> {
         <MatchedStylesView
           name="Matched"
           matchedStyles={matchedCSSRules}
+          ruleAnnotations={ruleAnnotations}
           toggleCSSProperty={toggleCSSProperty(nodeId)}
         />
         {showDevControls && (

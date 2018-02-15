@@ -1,4 +1,4 @@
-// @flow
+// @flow @format
 import type {
   CRDP$Node,
   CRDP$NodeId,
@@ -64,10 +64,18 @@ export type Connection = {
   connected: boolean,
   reconnecting: boolean,
 };
+
 export type NodeStyle = {
   nodeId: CRDP$NodeId,
   parentComputedStyle: ComputedStyle,
   computedStyle: ComputedStyle,
+  ruleAnnotations?: Array<?CSSRuleAnnotation>,
 } & CRDP$MatchedStyles;
+
+// TODO(slim): Move this to shared type definitions repo.
+export type CSSRuleAnnotation =
+  // TODO: Add fields for the overriding rule index.
+  { type: 'BASE_STYLE', shadowedProperties: Array<number> };
+
 export type NodeStyleMap = { [CRDP$NodeId]: NodeStyle };
 export type NormalizedNodeMap = { [CRDP$NodeId]: NormalizedNode };

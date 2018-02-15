@@ -10,6 +10,7 @@ const colors = {
   red: 'hsl(355, 50%, 56%)',
   lightRed: 'hsl(355, 50%, 94%)',
   yellow: '#fbf4b9',
+  highlightYellow: 'hsla(60, 100%, 50%, 0.5)',
   pink: 'hsl(321, 40%, 46%)',
   lightPink: 'hsl(315, 50%, 94%)',
   lightestGrey: '#efefef',

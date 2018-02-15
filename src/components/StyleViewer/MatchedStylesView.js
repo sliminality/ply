@@ -1,9 +1,10 @@
 // @flow @format
 /* eslint-disable no-use-before-define */
 import * as React from 'react';
-import has from 'lodash/has';
+import { has, zip } from 'lodash';
 import { StyleSheet, css } from 'aphrodite';
 import { colors } from '../../styles';
+import type { CSSRuleAnnotation } from '../../types';
 
 import type {
   CRDP$CSSProperty,
@@ -17,14 +18,16 @@ import type {
 
 type Props = {
   name: string,
-  matchedStyles: CRDP$RuleMatch[],
+  matchedStyles: Array<CRDP$RuleMatch>,
+  ruleAnnotations?: Array<?CSSRuleAnnotation>,
   toggleCSSProperty: (ruleIdx: number) => (propIdx: number) => () => void,
 };
 
 type PropertyListArgs = {
-  properties: CRDP$CSSProperty[],
+  properties: Array<CRDP$CSSProperty>,
   origin: CRDP$StyleSheetOrigin,
   toggleCSSPropertyForRule: (propIdx: number) => () => void,
+  annotation?: CSSRuleAnnotation,
 };
 
 const Selectors = ({
@@ -110,8 +113,14 @@ class MatchedStylesView extends React.Component<Props> {
     }
   };
 
-  renderRule = (ruleMatch: CRDP$RuleMatch, ruleIdx: number): ?React.Node => {
-    const { toggleCSSProperty } = this.props;
+  renderRule = (
+    ruleMatch: CRDP$RuleMatch,
+    ruleIdx: number,
+    annotation?: CSSRuleAnnotation,
+  ): ?React.Node => {
+    const {
+      toggleCSSProperty,
+    } = this.props;
     const { matchingSelectors, rule } = ruleMatch;
     const { selectorList, style, origin } = rule;
 
@@ -122,6 +131,7 @@ class MatchedStylesView extends React.Component<Props> {
       origin,
       properties: declaredProperties,
       toggleCSSPropertyForRule: toggleCSSProperty(ruleIdx),
+      annotation,
     });
     const ruleComponent = (
       <div className={css(styles.cssRule)}>
@@ -143,6 +153,9 @@ class MatchedStylesView extends React.Component<Props> {
           ) : (
             ruleComponent
           )}
+          {annotation && (
+            <div className={css(styles.hint)}>Likely base style</div>
+          )}
         </li>
       );
     }
@@ -152,7 +165,15 @@ class MatchedStylesView extends React.Component<Props> {
     properties,
     origin,
     toggleCSSPropertyForRule,
+    annotation,
   }: PropertyListArgs): React.Element<'ul'> {
+    // TODO: Come up with a more systematic way to handle different
+    // types of annotations.
+    let shadowed;
+    if (annotation && annotation.type === 'BASE_STYLE') {
+      shadowed = new Set([...annotation.shadowedProperties]);
+    }
+
     return (
       <ul className={css(styles.cssPropertyList)}>
         {properties.map((prop, propIdx) => {
@@ -161,6 +182,8 @@ class MatchedStylesView extends React.Component<Props> {
             typeof prop.disabled === 'boolean' && prop.disabled;
           const isNotParsedOk =
             typeof prop.parsedOk === 'boolean' && !prop.parsedOk;
+          const isShadowed = shadowed && shadowed.has(propIdx);
+
           return (
             <li
               key={propIdx}
@@ -168,6 +191,7 @@ class MatchedStylesView extends React.Component<Props> {
                 styles.cssProperty,
                 isDisabled && styles.cssPropertyDisabled,
                 isNotParsedOk && styles.cssPropertyNotParsedOk,
+                isShadowed && styles.cssPropertyShadowed,
               )}
               onClick={toggleCSSPropertyForRule(propIdx)}
             >
@@ -197,10 +221,23 @@ class MatchedStylesView extends React.Component<Props> {
   }
 
   render() {
-    const { matchedStyles } = this.props;
+    const { matchedStyles, ruleAnnotations } = this.props;
+
+    // If ruleAnnotations are provided, but stale wrt the stored RuleMatch
+    // (e.g. if a media query changes), just ignore the rule annotations to prevent
+    // crashing.
+    // TODO: Fix this when we develop a more permanent way of associating rule
+    // annotations with CSSRules.
+    const annotationsValid =
+      ruleAnnotations && matchedStyles.length === ruleAnnotations.length;
+
     return (
       <ul className={css(styles.matchedStyles)}>
-        {matchedStyles.map(this.renderRule)}
+        {annotationsValid
+          ? zip(matchedStyles, ruleAnnotations).map(([rule, annotation], idx) =>
+              this.renderRule(rule, idx, annotation),
+            )
+          : matchedStyles.map((rule, idx) => this.renderRule(rule, idx))}
       </ul>
     );
   }
@@ -215,6 +252,25 @@ const styles = StyleSheet.create({
   },
   cssDeclaration: {
     marginBottom: 10,
+    display: 'flex',
+    justifyContent: 'space-between',
+  },
+  hint: {
+    alignSelf: 'flex-start',
+    flexShrink: 0,
+    fontStyle: 'italic',
+    '::after': {
+      content: '"?"',
+      display: 'inline-block',
+      marginLeft: 10,
+      color: 'white',
+      minWidth: 20,
+      backgroundColor: colors.grey,
+      borderRadius: 25,
+      textAlign: 'center',
+      cursor: 'pointer',
+      fontStyle: 'normal',
+    },
   },
   mediaRuleContents: {
     paddingLeft: 10,
@@ -234,6 +290,9 @@ const styles = StyleSheet.create({
   },
   cssPropertyNotParsedOk: {
     display: 'none',
+  },
+  cssPropertyShadowed: {
+    backgroundColor: colors.highlightYellow,
   },
   clipboardOnly: {
     whiteSpace: 'pre',

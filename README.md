@@ -1,21 +1,40 @@
 # Ply
 
-![Ply](docs/img/ply.png)
+Ply is a lightweight DOM and CSS inspector. It is designed to help less-experienced developers inspect and learn from production websites of interest, when existing inspector interfaces are too overwhelming. Ply is research software under active development through [Design, Technology, and Research](http://dtr.northwestern.edu/projects/ply) at Northwestern University.
 
-Ply is a lightweight web inspector for HTML and CSS. It is designed to help less-experienced developers inspect and learn from existing websites of interest. Accordingly, the interface is designed for simplicity and usability, rather than power. Ply is research software under active development through [Design, Technology, and Research](http://dtr.northwestern.edu) at Northwestern University.
+![Screenshot of Ply inspecting a pair of buttons on the Indiegogo homepage](docs/img/ply.png)
 
-Currently, Ply implements the following novel features:
+## Novel features
 
-- **Visual regression pruning**: while viewing matched styles for an element, click a button to rule out styles with no visual impact on the page (this is dynamically-tested, not based on static analysis). Useful for reverse-engineering styles.
-- **Multiple element inspection**: click on multiple elements in the DOM viewer to see their styles side-by-side. Useful for debugging or exploring parent-child relationships, or positioning contexts.
-- **DOM isolation view**: select a node in the inspected webpage to isolate its subtree in the inspector. Useful for inspecting a single component in isolation.
+In order to help less-experienced developers navigate the complex DOM and CSS structures found on production webpages, Ply implements the following novel features:
 
-You can read more about *visual regression pruning* in our CHI 2017 materials:
+- **Visual regression pruning** (CHI 2017 SRC [paper](http://users.eecs.northwestern.edu/~scl025/files/ply.pdf), [talk](https://slides.com/soylentqueen/ply-chi-src/)): While inspecting the styles for an element, users can click a button to dynamically rule out styles with no visual impact on the page. Useful for reverse-engineering how certain visual effects are achieved, without wasting time on irrelevant properties.
+- **DOM component isolation**: Rather than viewing the entire DOM at all times, users can select a node on the target webpage, and inspect only its subtree. Useful for inspecting a component of interest.
 
-- [Ply: Visual Regression Pruning for Web Design Source Inspection](http://users.eecs.northwestern.edu/~scl025/files/ply.pdf)
-- [Slides from the talk](https://slides.com/soylentqueen/ply-chi-src/)
+Additional features under development include:
 
-## Getting Started
+- **Multiple element inspection**: Click on multiple elements in the DOM viewer to inspect their styles side-by-side. Useful for exploring parent-child relationships, positioning contexts, or many other interactions between CSS properties on distinct elements.
+- **Style organization cues**: Using visual regression pruning, Ply can heuristically identify when a CSS rule serves as a "base style" for multiple elements on the page, and when another rule serves as a "refinement" style on top of shared base styles. Useful for understanding how professionals structure their CSS to minimize repetition and capture visual similarities and differences between elements.
+
+## Design rationale
+
+In our needfinding studies, less-experienced developers were frequently overwhelmed by the complexity of the Chrome Developer Tools Element interface.
+
+Accordingly, Ply's user interface has been carefully designed to **minimize visual clutter** and extraneous cognitive load:
+
+- **Truncated content**: Long text nodes are truncated by default in the DOM view, with the option to expand their contents.
+- **No closing tags**: DOM nodes are displayed Python-style, with no closing tags. Indentation dictates the node hierarchy.
+    + By not rendering closing tags, we cut vertical screen space by up to 50% for block-level elements.
+- **Nodes are collapsed by default**: When a user selects a node for inspection, very rarely do they want to see the entire subtree at once. Ply collapses DOM nodes by default, allowing the user to explore the DOM structure step-by-step, at their own pace.
+    + **Auto-expansion**: Container elements, which wrap a single child for styling purposes, frequently confused users in testing. Namely, users would neglect to expand container nodes, missing large portions of the DOM as a result. When a user expands a DOM node with a single child element, Ply will *auto-expand* its child recursively, until reaching a leaf node or an element with multiple children.
+
+## Structure
+
+This repository only includes the Ply frontend and proxy server. The system communicates with the target webpage via the Chrome Remote Debugging Protocol; all browser-facing functionality is located in the [chrome-remote-css](https://github.com/sarahlim/chrome-remote-css) repository.
+
+The prototype implementation of the visual regression pruning algorithm can be found in [chrome-remote-css](https://github.com/sarahlim/chrome-remote-css) as well.
+
+## Getting started
 
 > The following instructions assume familiarity with Git and Node.js tooling. If you're not even sure how to download this project, check out [this guide](https://gist.github.com/sarahlim/ab4a31c822f93995806b29270f1faa7e) to get up to speed.
 
@@ -36,4 +55,6 @@ To start inspecting a webpage, open a new window or tab, and navigate to the sit
 Click the browser extension icon to activate `chrome-remote-css`, and select an element on the page using the cursor. The element and its subtree should appear in Ply.
 
 Note that you'll need to keep the inspection target tab open, so that Ply can update and request CSS styles as you inspect.
+
+Please file an issue if you encounter any difficulties running the project.
 

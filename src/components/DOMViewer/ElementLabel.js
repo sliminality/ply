@@ -113,8 +113,9 @@ class ValueLabel extends React.Component<ValueLabelProps, ValueLabelState> {
     showTruncated: true,
   };
 
-  toggleShowTruncated = () => {
+  toggleShowTruncated = (event: MouseEvent) => {
     const { showTruncated } = this.state;
+    event.stopPropagation();
     this.setState({ showTruncated: !showTruncated });
   };
 

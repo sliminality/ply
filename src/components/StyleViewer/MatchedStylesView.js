@@ -212,6 +212,9 @@ class MatchedStylesView extends React.Component<Props> {
               onClick={toggleCSSPropertyForRule(propIdx)}
             >
               <span className={css(styles.clipboardOnly)}>{'  '}</span>
+              {isDisabled && (
+                <span className={css(styles.clipboardOnly)}>{'/* '}</span>
+              )}
               <span
                 className={css(
                   styles.cssPropertyName,
@@ -229,6 +232,9 @@ class MatchedStylesView extends React.Component<Props> {
                 {value}
               </span>
               {';'}
+              {isDisabled && (
+                <span className={css(styles.clipboardOnly)}>{' */'}</span>
+              )}
             </li>
           );
         })}

@@ -169,13 +169,20 @@ class MatchedStylesView extends React.Component<Props> {
           ) : (
             ruleComponent
           )}
-          {annotation && (
-            <div className={css(styles.hint)}>Likely base style</div>
-          )}
+          {annotation && this.renderRuleAnnotation(annotation)}
         </li>
       );
     }
   };
+
+  renderRuleAnnotation(annotation: CSSRuleAnnotation) {
+    switch (annotation) {
+      case 'BASE_STYLE':
+        return <div className={css(styles.hint)}>Likely base style</div>;
+      default:
+        return null;
+    }
+  }
 
   renderPropertyList({
     properties,

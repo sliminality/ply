@@ -107,6 +107,7 @@ const styles = StyleSheet.create({
 
     // For the underline
     position: 'relative',
+    cursor: 'pointer',
 
     ':hover': {
       color: colors.medGrey,

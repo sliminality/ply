@@ -130,9 +130,7 @@ class ValueLabel extends React.Component<ValueLabelProps, ValueLabelState> {
           className={css(styles.nodeValue)}
           onClick={this.toggleShowTruncated}
           title={
-            needsTruncation && !showTruncated
-              ? 'Click to expand/collapse contents'
-              : null
+            needsTruncation ? 'Click to expand/collapse contents' : undefined
           }
         >
           {showTruncated && needsTruncation

@@ -95,13 +95,15 @@ class Inspector extends Component<Props, State> {
             <ul className={css(styles.settingsList)}>
               {Object.keys(settings).map((item: string, i: number) => (
                 <li key={i} className={css(styles.settingsListItem)}>
-                  <input
-                    type="checkbox"
-                    className={`uk-checkbox ${css(styles.settingsCheck)}`}
-                    checked={settings[item]}
-                    onClick={() => this.toggleSetting(item)}
-                  />
-                  {item.replace(/([A-Z])/g, ' $1').toLowerCase()}
+                  <label className={css(styles.settingsItemLabel)}>
+                    <input
+                      type="checkbox"
+                      className={`uk-checkbox ${css(styles.settingsCheck)}`}
+                      checked={settings[item]}
+                      onChange={() => this.toggleSetting(item)}
+                    />
+                    {item.replace(/([A-Z])/g, ' $1').toLowerCase()}
+                  </label>
                 </li>
               ))}
             </ul>
@@ -181,6 +183,9 @@ const styles = StyleSheet.create({
   },
   settingsListItem: {
     marginBottom: 5,
+  },
+  settingsItemLabel: {
+    cursor: 'pointer',
   },
   settingsCheck: {
     marginRight: 5,

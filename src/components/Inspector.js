@@ -32,7 +32,7 @@ class Inspector extends Component<Props, State> {
     showSettings: false,
     settings: {
       inspectMultiple: false,
-      showDevControls: false,
+      showDevControls: true,
       deepExpandNodes: true,
     },
   };

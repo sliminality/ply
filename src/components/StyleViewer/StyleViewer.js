@@ -118,7 +118,7 @@ class StyleViewer extends React.Component<Props> {
             computedStyle={computedStyle}
           />
         )}
-        {showDevControls && <JSONTree data={styles} name="JSONTree" />}
+        {showDevControls && <JSONTree data={styles[nodeId]} name="JSONTree" />}
       </ElementStyles>
     );
   };

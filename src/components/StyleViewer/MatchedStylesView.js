@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { has, zip } from 'lodash';
 import { StyleSheet, css } from 'aphrodite';
-import { colors } from '../../styles';
+import { colors, mixins } from '../../styles';
 import type { CSSRuleAnnotation } from '../../types';
 
 import type {
@@ -13,7 +13,6 @@ import type {
   CRDP$CSSMedia,
   CRDP$MediaQuery,
   CRDP$Value,
-  CRDP$SelectorList,
 } from 'devtools-typed/domain/CSS';
 
 type Props = {
@@ -137,6 +136,12 @@ class MatchedStylesView extends React.Component<Props> {
     } = this.props;
     const { matchingSelectors, rule } = ruleMatch;
     const { selectorList, style, origin } = rule;
+    const { cssText } = style;
+
+    // Don't render rules with user-agent origins.
+    if (origin === 'user-agent') {
+      return null;
+    }
 
     const declaredProperties = style.cssProperties.filter(
       this.isDeclaredProperty(origin),
@@ -147,8 +152,16 @@ class MatchedStylesView extends React.Component<Props> {
       toggleCSSPropertyForRule: toggleCSSProperty(ruleIdx),
       annotation,
     });
+    const allPropertiesDisabled = style.cssProperties.every(
+      ({ disabled }) => disabled,
+    );
     const ruleComponent = (
-      <div className={css(styles.cssRule)}>
+      <div
+        className={css(
+          styles.cssRule,
+          allPropertiesDisabled && styles.disabledColor,
+        )}
+      >
         <Selectors
           matchedIndices={matchingSelectors}
           selectors={selectorList.selectors}
@@ -161,9 +174,18 @@ class MatchedStylesView extends React.Component<Props> {
       </div>
     );
 
+    // Determine whether the style has already been pruned.
+    const stylePruned = cssText && cssText.match(/^\/\*\* PRUNED \*\//);
+
     if (declaredProperties.length > 0) {
       return (
-        <li className={css(styles.cssDeclaration)} key={ruleIdx}>
+        <li
+          className={css(
+            styles.cssDeclaration,
+            allPropertiesDisabled && styles.cssRuleDisabled,
+          )}
+          key={ruleIdx}
+        >
           {rule.media ? (
             <MediaQuery media={rule.media}>{ruleComponent}</MediaQuery>
           ) : (
@@ -176,7 +198,7 @@ class MatchedStylesView extends React.Component<Props> {
   };
 
   renderRuleAnnotation(annotation: CSSRuleAnnotation) {
-    switch (annotation) {
+    switch (annotation.type) {
       case 'BASE_STYLE':
         return <div className={css(styles.hint)}>Likely base style</div>;
       default:
@@ -225,7 +247,7 @@ class MatchedStylesView extends React.Component<Props> {
               <span
                 className={css(
                   styles.cssPropertyName,
-                  isDisabled && styles.cssPropertyDisabled,
+                  isDisabled && styles.disabledColor,
                 )}
               >
                 {`${name}:`}
@@ -233,7 +255,7 @@ class MatchedStylesView extends React.Component<Props> {
               <span
                 className={css(
                   styles.cssPropertyValue,
-                  isDisabled && styles.cssPropertyDisabled,
+                  isDisabled && styles.disabledColor,
                 )}
               >
                 {value}
@@ -272,6 +294,17 @@ class MatchedStylesView extends React.Component<Props> {
   }
 }
 
+const sharedStyles = {
+  strikethrough: {
+    textDecoration: 'line-through',
+    // Needed for strikethrough color.
+    color: colors.lightGrey,
+  },
+  greyout: {
+    color: colors.lightGrey,
+  },
+};
+
 const styles = StyleSheet.create({
   matchedStyles: {
     padding: 0,
@@ -304,6 +337,10 @@ const styles = StyleSheet.create({
   mediaRuleContents: {
     paddingLeft: 10,
   },
+  cssRuleDisabled: {
+    ...sharedStyles.greyout,
+    // TODO: Some way to hide consecutive styles.
+  },
   cssPropertyList: {
     listStyle: 'none',
     padding: 0,
@@ -313,9 +350,16 @@ const styles = StyleSheet.create({
   cssProperty: {
     cursor: 'pointer',
   },
+  disabledColor: {
+    ...sharedStyles.greyout,
+  },
   cssPropertyDisabled: {
-    textDecoration: 'line-through',
-    color: colors.lightGrey,
+    ...sharedStyles.strikethrough,
+    ...sharedStyles.greyout,
+
+    ':hover': {
+      textDecoration: 'none',
+    },
   },
   cssPropertyNotParsedOk: {
     display: 'none',
@@ -324,11 +368,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.highlightYellow,
   },
   clipboardOnly: {
-    whiteSpace: 'pre',
-    display: 'inline-block',
-    width: 0,
-    opacity: 0,
-    pointerEvents: 'none',
+    ...mixins.clipboardOnly,
   },
   cssPropertyValue: {
     color: colors.grey,

@@ -74,30 +74,15 @@ $hover-highlight: $yellow;
     font-style: italic;
   }
 
-  &__attr-value {
-    &::before {
-      content: '=';
-      color: lightgrey;
-    }
-  }
-
   &__attr-value--class {
     margin-left: 0.5em;
     color: $node-class;
     background-color: $node-class-background;
-
-    &::before {
-      content: '.';
-    }
   }
 
   &__attr-value--id {
     margin-left: 0.5em;
     color: $node-id;
     background-color: $node-id-background;
-
-      &::before {
-        content: '#';
-      }
   }
 }

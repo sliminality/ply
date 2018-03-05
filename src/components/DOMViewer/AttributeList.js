@@ -1,6 +1,10 @@
-// @flow
+// @flow @format
+// eslint-disable no-use-before-define
 import React from 'react';
+import { StyleSheet, css } from 'aphrodite';
 import chunk from 'lodash/chunk';
+
+import { mixins } from '../../styles';
 
 type AttributeName = string;
 type Attribute = [AttributeName, string];
@@ -42,9 +46,15 @@ const attributeFilter = ([name, _]: Attribute): boolean => {
  */
 const ClassIdAttribute = ([name, value]: Attribute, i: number) => {
   const className = `Node__attr-value--${name}`;
+  const prefix = name === 'id' ? '#' : '.';
   return (
     <li key={i}>
-      <span className={className}>{value}</span>
+      {value.split(' ').map((token, j) => (
+        <span key={j} className={className}>
+          {prefix}
+          {token}
+        </span>
+      ))}
     </li>
   );
 };
@@ -52,10 +62,12 @@ const ClassIdAttribute = ([name, value]: Attribute, i: number) => {
 /**
  * Format normal attributes as key/value pairs.
  */
-const NormalAttribue = ([name, value]: Attribute, i: number) => (
+const NormalAttribute = ([name, value]: Attribute, i: number) => (
   <li key={i}>
+    <span className={css(styles.clipboardOnly)}>[</span>
     <span className="Node__attr-name">{name}</span>
-    {value && <span className="Node__attr-value">{value}</span>}
+    {value && <span>="{value}"</span>}
+    <span className={css(styles.clipboardOnly)}>]</span>
   </li>
 );
 
@@ -70,10 +82,14 @@ const AttributeList = ({ attrs }: AttributeListProps) => {
       ([name, value], i) =>
         name === 'class' || name === 'id'
           ? ClassIdAttribute([name, value], i)
-          : NormalAttribue([name, value], i)
+          : NormalAttribute([name, value], i),
     );
 
   return <ul className="Node__attr-list">{attrList}</ul>;
 };
+
+const styles = StyleSheet.create({
+  clipboardOnly: { ...mixins.clipboardOnly },
+});
 
 export default AttributeList;

@@ -37,6 +37,13 @@ const mixins = {
     fontSize: '0.9rem',
     color: '#999',
   },
+  clipboardOnly: {
+    whiteSpace: 'pre',
+    display: 'inline-block',
+    width: 0,
+    opacity: 0,
+    pointerEvents: 'none',
+  },
 };
 
 export { colors, mixins, spacing };

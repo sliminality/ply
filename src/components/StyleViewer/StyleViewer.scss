@@ -1,6 +1,8 @@
 @import '../../globals.scss';
 
 .StyleViewer {
+  width: 100%;  // Fill up the vertical .Pane
+
   &__none-selected {
     display: block;
     padding: 10px;
@@ -9,7 +11,7 @@
 
 .ElementStyles {
   width: 100%;  // parent is flex
-  // height: 100%;  // get last child to scroll
+  height: 100%;  // get children to scroll
   position: relative;
 
   // Let computed styles scroll correctly
@@ -49,6 +51,7 @@
 
   &__content {
     padding: ($padding-sides / 2) $padding-sides;
+    overflow-y: auto;
   }
 }
 

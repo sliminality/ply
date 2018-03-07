@@ -5,6 +5,7 @@ import JSONTree from 'react-json-tree';
 import ElementStyles from './ElementStyles';
 import ComputedStylesView from './ComputedStylesView';
 import MatchedStylesView from './MatchedStylesView';
+import DependentStylesView from './DependentStylesView';
 import { connect } from 'react-redux';
 import {
   getStyles,
@@ -109,6 +110,11 @@ class StyleViewer extends React.Component<Props> {
           ruleAnnotations={ruleAnnotations}
           highlightSelectorAll={highlightSelectorAll(nodeId)}
           clearHighlight={clearHighlight}
+          toggleCSSProperty={toggleCSSProperty(nodeId)}
+        />
+        <DependentStylesView
+          name="Dependent"
+          matchedStyles={matchedCSSRules}
           toggleCSSProperty={toggleCSSProperty(nodeId)}
         />
         {showDevControls && (

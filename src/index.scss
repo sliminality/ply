@@ -12,7 +12,7 @@
 
 // Overrides for react-split-pane
 .Pane {
-  overflow: auto;
+  height: 100%;
 
   &::-webkit-scrollbar {
     height: 5px;

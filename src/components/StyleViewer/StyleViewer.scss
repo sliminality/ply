@@ -2,6 +2,7 @@
 
 .StyleViewer {
   width: 100%;  // Fill up the vertical .Pane
+  height: 100%; // Allow contents to scroll 
 
   &__none-selected {
     display: block;

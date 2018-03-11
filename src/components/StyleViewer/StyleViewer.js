@@ -109,6 +109,7 @@ class StyleViewer extends React.Component<Props> {
         nodeId={nodeId}
         style={nodeStyle}
         pruneNode={pruneNode}
+        mask={mask}
         isPruning={isPruning}
         settings={settings}
       >
@@ -121,11 +122,13 @@ class StyleViewer extends React.Component<Props> {
           clearHighlight={clearHighlight}
           toggleCSSProperty={toggleCSSProperty(nodeId)}
         />
-        <DependentStylesView
-          name="Dependent"
-          matchedStyles={matchedCSSRules}
-          toggleCSSProperty={toggleCSSProperty(nodeId)}
-        />
+        {/**
+          <DependentStylesView
+            name="Dependent"
+            matchedStyles={matchedCSSRules}
+            toggleCSSProperty={toggleCSSProperty(nodeId)}
+          />
+          */}
         {showDevControls && (
           <ComputedStylesView
             name="Computed"
@@ -133,7 +136,7 @@ class StyleViewer extends React.Component<Props> {
             computedStyle={computedStyle}
           />
         )}
-        {showDevControls && <JSONTree data={styles[nodeId]} name="JSONTree" />}
+        {showDevControls && <JSONTree data={styles[nodeId]} name="JSON" />}
       </ElementStyles>
     );
   };

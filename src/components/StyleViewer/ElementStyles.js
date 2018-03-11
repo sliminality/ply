@@ -4,7 +4,7 @@ import * as React from 'react';
 import { StyleSheet, css } from 'aphrodite';
 import { colors, mixins } from '../../styles';
 
-import type { NodeStyle, InspectorSettings } from '../../types';
+import type { NodeStyle, InspectorSettings, NodeStyleMask } from '../../types';
 import type { CRDP$NodeId } from 'devtools-typed/domain/DOM';
 
 type Props = {
@@ -14,16 +14,19 @@ type Props = {
   pruneNode: CRDP$NodeId => void,
   settings: InspectorSettings,
   children?: Array<React.Node>,
+  mask?: NodeStyleMask,
 };
 
 type State = {
   activeView: number,
+  showPruneMenu: boolean,
 };
 
 class ElementStyles extends React.Component<Props, State> {
   props: Props;
   state: State = {
     activeView: 0,
+    showPruneMenu: false,
   };
 
   switchView = (index: number) => {
@@ -32,8 +35,17 @@ class ElementStyles extends React.Component<Props, State> {
     });
   };
 
+  togglePruneMenu = (show?: boolean) => {
+    const { showPruneMenu } = this.state;
+    if (typeof show === 'boolean') {
+      this.setState({ showPruneMenu: show });
+    } else {
+      this.setState({ showPruneMenu: !showPruneMenu });
+    }
+  };
+
   renderToolbar() {
-    const { nodeId, pruneNode, isPruning, settings, children } = this.props;
+    const { settings, children } = this.props;
     const { activeView } = this.state;
     const { showDevControls } = settings;
     const tabs = React.Children.map(children, (child, i) => (
@@ -50,16 +62,69 @@ class ElementStyles extends React.Component<Props, State> {
         <ul className={css(styles.tabs)}>{tabs}</ul>
         {showDevControls && (
           <span className="ElementStyles__node-id">
-            Node ID: {this.props.nodeId}
+            ID: {this.props.nodeId}
           </span>
         )}
-        <button
-          className="uk-button-default uk-button-small"
-          onClick={() => pruneNode(nodeId)}
-        >
-          {isPruning ? 'Pruning...' : 'Prune'}
-        </button>
+        {this.renderPruneButton()}
       </div>
+    );
+  }
+
+  renderPruneButton() {
+    const { nodeId, pruneNode, isPruning, mask } = this.props;
+    const { showPruneMenu } = this.state;
+
+    // TODO: Logic about whether or not properties have
+    // been changed since "Prune."
+
+    if (mask) {
+      return (
+        <div className="uk-button-group">
+          <button className="uk-button uk-button-default uk-button-small">
+            Prune
+          </button>
+          <button
+            className={`${css(
+              styles.pruneMenuButton,
+            )} uk-button uk-button-default uk-button-small`}
+            type="button"
+            tabIndex={0}
+            onClick={this.togglePruneMenu}
+            onBlur={() => this.togglePruneMenu(false)}
+          >
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 20 20"
+              xmlns="http://www.w3.org/2000/svg"
+              ratio="1"
+            >
+              <polygon points="5 7 15 7 10 12" />
+            </svg>
+          </button>
+          {showPruneMenu && (
+            <div className={css(styles.dropdown)}>
+              <ul class="uk-nav uk-dropdown-nav">
+                <li>
+                  <a href="#">Reset to pruned</a>
+                </li>
+                <li>
+                  <a href="#">Check dependencies</a>
+                </li>
+              </ul>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    return (
+      <button
+        className="uk-button-default uk-button-small"
+        onClick={() => pruneNode(nodeId)}
+      >
+        {isPruning ? 'Pruning...' : 'Prune'}
+      </button>
     );
   }
 
@@ -126,6 +191,20 @@ const styles = StyleSheet.create({
       bottom: 0,
       transform: 'translateY(1px)',
     },
+  },
+  dropdown: {
+    position: 'absolute',
+    boxShadow: '0 5px 12px rgba(0,0,0,0.15)',
+    zIndex: 3000,
+    background: 'white',
+    right: 0,
+    top: '100%',
+    minWidth: 200,
+    padding: 10,
+  },
+  pruneMenuButton: {
+    marginLeft: -1,
+    padding: '0 5px',
   },
 });
 

@@ -64,15 +64,15 @@ export function requestStyleForNode(
 
 export function toggleCSSProperty(
   nodeId: CRDP$NodeId,
-  ruleIdx: number,
-  propIdx: number,
+  ruleIndex: number,
+  propertyIndex: number,
 ): ToggleCSSPropertyAction {
   return {
     type: actions.TOGGLE_CSS_PROPERTY,
     data: {
       nodeId: toInt(nodeId),
-      ruleIdx,
-      propIdx,
+      ruleIndex,
+      propertyIndex,
     },
   };
 }

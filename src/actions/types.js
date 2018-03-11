@@ -84,8 +84,8 @@ export type ToggleCSSPropertyAction = {
   type: 'TOGGLE_CSS_PROPERTY',
   data: {
     nodeId: CRDP$NodeId,
-    ruleIdx: number,
-    propIdx: number,
+    ruleIndex: number,
+    propertyIndex: number,
   },
 };
 

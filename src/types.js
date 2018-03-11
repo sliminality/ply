@@ -16,6 +16,7 @@ export type State = {
   inspectionRoot: ?CRDP$NodeId,
   styles: NodeStyleMap,
   isPruning: boolean,
+  pruned: NodeStyleMaskMap,
   selectedNodes: { [CRDP$NodeId]: boolean },
   entities: {
     // Output from Normalizr
@@ -71,6 +72,17 @@ export type NodeStyle = {
   computedStyle: ComputedStyle,
   ruleAnnotations?: Array<?CSSRuleAnnotation>,
 } & CRDP$MatchedStyles;
+
+export type NodeStyleMask = Array<Array<boolean>>;
+
+export type NodeStyleMaskDiff = {
+  enabled?: Array<CSSPropertyIndices>,
+  disabled?: Array<CSSPropertyIndices>,
+};
+
+export type CSSPropertyIndices = [number, number];
+
+export type NodeStyleMaskMap = { [CRDP$NodeId]: NodeStyleMask };
 
 // TODO(slim): Move this to shared type definitions repo.
 export type CSSRuleAnnotation =

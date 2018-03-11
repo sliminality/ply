@@ -3,8 +3,13 @@
 import * as React from 'react';
 import { has, zip } from 'lodash';
 import { StyleSheet, css } from 'aphrodite';
-import { colors, mixins } from '../../styles';
-import type { CSSRuleAnnotation } from '../../types';
+import { colors, mixins, spacing } from '../../styles';
+
+import type {
+  CSSRuleAnnotation,
+  NodeStyleMask,
+  CSSPropertyIndices,
+} from '../../types';
 
 import type {
   CRDP$CSSProperty,
@@ -283,13 +288,18 @@ class MatchedStylesView extends React.Component<Props> {
       ruleAnnotations && matchedStyles.length === ruleAnnotations.length;
 
     return (
-      <ul className={css(styles.matchedStyles)}>
-        {annotationsValid
-          ? zip(matchedStyles, ruleAnnotations).map(([rule, annotation], idx) =>
-              this.renderRule(rule, idx, annotation),
-            )
-          : matchedStyles.map((rule, idx) => this.renderRule(rule, idx))}
-      </ul>
+      <div className={css(styles.container)}>
+        <ul className={css(styles.matchedStylesList)}>
+          {annotationsValid
+            ? zip(
+                matchedStyles,
+                ruleAnnotations,
+              ).map(([rule, annotation], idx) =>
+                this.renderRule(rule, idx, annotation),
+              )
+            : matchedStyles.map((rule, idx) => this.renderRule(rule, idx))}
+        </ul>
+      </div>
     );
   }
 }
@@ -306,7 +316,10 @@ const sharedStyles = {
 };
 
 const styles = StyleSheet.create({
-  matchedStyles: {
+  container: {
+    padding: `${spacing.paddingSides / 2}px ${spacing.paddingSides}px`,
+  },
+  matchedStylesList: {
     padding: 0,
     listStyle: 'none',
     fontFamily: `'Inconsolata', monospace`,

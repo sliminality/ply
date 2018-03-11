@@ -3,7 +3,12 @@ import { combineReducers } from 'redux';
 import actionTypes from '../actions/actionTypes';
 
 import type { Action } from '../actions/types';
-import type { Connection, NormalizedNodeMap, NodeStyleMap } from '../types';
+import type {
+  Connection,
+  NormalizedNodeMap,
+  NodeStyleMap,
+  NodeStyleMaskMap,
+} from '../types';
 import type { CRDP$NodeId } from 'devtools-typed/domain/DOM';
 
 function connection(

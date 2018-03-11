@@ -9,12 +9,14 @@ const {
   SET_DOCUMENT,
   SET_STYLES,
   SET_INSPECTION_ROOT,
+  SET_DEPENDENCIES,
 
   PRUNE_NODE,
   CLEAR_HIGHLIGHT,
   HIGHLIGHT_NODE,
   REQUEST_STYLE_FOR_NODE,
   TOGGLE_CSS_PROPERTY,
+  COMPUTE_DEPENDENCIES,
 } = actionTypes;
 
 // TODO: test that every action defined in actions/actionTypes.js has
@@ -36,11 +38,13 @@ const messageTypes = {
     PRUNE_NODE_RESULT,
     SET_DOCUMENT,
     SET_STYLES,
+    SET_DEPENDENCIES,
     SET_INSPECTION_ROOT,
   },
   outgoing: {
     // Dispatched to store AND pushed to server
     PRUNE_NODE,
+    COMPUTE_DEPENDENCIES,
 
     // Pushed to server only
     CLEAR_HIGHLIGHT,

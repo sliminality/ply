@@ -17,6 +17,7 @@ export type State = {
   styles: NodeStyleMap,
   isPruning: boolean,
   pruned: NodeStyleMaskMap,
+  dependencies: NodeStyleDependencies,
   selectedNodes: { [CRDP$NodeId]: boolean },
   entities: {
     // Output from Normalizr
@@ -83,6 +84,11 @@ export type NodeStyleMaskDiff = {
 export type CSSPropertyIndices = [number, number];
 
 export type NodeStyleMaskMap = { [CRDP$NodeId]: NodeStyleMask };
+
+export type NodeStyleDependencies = {
+  dependants: { [keystone: CSSPropertyIndices]: Array<CSSPropertyIndices> },
+  keystones: { [dependant: CSSPropertyIndices]: Array<CSSPropertyIndices> },
+};
 
 // TODO(slim): Move this to shared type definitions repo.
 export type CSSRuleAnnotation =

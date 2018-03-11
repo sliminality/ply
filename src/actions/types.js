@@ -1,7 +1,13 @@
 // @flow @format
 import actions from './actionTypes';
 import type { CRDP$NodeId } from 'devtools-typed/domain/DOM';
-import type { NodeStyleMap, NormalizedNodeMap, NodeStyleMask } from '../types';
+import type {
+  NodeStyleMap,
+  NormalizedNodeMap,
+  NodeStyleMask,
+  NodeStyleMaskDiff,
+  NodeStyleDependencies,
+} from '../types';
 
 // Socket.io Events
 export type ConnectAction = { type: typeof actions.CONNECT };
@@ -49,6 +55,14 @@ export type PruneNodeResultAction = {
     nodeId: CRDP$NodeId,
     error?: string,
     mask?: NodeStyleMask,
+    diff?: NodeStyleMaskDiff,
+  },
+};
+
+export type SetDependenciesAction = {
+  type: typeof actions.SET_STYLES,
+  data: {
+    dependencies: NodeStyleDependencies,
   },
 };
 
@@ -65,6 +79,15 @@ export type PruneNodeAction = {
   type: typeof actions.PRUNE_NODE,
   data: {
     nodeId: CRDP$NodeId,
+  },
+};
+
+export type ComputeDependenciesAction = {
+  type: 'COMPUTE_DEPENDENCIES',
+  data: {
+    nodeId: CRDP$NodeId,
+    ruleIndex: number,
+    propertyIndex: number,
   },
 };
 
@@ -109,9 +132,11 @@ export type Action =
   | SetDocumentAction
   | SetStylesAction
   | PruneNodeResultAction
+  | SetDependenciesAction
   | SetInspectionRootAction
   | ToggleSelectNodeAction
   | PruneNodeAction
+  | ComputeDependenciesAction
   | HighlightNodeAction
   | ClearHighlightAction
   | RequestStyleForNodeAction

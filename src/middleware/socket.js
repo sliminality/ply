@@ -88,6 +88,9 @@ const socketMiddleware = (store: Store) => (next: Dispatch) => (
     case actionTypes.PRUNE_NODE:
       emit(outgoing.PRUNE_NODE, action.data);
       return next(action);
+    case actionTypes.COMPUTE_DEPENDENCIES:
+      emit(outgoing.COMPUTE_DEPENDENCIES, action.data);
+      return next(action);
 
     case actionTypes.SET_INSPECTION_ROOT:
     case actionTypes.TOGGLE_SELECT_NODE:

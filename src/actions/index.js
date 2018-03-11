@@ -3,6 +3,7 @@ import actions from './actionTypes';
 
 import type { CRDP$NodeId } from 'devtools-typed/domain/DOM';
 import type {
+  ComputeDependenciesAction,
   SetInspectionRootAction,
   ToggleSelectNodeAction,
   PruneNodeAction,
@@ -69,6 +70,21 @@ export function toggleCSSProperty(
 ): ToggleCSSPropertyAction {
   return {
     type: actions.TOGGLE_CSS_PROPERTY,
+    data: {
+      nodeId: toInt(nodeId),
+      ruleIndex,
+      propertyIndex,
+    },
+  };
+}
+
+export function computeDependencies(
+  nodeId: CRDP$NodeId,
+  ruleIndex: number,
+  propertyIndex: number,
+): ComputeDependenciesAction {
+  return {
+    type: actions.COMPUTE_DEPENDENCIES,
     data: {
       nodeId: toInt(nodeId),
       ruleIndex,

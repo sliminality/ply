@@ -14,6 +14,7 @@ const actionTypes = {
   PRUNE_NODE_RESULT: 'PRUNE_NODE_RESULT',
   SET_DOCUMENT: 'SET_DOCUMENT',
   SET_STYLES: 'SET_STYLES',
+  SET_DEPENDENCIES: 'SET_DEPENDENCIES',
   ERROR: 'ERROR',
 
   // Can originate on server or client
@@ -22,6 +23,7 @@ const actionTypes = {
   // Dispatched to store, also pushed to server
   PRUNE_NODE: 'PRUNE_NODE',
   TOGGLE_SELECT_NODE: 'TOGGLE_SELECT_NODE',
+  COMPUTE_DEPENDENCIES: 'COMPUTE_DEPENDENCIES',
 
   // Handled completely by server, never dispatched
   CLEAR_HIGHLIGHT: 'CLEAR_HIGHLIGHT',

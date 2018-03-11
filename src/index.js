@@ -21,6 +21,8 @@ const initialState: State = {
   selectedNodes: {},
   inspectionRoot: null,
   styles: {},
+  pruned: {},
+  dependencies: {},
   isPruning: false,
   entities: { nodes: {} },
 };

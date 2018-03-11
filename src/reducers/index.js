@@ -83,6 +83,27 @@ function styles(state: NodeStyleMap = {}, action: Action): NodeStyleMap {
   }
 }
 
+function pruned(
+  state: NodeStyleMaskMap = {},
+  action: Action,
+): NodeStyleMaskMap {
+  switch (action.type) {
+    case actionTypes.PRUNE_NODE_RESULT:
+      // If the result contains a mask, we need to overwrite
+      // the currently-stored mask.
+      if (action.data.mask && action.data.nodeId) {
+        return {
+          ...state,
+          [action.data.nodeId]: action.data.mask,
+        };
+      }
+      return state;
+
+    default:
+      return state;
+  }
+}
+
 function isPruning(state: boolean = false, action: Action): boolean {
   switch (action.type) {
     case actionTypes.PRUNE_NODE:
@@ -151,6 +172,7 @@ export default combineReducers({
   connection,
   error,
   inspectionRoot,
+  pruned,
   selectedNodes,
   styles,
   isPruning,

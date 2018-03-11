@@ -1,7 +1,7 @@
 // @flow @format
 import actions from './actionTypes';
 import type { CRDP$NodeId } from 'devtools-typed/domain/DOM';
-import type { NodeStyleMap, NormalizedNodeMap } from '../types';
+import type { NodeStyleMap, NormalizedNodeMap, NodeStyleMask } from '../types';
 
 // Socket.io Events
 export type ConnectAction = { type: typeof actions.CONNECT };
@@ -46,7 +46,9 @@ export type SetStylesAction = {
 export type PruneNodeResultAction = {
   type: typeof actions.PRUNE_NODE_RESULT,
   data: {
+    nodeId: CRDP$NodeId,
     error?: string,
+    mask?: NodeStyleMask,
   },
 };
 

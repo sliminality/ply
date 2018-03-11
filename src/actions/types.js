@@ -92,6 +92,7 @@ export type ToggleCSSPropertyAction = {
 export type Action =
   | ConnectAction
   | DisconnectAction
+  | ErrorAction
   | ReconnectAction
   | ReconnectAttemptAction
   | ReconnectFailedAction

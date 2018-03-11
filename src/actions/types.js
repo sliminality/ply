@@ -1,21 +1,27 @@
 // @flow @format
+import actions from './actionTypes';
 import type { CRDP$NodeId } from 'devtools-typed/domain/DOM';
 import type { NodeStyleMap, NormalizedNodeMap } from '../types';
 
 // Socket.io Events
-export type ConnectAction = { type: 'CONNECT' };
-export type DisconnectAction = { type: 'DISCONNECT' };
-export type ReconnectAction = { type: 'RECONNECT' };
-export type ReconnectAttemptAction = { type: 'RECONNECT_ATTEMPT_ACTION' };
-export type ReconnectFailedAction = { type: 'RECONNECT_FAILED_ACTION' };
+export type ConnectAction = { type: typeof actions.CONNECT };
+export type DisconnectAction = { type: typeof actions.DISCONNECT };
+export type ReconnectAction = { type: typeof actions.RECONNECT };
+export type ReconnectAttemptAction = { type: typeof actions.RECONNECT_ATTEMPT };
+export type ReconnectFailedAction = { type: typeof actions.RECONNECT_FAILED };
 
 // Server-to-client
-export type TargetConnectedAction = { type: 'TARGET_CONNECTED' };
-export type TargetDisconnectedAction = { type: 'TARGET_DISCONNECTED' };
-export type ErrorAction = { type: 'ERROR', data: { error: string } };
+export type TargetConnectedAction = { type: typeof actions.TARGET_CONNECTED };
+export type TargetDisconnectedAction = {
+  type: typeof actions.TARGET_DISCONNECTED,
+};
+export type ErrorAction = {
+  type: typeof actions.ERROR,
+  data: { error: string },
+};
 
 export type SetDocumentAction = {
-  type: 'SET_DOCUMENT',
+  type: typeof actions.SET_DOCUMENT,
   data: {
     entities: {
       nodes: NormalizedNodeMap,
@@ -24,21 +30,21 @@ export type SetDocumentAction = {
 };
 
 export type ToggleSelectNodeAction = {
-  type: 'TOGGLE_SELECT_NODE',
+  type: typeof actions.TOGGLE_SELECT_NODE,
   data: {
     nodeId: CRDP$NodeId,
   },
 };
 
 export type SetStylesAction = {
-  type: 'SET_STYLES',
+  type: typeof actions.SET_STYLES,
   data: {
     styles: NodeStyleMap,
   },
 };
 
 export type PruneNodeResultAction = {
-  type: 'PRUNE_NODE_RESULT',
+  type: typeof actions.PRUNE_NODE_RESULT,
   data: {
     error?: string,
   },
@@ -46,7 +52,7 @@ export type PruneNodeResultAction = {
 
 // Can originate from server or client
 export type SetInspectionRootAction = {
-  type: 'SET_INSPECTION_ROOT',
+  type: typeof actions.SET_INSPECTION_ROOT,
   data: {
     nodeId: CRDP$NodeId,
   },
@@ -54,7 +60,7 @@ export type SetInspectionRootAction = {
 
 // Dispatched to state, but also pushed to server.
 export type PruneNodeAction = {
-  type: 'PRUNE_NODE',
+  type: typeof actions.PRUNE_NODE,
   data: {
     nodeId: CRDP$NodeId,
   },
@@ -62,7 +68,7 @@ export type PruneNodeAction = {
 
 // Handled completely by server, never dispatched
 export type HighlightNodeAction = {
-  type: 'HIGHLIGHT_NODE',
+  type: typeof actions.HIGHLIGHT_NODE,
   data: {
     nodeId: CRDP$NodeId,
     selectorList?: string,
@@ -70,18 +76,18 @@ export type HighlightNodeAction = {
 };
 
 export type ClearHighlightAction = {
-  type: 'CLEAR_HIGHLIGHT',
+  type: typeof actions.CLEAR_HIGHLIGHT,
 };
 
 export type RequestStyleForNodeAction = {
-  type: 'REQUEST_STYLE_FOR_NODE',
+  type: typeof actions.REQUEST_STYLE_FOR_NODE,
   data: {
     nodeId: CRDP$NodeId,
   },
 };
 
 export type ToggleCSSPropertyAction = {
-  type: 'TOGGLE_CSS_PROPERTY',
+  type: typeof actions.TOGGLE_CSS_PROPERTY,
   data: {
     nodeId: CRDP$NodeId,
     ruleIndex: number,

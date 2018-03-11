@@ -4,12 +4,9 @@ import * as React from 'react';
 import { has, zip } from 'lodash';
 import { StyleSheet, css } from 'aphrodite';
 import { colors, mixins, spacing } from '../../styles';
+import { isPropertyActiveInMask } from '../../styleHelpers';
 
-import type {
-  CSSRuleAnnotation,
-  NodeStyleMask,
-  CSSPropertyIndices,
-} from '../../types';
+import type { CSSRuleAnnotation, NodeStyleMask } from '../../types';
 
 import type {
   CRDP$CSSProperty,
@@ -23,6 +20,7 @@ import type {
 type Props = {
   name: string,
   matchedStyles: Array<CRDP$RuleMatch>,
+  mask?: NodeStyleMask,
   ruleAnnotations?: Array<?CSSRuleAnnotation>,
   toggleCSSProperty: (ruleIdx: number) => (propIdx: number) => () => void,
   highlightSelectorAll: string => void,
@@ -32,8 +30,9 @@ type Props = {
 type PropertyListArgs = {
   properties: Array<CRDP$CSSProperty>,
   origin: CRDP$StyleSheetOrigin,
-  toggleCSSPropertyForRule: (propIdx: number) => () => void,
+  toggleCSSPropertyForRule: (propertyIdx: number) => () => void,
   annotation?: CSSRuleAnnotation,
+  checkMask?: (propertyIndex: number) => boolean,
 };
 
 const Selectors = ({
@@ -138,10 +137,10 @@ class MatchedStylesView extends React.Component<Props> {
       toggleCSSProperty,
       highlightSelectorAll,
       clearHighlight,
+      mask,
     } = this.props;
     const { matchingSelectors, rule } = ruleMatch;
     const { selectorList, style, origin } = rule;
-    const { cssText } = style;
 
     // Don't render rules with user-agent origins.
     if (origin === 'user-agent') {
@@ -151,11 +150,13 @@ class MatchedStylesView extends React.Component<Props> {
     const declaredProperties = style.cssProperties.filter(
       this.isDeclaredProperty(origin),
     );
+    const checkMask = mask && isPropertyActiveInMask(mask)(ruleIdx);
     const propertyList = this.renderPropertyList({
       origin,
       properties: declaredProperties,
       toggleCSSPropertyForRule: toggleCSSProperty(ruleIdx),
       annotation,
+      checkMask,
     });
     const allPropertiesDisabled = style.cssProperties.every(
       ({ disabled }) => disabled,
@@ -178,9 +179,6 @@ class MatchedStylesView extends React.Component<Props> {
         {'}'}
       </div>
     );
-
-    // Determine whether the style has already been pruned.
-    const stylePruned = cssText && cssText.match(/^\/\*\* PRUNED \*\//);
 
     if (declaredProperties.length > 0) {
       return (
@@ -211,12 +209,13 @@ class MatchedStylesView extends React.Component<Props> {
     }
   }
 
-  renderPropertyList({
+  renderPropertyList = ({
     properties,
     origin,
     toggleCSSPropertyForRule,
     annotation,
-  }: PropertyListArgs): React.Element<'ul'> {
+    checkMask,
+  }: PropertyListArgs): React.Element<'ul'> => {
     // TODO: Come up with a more systematic way to handle different
     // types of annotations.
     let shadowed;
@@ -226,24 +225,28 @@ class MatchedStylesView extends React.Component<Props> {
 
     return (
       <ul className={css(styles.cssPropertyList)}>
-        {properties.map((prop, propIdx) => {
-          const { name, value } = prop;
-          const isDisabled =
-            typeof prop.disabled === 'boolean' && prop.disabled;
+        {properties.map((property, propertyIndex) => {
+          const { name, value } = property;
           const isNotParsedOk =
-            typeof prop.parsedOk === 'boolean' && !prop.parsedOk;
-          const isShadowed = shadowed && shadowed.has(propIdx);
+            typeof property.parsedOk === 'boolean' && !property.parsedOk;
+          const isShadowed = shadowed && shadowed.has(propertyIndex);
+
+          // Disabled properties are either pruned or toggled off.
+          const isDisabled =
+            typeof property.disabled === 'boolean' && property.disabled;
+          const isPruned = isDisabled && checkMask && !checkMask(propertyIndex);
 
           return (
             <li
-              key={propIdx}
+              key={propertyIndex}
               className={css(
                 styles.cssProperty,
                 isDisabled && styles.cssPropertyDisabled,
+                isPruned && styles.cssPropertyPruned,
                 isNotParsedOk && styles.cssPropertyNotParsedOk,
                 isShadowed && styles.cssPropertyShadowed,
               )}
-              onClick={toggleCSSPropertyForRule(propIdx)}
+              onClick={toggleCSSPropertyForRule(propertyIndex)}
             >
               <span className={css(styles.clipboardOnly)}>{'  '}</span>
               {isDisabled && (
@@ -274,7 +277,7 @@ class MatchedStylesView extends React.Component<Props> {
         })}
       </ul>
     );
-  }
+  };
 
   render() {
     const { matchedStyles, ruleAnnotations } = this.props;
@@ -360,6 +363,10 @@ const styles = StyleSheet.create({
     margin: 0,
     marginLeft: 20,
   },
+
+  /**
+   * CSS property styles
+   */
   cssProperty: {
     cursor: 'pointer',
   },
@@ -372,6 +379,12 @@ const styles = StyleSheet.create({
 
     ':hover': {
       textDecoration: 'none',
+    },
+  },
+  cssPropertyPruned: {
+    '::after': {
+      content: '" (pruned)"',
+      color: colors.lightGrey,
     },
   },
   cssPropertyNotParsedOk: {

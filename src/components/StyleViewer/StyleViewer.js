@@ -9,6 +9,7 @@ import DependentStylesView from './DependentStylesView';
 import { connect } from 'react-redux';
 import {
   getStyles,
+  getPruned,
   getIsPruning,
   getSelectedNodes,
   filterSelectedNodes,
@@ -25,6 +26,7 @@ import type {
   State as ReduxState,
   Dispatch,
   NodeStyleMap,
+  NodeStyleMaskMap,
   InspectorSettings,
 } from '../../types';
 import type { CRDP$NodeId } from 'devtools-typed/domain/DOM';
@@ -33,6 +35,7 @@ type Props = {
   styles: NodeStyleMap,
   isPruning: boolean,
   selectedNodes: { [CRDP$NodeId]: boolean },
+  pruned: NodeStyleMaskMap,
   settings: InspectorSettings,
 
   toggleCSSProperty: CRDP$NodeId => number => number => () => void,
@@ -78,17 +81,20 @@ class StyleViewer extends React.Component<Props> {
     const {
       styles,
       isPruning,
+      pruned,
       settings,
       pruneNode,
       toggleCSSProperty,
       highlightSelectorAll,
       clearHighlight,
     } = this.props;
+
     const nodeStyle = styles[nodeId];
     if (!nodeStyle) {
       // Styles haven't landed yet for this particular node.
       return <span>Loading styles...</span>;
     }
+
     const { showDevControls } = settings;
     const {
       parentComputedStyle,
@@ -96,6 +102,8 @@ class StyleViewer extends React.Component<Props> {
       matchedCSSRules,
       ruleAnnotations,
     } = nodeStyle;
+    const mask = pruned[nodeId];
+
     return (
       <ElementStyles
         nodeId={nodeId}
@@ -108,6 +116,7 @@ class StyleViewer extends React.Component<Props> {
           name="Matched"
           matchedStyles={matchedCSSRules}
           ruleAnnotations={ruleAnnotations}
+          mask={mask}
           highlightSelectorAll={highlightSelectorAll(nodeId)}
           clearHighlight={clearHighlight}
           toggleCSSProperty={toggleCSSProperty(nodeId)}
@@ -150,6 +159,7 @@ const mapStateToProps = (state: ReduxState) => ({
   styles: getStyles(state),
   selectedNodes: getSelectedNodes(state),
   isPruning: getIsPruning(state),
+  pruned: getPruned(state),
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({

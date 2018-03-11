@@ -4,7 +4,7 @@ const io = require('socket.io')().attach(config.socketPort);
 const messageTypes = require('./middleware/messageTypes');
 
 /*::
-import type {NodeStyleMap, NormalizedNodeMap} from './types';
+import type {NodeStyleMap, NormalizedNodeMap, NodeStyleMaskMap} from './types';
 import type {CRDP$NodeId} from 'devtools-typed/domain/DOM';
 import type {Action} from './actions/types';
 */
@@ -22,12 +22,14 @@ type State = {
   inspectionRoot: ?CRDP$NodeId,
   styles: NodeStyleMap,
   nodes?: NormalizedNodeMap,
+  pruned?: NodeStyleMaskMap,
 };
 */
 const INITIAL_STATE = {
   inspectionRoot: null,
   nodes: {},
   styles: {},
+  pruned: {},
 };
 
 let state = INITIAL_STATE;
@@ -90,6 +92,18 @@ function onClientConnect(app) {
       nodeId: state.inspectionRoot,
     },
   });
+
+  const prunedNodes = Object.keys(state.pruned);
+  for (const nodeId of prunedNodes) {
+    emitToApps({
+      type: incoming.PRUNE_NODE_RESULT,
+      data: {
+        nodeId,
+        mask: state.pruned[nodeId],
+      },
+    });
+  }
+
   for (const type of Object.keys(outgoing)) {
     app.on(type, data => onClientRequest({ type, data }));
   }
@@ -122,6 +136,14 @@ function maybeUpdateState(message /*: IncomingMessage */, data /*?: Object */) {
       break;
     case incoming.SET_INSPECTION_ROOT:
       state.inspectionRoot = data.nodeId;
+      break;
+    case incoming.PRUNE_NODE_RESULT:
+      if (data.nodeId && data.mask) {
+        state.pruned = {
+          ...state.pruned,
+          [data.nodeId]: data.mask,
+        }
+      }
       break;
     default:
       break;

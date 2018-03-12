@@ -97,7 +97,7 @@ class ElementStyles extends React.Component<Props, State> {
           </button>
           {showPruneMenu && (
             <div className={css(styles.dropdown)}>
-              <ul class="uk-nav uk-dropdown-nav">
+              <ul className="uk-nav uk-dropdown-nav">
                 <li>
                   <a href="#">Reset to pruned</a>
                 </li>

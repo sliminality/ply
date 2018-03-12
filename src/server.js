@@ -25,14 +25,15 @@ type State = {
   pruned?: NodeStyleMaskMap,
 };
 */
-const INITIAL_STATE = {
+
+let state = {
   inspectionRoot: null,
   nodes: {},
   styles: {},
   pruned: {},
+  dependencies: {},
 };
 
-let state = INITIAL_STATE;
 const connections = {
   browsers: new Set(),
   apps: new Set(),
@@ -187,7 +188,13 @@ function registerDisconnect(socketId /*: number */, type /*: 'browsers' | 'apps'
         browsers: connections.browsers.size,
       });
       if (type === 'browsers') {
-        state = INITIAL_STATE;
+        state = {
+          inspectionRoot: null,
+          nodes: {},
+          styles: {},
+          pruned: {},
+          dependencies: {},
+        };
       }
     } else {
       throw new Error(`tried to disconnect a ${type} that didnt exist`);

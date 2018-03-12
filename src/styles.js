@@ -16,6 +16,7 @@ const colors = {
   lightestGrey: '#efefef',
   lightGrey: '#b7b7b7',
   medGrey: '#666',
+  darkGrey: '#333',
   grey: '#111',
 };
 
@@ -43,6 +44,9 @@ const mixins = {
     width: 0,
     opacity: 0,
     pointerEvents: 'none',
+  },
+  sansSerif: {
+    fontFamily: `-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif`,
   },
 };
 

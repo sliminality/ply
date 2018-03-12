@@ -3,6 +3,7 @@
 import * as React from 'react';
 import { StyleSheet, css } from 'aphrodite';
 import { colors, mixins } from '../../styles';
+import Icon from '../shared/Icon';
 
 import type { NodeStyle, InspectorSettings, NodeStyleMask } from '../../types';
 import type { CRDP$NodeId } from 'devtools-typed/domain/DOM';
@@ -92,15 +93,7 @@ class ElementStyles extends React.Component<Props, State> {
             onClick={this.togglePruneMenu}
             onBlur={() => this.togglePruneMenu(false)}
           >
-            <svg
-              width="20"
-              height="20"
-              viewBox="0 0 20 20"
-              xmlns="http://www.w3.org/2000/svg"
-              ratio="1"
-            >
-              <polygon points="5 7 15 7 10 12" />
-            </svg>
+            <Icon type="triangle-down" />
           </button>
           {showPruneMenu && (
             <div className={css(styles.dropdown)}>

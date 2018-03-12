@@ -5,6 +5,8 @@ import { has, zip } from 'lodash';
 import { StyleSheet, css } from 'aphrodite';
 import { colors, mixins, spacing } from '../../styles';
 import { isPropertyActiveInMask } from '../../styleHelpers';
+import Icon from '../shared/Icon';
+import Tooltip from '../shared/Tooltip';
 
 import type { CSSRuleAnnotation, NodeStyleMask } from '../../types';
 
@@ -216,6 +218,8 @@ class MatchedStylesView extends React.Component<Props> {
     annotation,
     checkMask,
   }: PropertyListArgs): React.Element<'ul'> => {
+    const { mask } = this.props;
+
     // TODO: Come up with a more systematic way to handle different
     // types of annotations.
     let shadowed;
@@ -239,39 +243,55 @@ class MatchedStylesView extends React.Component<Props> {
           return (
             <li
               key={propertyIndex}
-              className={css(
-                styles.cssProperty,
-                isDisabled && styles.cssPropertyDisabled,
-                isPruned && styles.cssPropertyPruned,
-                isNotParsedOk && styles.cssPropertyNotParsedOk,
-                isShadowed && styles.cssPropertyShadowed,
-              )}
+              className={css(styles.cssProperty)}
               onClick={toggleCSSPropertyForRule(propertyIndex)}
             >
-              <span className={css(styles.clipboardOnly)}>{'  '}</span>
-              {isDisabled && (
-                <span className={css(styles.clipboardOnly)}>{'/* '}</span>
-              )}
               <span
                 className={css(
-                  styles.cssPropertyName,
-                  isDisabled && styles.disabledColor,
+                  styles.cssPropertyText,
+                  isDisabled && styles.cssPropertyDisabled,
+                  isPruned && styles.cssPropertyPruned,
+                  isNotParsedOk && styles.cssPropertyNotParsedOk,
+                  isShadowed && styles.cssPropertyShadowed,
                 )}
               >
-                {`${name}:`}
-              </span>{' '}
-              <span
-                className={css(
-                  styles.cssPropertyValue,
-                  isDisabled && styles.disabledColor,
+                <span className={css(styles.clipboardOnly)}>{'  '}</span>
+                {isDisabled && (
+                  <span className={css(styles.clipboardOnly)}>{'/* '}</span>
                 )}
-              >
-                {value}
+                <span
+                  className={css(
+                    styles.cssPropertyName,
+                    isDisabled && styles.disabledColor,
+                  )}
+                >
+                  {`${name}:`}{' '}
+                  <span
+                    className={css(
+                      styles.cssPropertyValue,
+                      isDisabled && styles.disabledColor,
+                    )}
+                  >
+                    {value}
+                  </span>
+                  {';'}
+                  {isDisabled && (
+                    <span className={css(styles.clipboardOnly)}>{' */'}</span>
+                  )}
+                </span>
               </span>
-              {';'}
-              {isDisabled && (
-                <span className={css(styles.clipboardOnly)}>{' */'}</span>
-              )}
+              {/** Show dependencies for pruned, active properties. **/
+              mask &&
+                !isDisabled && (
+                  <Tooltip title="Show dependencies">
+                    <Icon
+                      className={css(styles.findDepsIcon)}
+                      type="social"
+                      title="Find dependants"
+                      transform="scale(0.8)"
+                    />
+                  </Tooltip>
+                )}
             </li>
           );
         })}
@@ -333,6 +353,26 @@ const styles = StyleSheet.create({
     display: 'flex',
     justifyContent: 'space-between',
   },
+  mediaRuleContents: {
+    paddingLeft: 10,
+  },
+  cssRule: {
+    width: '100%',
+  },
+  cssRuleDisabled: {
+    ...sharedStyles.greyout,
+    // TODO: Some way to hide consecutive styles.
+  },
+  cssPropertyList: {
+    listStyle: 'none',
+    padding: 0,
+    margin: 0,
+    marginLeft: 20,
+  },
+
+  /**
+   * Annotations
+   */
   hint: {
     alignSelf: 'flex-start',
     flexShrink: 0,
@@ -350,25 +390,24 @@ const styles = StyleSheet.create({
       fontStyle: 'normal',
     },
   },
-  mediaRuleContents: {
-    paddingLeft: 10,
-  },
-  cssRuleDisabled: {
-    ...sharedStyles.greyout,
-    // TODO: Some way to hide consecutive styles.
-  },
-  cssPropertyList: {
-    listStyle: 'none',
-    padding: 0,
-    margin: 0,
-    marginLeft: 20,
-  },
 
   /**
    * CSS property styles
    */
   cssProperty: {
     cursor: 'pointer',
+    display: 'flex',
+    justifyContent: 'space-between',
+  },
+  cssPropertyText: {
+    // Accommodate icon.
+    maxWidth: 'calc(100% - 25px)',
+    padding: '0 4px',
+  },
+  cssPropertyHighlight: {
+    backgroundColor: 'hsla(134, 100%, 50%, 0.4)',
+    boxShadow: '0 0 5px 3px hsla(134, 100%, 50%, 0.4)',
+    borderRadius: 2,
   },
   disabledColor: {
     ...sharedStyles.greyout,
@@ -401,6 +440,9 @@ const styles = StyleSheet.create({
   },
   cssPropertyName: {
     color: colors.purple,
+  },
+  findDepsIcon: {
+    ...sharedStyles.greyout,
   },
 });
 

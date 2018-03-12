@@ -238,7 +238,7 @@ class MatchedStylesView extends React.Component<Props> {
           // Disabled properties are either pruned or toggled off.
           const isDisabled =
             typeof property.disabled === 'boolean' && property.disabled;
-          const isPruned = isDisabled && checkMask && !checkMask(propertyIndex);
+          const isPruned = checkMask && !checkMask(propertyIndex);
 
           return (
             <li

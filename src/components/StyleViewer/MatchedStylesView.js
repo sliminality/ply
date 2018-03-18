@@ -290,7 +290,7 @@ class MatchedStylesView extends React.Component<Props> {
                 !isDisabled && (
                   <Tooltip
                     title={isFocused ? 'Hide dependants' : 'Show dependants'}
-                    direction="right"
+                    direction="left"
                   >
                     <Icon
                       className={css(

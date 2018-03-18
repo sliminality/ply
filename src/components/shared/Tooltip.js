@@ -10,6 +10,7 @@ type Props = {
   children: React.Node,
   title: React.Node,
   direction?: TooltipDirection,
+  isLarge?: boolean,
   rest?: Object,
 };
 
@@ -30,7 +31,7 @@ class Tooltip extends React.Component<Props, State> {
   };
 
   render() {
-    const { children, title, direction, rest } = this.props;
+    const { children, title, direction, isLarge, rest } = this.props;
     const { showTooltip } = this.state;
     return (
       <span
@@ -40,9 +41,16 @@ class Tooltip extends React.Component<Props, State> {
       >
         {children}
         {showTooltip && (
-          <span className={css(styles.tooltip, styles[direction])} {...rest}>
+          <div
+            className={css(
+              styles.tooltip,
+              isLarge && styles.tooltipLarge,
+              styles[direction],
+            )}
+            {...rest}
+          >
             {title}
-          </span>
+          </div>
         )}
       </span>
     );
@@ -50,7 +58,8 @@ class Tooltip extends React.Component<Props, State> {
 }
 
 Tooltip.defaultProps = {
-  direction: 'left',
+  direction: 'right',
+  large: false,
 };
 
 const styles = StyleSheet.create({
@@ -66,15 +75,25 @@ const styles = StyleSheet.create({
     borderRadius: 2,
     padding: '3px 6px',
     zIndex: zIndex.tooltip,
-    maxWidth: 150,
   },
-  left: {
+  tooltipLarge: {
+    padding: '5px 10px',
+    minWidth: 150,
+    maxWidth: 300,
+  },
+  right: {
+    top: 0,
     right: 0,
     transform: 'translateX(calc(100% + 5px))',
   },
-  right: {
+  left: {
+    top: 0,
     left: 0,
     transform: 'translateX(calc(-100% - 5px))',
+  },
+  bottom: {
+    left: '50%',
+    transform: 'translateX(-50%)',
   },
 });
 

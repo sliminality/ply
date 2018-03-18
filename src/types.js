@@ -81,14 +81,18 @@ export type NodeStyleMaskDiff = {
   disabled?: Array<CSSPropertyIndices>,
 };
 
-export type CSSPropertyIndices = [number, number];
+export type CSSPropertyIndices = [number, number, number];
 
 export type NodeStyleMaskMap = { [CRDP$NodeId]: NodeStyleMask };
 
 export type NodeStyleDependencies = {
-  dependants: { [keystone: CSSPropertyIndices]: Array<CSSPropertyIndices> },
-  keystones: { [dependant: CSSPropertyIndices]: Array<CSSPropertyIndices> },
+  [keystone: CSSPropertyIndices]: Array<CSSPropertyIndices>,
 };
+
+export type CSSPropertyRelation =
+  | 'FOCUSED'
+  | 'DEPENDANT'
+  | 'DEPENDANT_DISABLED';
 
 // TODO(slim): Move this to shared type definitions repo.
 export type CSSRuleAnnotation =

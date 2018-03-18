@@ -13,6 +13,7 @@ const colors = {
   highlightYellow: 'hsla(60, 100%, 50%, 0.5)',
   pink: 'hsl(321, 40%, 46%)',
   lightPink: 'hsl(315, 50%, 94%)',
+  highlightPink: 'hsla(0, 100%, 50%, 0.3)',
   lightestGrey: '#efefef',
   lightGrey: '#b7b7b7',
   medGrey: '#666',
@@ -22,6 +23,10 @@ const colors = {
 
 const spacing = {
   paddingSides: 12,
+};
+
+const zIndex = {
+  tooltip: 30,
 };
 
 const mixins = {
@@ -50,4 +55,4 @@ const mixins = {
   },
 };
 
-export { colors, mixins, spacing };
+export { colors, mixins, spacing, zIndex };

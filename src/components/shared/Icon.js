@@ -21,13 +21,17 @@ type IconType = $Keys<typeof glyphs>;
 
 type Props = {
   type: IconType,
-  title: string,
+  title?: string,
   className?: string,
 };
 
 const Icon = ({ className, type, title, ...rest }: Props) => (
   <span className={`${css(styles.icon)} ${className || ''}`} aria-label={title}>
-    <span className={css(styles.a11yHidden)}>{title}</span>
+    {/**
+      * HACK: this is terrible for a11y but we don't want to have the label
+      * appear when the user copy/pastes styles, so we may not render it.
+      */
+    title && <span className={css(styles.a11yHidden)}>{title}</span>}
     <svg
       width="20"
       height="20"

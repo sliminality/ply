@@ -4,12 +4,22 @@ import * as React from 'react';
 import { has, zip } from 'lodash';
 import { StyleSheet, css } from 'aphrodite';
 import { colors, mixins, spacing } from '../../styles';
-import { isPropertyActiveInMask } from '../../styleHelpers';
+import {
+  isPropertyActiveInMask,
+  getEffectiveValueForProperty,
+} from '../../styleHelpers';
 import Icon from '../shared/Icon';
 import Tooltip from '../shared/Tooltip';
 
-import type { CSSRuleAnnotation, NodeStyleMask } from '../../types';
+import type {
+  CSSRuleAnnotation,
+  NodeStyleMask,
+  NodeStyleDependencies,
+  CSSPropertyIndices,
+  CSSPropertyRelation,
+} from '../../types';
 
+import type { CRDP$NodeId } from 'devtools-typed/domain/DOM';
 import type {
   CRDP$CSSProperty,
   CRDP$StyleSheetOrigin,
@@ -23,77 +33,29 @@ type Props = {
   name: string,
   matchedStyles: Array<CRDP$RuleMatch>,
   mask?: NodeStyleMask,
+  dependencies?: NodeStyleDependencies,
   ruleAnnotations?: Array<?CSSRuleAnnotation>,
+
+  focusedProperty: ?CRDP$CSSProperty,
+  getCSSProperty: (CRDP$NodeId, number, number) => ?CRDP$CSSProperty,
+
   toggleCSSProperty: (ruleIdx: number) => (propIdx: number) => () => void,
   highlightSelectorAll: string => void,
   clearHighlight: () => void,
+  toggleFocusedProperty: (ruleIndex: number) => (propertyIndex: number) => void,
+  getRelation: (
+    ruleIndex: number,
+  ) => (propertyIndex: number) => ?CSSPropertyRelation,
 };
 
 type PropertyListArgs = {
   properties: Array<CRDP$CSSProperty>,
   origin: CRDP$StyleSheetOrigin,
-  toggleCSSPropertyForRule: (propertyIdx: number) => () => void,
   annotation?: CSSRuleAnnotation,
   checkMask?: (propertyIndex: number) => boolean,
-};
-
-const Selectors = ({
-  matchedIndices,
-  selectors,
-  highlightSelectorAll,
-  clearHighlight,
-}: {
-  matchedIndices: number[],
-  selectors: Array<CRDP$Value>,
-  highlightSelectorAll: string => void,
-  clearHighlight: () => void,
-}): React.Node => {
-  const selectorList = matchedIndices
-    .map(i => selectors[i].text)
-    // return selectors
-    //   .map(x => x.text)
-    .join(', ');
-  return (
-    <span
-      onMouseEnter={() => highlightSelectorAll(selectorList)}
-      onMouseLeave={clearHighlight}
-    >
-      {selectorList}
-    </span>
-  );
-};
-
-const MediaQuery = ({
-  children,
-  media,
-}: {
-  media: Array<CRDP$CSSMedia>,
-  children?: React.Fragment,
-}): React.Node => {
-  // Filter out @import, inline/linked sheets, etc.
-  const mediaQueries = media.filter(md => md.source === 'mediaRule');
-  const mQ = mediaQueries[0];
-  if (!mQ || !mQ.mediaList) {
-    return <React.Fragment>{children}</React.Fragment>;
-  }
-  // TODO: Handle > 1 media query.
-  const mediaList: Array<CRDP$MediaQuery> = mQ.mediaList;
-  const texts = mediaList
-    .filter(mq => mq.active)
-    .map(({ expressions }) =>
-      expressions
-        .map(({ feature, value, unit }) => `(${feature}: ${value}${unit})`)
-        .join(' and '),
-    )
-    .join(' '); // TODO: Not sure what it means to have N > 2 mediaList items.
-  const mediaRule = `@media ${texts} {`;
-  return (
-    <div>
-      {mediaRule}
-      <div className={css(styles.mediaRuleContents)}>{children}</div>
-      {'}'}
-    </div>
-  );
+  toggleCSSPropertyForRule: (propertyIdx: number) => () => void,
+  toggleFocusedProperty: (propertyIndex: number) => void,
+  getRelation: (propertyIndex: number) => ?CSSPropertyRelation,
 };
 
 class MatchedStylesView extends React.Component<Props> {
@@ -136,10 +98,12 @@ class MatchedStylesView extends React.Component<Props> {
     annotation?: CSSRuleAnnotation,
   ): ?React.Node => {
     const {
+      mask,
       toggleCSSProperty,
       highlightSelectorAll,
       clearHighlight,
-      mask,
+      toggleFocusedProperty,
+      getRelation,
     } = this.props;
     const { matchingSelectors, rule } = ruleMatch;
     const { selectorList, style, origin } = rule;
@@ -154,9 +118,11 @@ class MatchedStylesView extends React.Component<Props> {
     );
     const checkMask = mask && isPropertyActiveInMask(mask)(ruleIdx);
     const propertyList = this.renderPropertyList({
-      origin,
       properties: declaredProperties,
+      origin,
       toggleCSSPropertyForRule: toggleCSSProperty(ruleIdx),
+      toggleFocusedProperty: toggleFocusedProperty(ruleIdx),
+      getRelation: getRelation(ruleIdx),
       annotation,
       checkMask,
     });
@@ -214,11 +180,13 @@ class MatchedStylesView extends React.Component<Props> {
   renderPropertyList = ({
     properties,
     origin,
-    toggleCSSPropertyForRule,
     annotation,
     checkMask,
+    toggleCSSPropertyForRule,
+    toggleFocusedProperty,
+    getRelation,
   }: PropertyListArgs): React.Element<'ul'> => {
-    const { mask } = this.props;
+    const { mask, focusedProperty } = this.props;
 
     // TODO: Come up with a more systematic way to handle different
     // types of annotations.
@@ -240,55 +208,99 @@ class MatchedStylesView extends React.Component<Props> {
             typeof property.disabled === 'boolean' && property.disabled;
           const isPruned = checkMask && !checkMask(propertyIndex);
 
+          const relation = getRelation(propertyIndex);
+          const isFocused = relation === 'FOCUSED';
+          const propertyStyles: { [CSSPropertyRelation]: Object } = {
+            DEPENDANT_DISABLED: styles.cssPropertyDisabled,
+            DEPENDANT: styles.cssPropertyDependant,
+            FOCUSED: styles.cssPropertyFocused,
+          };
+          const propertyRelationStyle = relation
+            ? propertyStyles[relation]
+            : null;
+
+          const tooltipDependant = (
+            <span>
+              This property depends on{' '}
+              <span style={{ fontFamily: 'monospace' }}>
+                {focusedProperty && focusedProperty.text}
+              </span>
+            </span>
+          );
+
+          const propertyText = (
+            <span
+              className={css(
+                styles.cssPropertyText,
+                isDisabled && styles.cssPropertyDisabled,
+                propertyRelationStyle,
+                isPruned && styles.cssPropertyPruned,
+                isShadowed && styles.cssPropertyShadowed,
+              )}
+              onClick={toggleCSSPropertyForRule(propertyIndex)}
+            >
+              <span className={css(styles.clipboardOnly)}>{'  '}</span>
+              {isDisabled && (
+                <span className={css(styles.clipboardOnly)}>{'/* '}</span>
+              )}
+              <span
+                className={css(
+                  styles.cssPropertyName,
+                  (relation === 'DEPENDANT_DISABLED' || isDisabled) &&
+                    styles.disabledColor,
+                )}
+              >
+                {`${name}:`}{' '}
+                <span
+                  className={css(
+                    styles.cssPropertyValue,
+                    (relation === 'DEPENDANT_DISABLED' || isDisabled) &&
+                      styles.disabledColor,
+                  )}
+                >
+                  {value}
+                </span>
+                {';'}
+                {isDisabled && (
+                  <span className={css(styles.clipboardOnly)}>{' */'}</span>
+                )}
+              </span>
+            </span>
+          );
+
           return (
             <li
               key={propertyIndex}
-              className={css(styles.cssProperty)}
-              onClick={toggleCSSPropertyForRule(propertyIndex)}
+              className={css(
+                styles.cssProperty,
+                isNotParsedOk && styles.cssPropertyNotParsedOk,
+              )}
             >
-              <span
-                className={css(
-                  styles.cssPropertyText,
-                  isDisabled && styles.cssPropertyDisabled,
-                  isPruned && styles.cssPropertyPruned,
-                  isNotParsedOk && styles.cssPropertyNotParsedOk,
-                  isShadowed && styles.cssPropertyShadowed,
-                )}
-              >
-                <span className={css(styles.clipboardOnly)}>{'  '}</span>
-                {isDisabled && (
-                  <span className={css(styles.clipboardOnly)}>{'/* '}</span>
-                )}
-                <span
-                  className={css(
-                    styles.cssPropertyName,
-                    isDisabled && styles.disabledColor,
-                  )}
-                >
-                  {`${name}:`}{' '}
-                  <span
-                    className={css(
-                      styles.cssPropertyValue,
-                      isDisabled && styles.disabledColor,
-                    )}
-                  >
-                    {value}
-                  </span>
-                  {';'}
-                  {isDisabled && (
-                    <span className={css(styles.clipboardOnly)}>{' */'}</span>
-                  )}
-                </span>
-              </span>
-              {/** Show dependencies for pruned, active properties. **/
+              {relation === 'DEPENDANT' ? (
+                <Tooltip title={tooltipDependant}>{propertyText}</Tooltip>
+              ) : (
+                propertyText
+              )}
+              {/**
+              * Show dependants for pruned, active properties.
+              * TODO: add title prop to <Icon> after study, or make it toggleable
+              * from settings.
+              */
               mask &&
                 !isDisabled && (
-                  <Tooltip title="Show dependencies">
+                  <Tooltip
+                    title={isFocused ? 'Hide dependants' : 'Show dependants'}
+                    direction="right"
+                  >
                     <Icon
-                      className={css(styles.findDepsIcon)}
+                      className={css(
+                        isFocused
+                          ? styles.findDepsIconDark
+                          : styles.findDepsIcon,
+                      )}
                       type="social"
-                      title="Find dependants"
                       transform="scale(0.8)"
+                      onClick={() => toggleFocusedProperty(propertyIndex)}
                     />
                   </Tooltip>
                 )}
@@ -327,6 +339,65 @@ class MatchedStylesView extends React.Component<Props> {
   }
 }
 
+const Selectors = ({
+  matchedIndices,
+  selectors,
+  highlightSelectorAll,
+  clearHighlight,
+}: {
+  matchedIndices: number[],
+  selectors: Array<CRDP$Value>,
+  highlightSelectorAll: string => void,
+  clearHighlight: () => void,
+}): React.Node => {
+  const selectorList = matchedIndices
+    .map(i => selectors[i].text)
+    // return selectors
+    //   .map(x => x.text)
+    .join(', ');
+  return (
+    <span
+      onMouseEnter={() => highlightSelectorAll(selectorList)}
+      onMouseLeave={clearHighlight}
+    >
+      {selectorList}
+    </span>
+  );
+};
+
+const MediaQuery = ({
+  children,
+  media,
+}: {
+  media: Array<CRDP$CSSMedia>,
+  children?: React.Fragment,
+}): React.Node => {
+  // Filter out @import, inline/linked sheets, etc.
+  const mediaQueries = media.filter(md => md.source === 'mediaRule');
+  const mQ = mediaQueries[0];
+  if (!mQ || !mQ.mediaList) {
+    return <React.Fragment>{children}</React.Fragment>;
+  }
+  // TODO: Handle > 1 media query.
+  const mediaList: Array<CRDP$MediaQuery> = mQ.mediaList;
+  const texts = mediaList
+    .filter(mq => mq.active)
+    .map(({ expressions }) =>
+      expressions
+        .map(({ feature, value, unit }) => `(${feature}: ${value}${unit})`)
+        .join(' and '),
+    )
+    .join(' '); // TODO: Not sure what it means to have N > 2 mediaList items.
+  const mediaRule = `@media ${texts} {`;
+  return (
+    <div className={css(styles.fullWidth)}>
+      {mediaRule}
+      <div className={css(styles.mediaRuleContents)}>{children}</div>
+      {'}'}
+    </div>
+  );
+};
+
 const sharedStyles = {
   strikethrough: {
     textDecoration: 'line-through',
@@ -339,6 +410,9 @@ const sharedStyles = {
 };
 
 const styles = StyleSheet.create({
+  fullWidth: {
+    width: '100%',
+  },
   container: {
     padding: `${spacing.paddingSides / 2}px ${spacing.paddingSides}px`,
   },
@@ -404,9 +478,14 @@ const styles = StyleSheet.create({
     maxWidth: 'calc(100% - 25px)',
     padding: '0 4px',
   },
-  cssPropertyHighlight: {
-    backgroundColor: 'hsla(134, 100%, 50%, 0.4)',
-    boxShadow: '0 0 5px 3px hsla(134, 100%, 50%, 0.4)',
+  cssPropertyDependant: {
+    backgroundColor: colors.highlightPink,
+    boxShadow: `0 0 5px 3px ${colors.highlightPink}`,
+    borderRadius: 2,
+  },
+  cssPropertyFocused: {
+    backgroundColor: colors.highlightYellow,
+    boxShadow: `0 0 5px 3px ${colors.highlightYellow}`,
     borderRadius: 2,
   },
   disabledColor: {
@@ -443,6 +522,9 @@ const styles = StyleSheet.create({
   },
   findDepsIcon: {
     ...sharedStyles.greyout,
+  },
+  findDepsIconDark: {
+    colors: colors.medGrey,
   },
 });
 

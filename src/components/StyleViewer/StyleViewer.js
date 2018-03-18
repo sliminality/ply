@@ -1,17 +1,22 @@
 // @flow @format
 import * as React from 'react';
+import { css, StyleSheet } from 'aphrodite';
+import { connect } from 'react-redux';
+
 import SplitPane from 'react-split-pane';
 import JSONTree from 'react-json-tree';
 import ElementStyles from './ElementStyles';
 import ComputedStylesView from './ComputedStylesView';
 import MatchedStylesView from './MatchedStylesView';
-import DependentStylesView from './DependentStylesView';
-import { connect } from 'react-redux';
+import { colors } from '../../styles';
+
 import {
   getStyles,
+  getCSSProperty,
   getPruned,
   getIsPruning,
   getSelectedNodes,
+  getDependencies,
   filterSelectedNodes,
 } from '../../selectors';
 import {
@@ -19,7 +24,9 @@ import {
   toggleCSSProperty,
   highlightNode,
   clearHighlight,
+  computeDependencies,
 } from '../../actions';
+import { indicesEqual, toInt } from '../../styleHelpers';
 import './StyleViewer.css';
 
 import type {
@@ -28,7 +35,11 @@ import type {
   NodeStyleMap,
   NodeStyleMaskMap,
   InspectorSettings,
+  NodeStyleDependencies,
+  CSSPropertyIndices,
+  CSSPropertyRelation,
 } from '../../types';
+import type { CRDP$CSSProperty } from 'devtools-typed/domain/CSS';
 import type { CRDP$NodeId } from 'devtools-typed/domain/DOM';
 
 type Props = {
@@ -36,16 +47,70 @@ type Props = {
   isPruning: boolean,
   selectedNodes: { [CRDP$NodeId]: boolean },
   pruned: NodeStyleMaskMap,
+  dependencies: NodeStyleDependencies,
   settings: InspectorSettings,
+
+  getCSSProperty: (CRDP$NodeId, number, number) => ?CRDP$CSSProperty,
 
   toggleCSSProperty: CRDP$NodeId => number => number => () => void,
   highlightSelectorAll: CRDP$NodeId => string => void,
   pruneNode: CRDP$NodeId => void,
   clearHighlight: () => void,
+  computeDependencies: (CRDP$NodeId, number, number) => void,
 };
 
-class StyleViewer extends React.Component<Props> {
+type State = {
+  focusedProperty: ?CSSPropertyIndices,
+};
+
+class StyleViewer extends React.Component<Props, State> {
   props: Props;
+  state: State = {
+    focusedProperty: null,
+  };
+
+  toggleFocusedProperty = (nodeId: CRDP$NodeId) => (ruleIndex: number) => (
+    propertyIndex: number,
+  ) => {
+    const { dependencies, computeDependencies } = this.props;
+    const { focusedProperty: current } = this.state;
+    const given: CSSPropertyIndices = [toInt(nodeId), ruleIndex, propertyIndex];
+
+    // Set given property as the new focus, unless it matches the current,
+    // in which case we disable the current focus.
+    const nextFocus = current && indicesEqual(current)(given) ? null : given;
+
+    this.setState({ focusedProperty: nextFocus });
+
+    // If we don't already have dependencies, request those.
+    if (nextFocus && !dependencies[nextFocus]) {
+      computeDependencies(...nextFocus);
+    }
+  };
+
+  getRelation = (nodeId: CRDP$NodeId) => (ruleIndex: number) => (
+    propertyIndex: number,
+  ): ?CSSPropertyRelation => {
+    const { focusedProperty } = this.state;
+    const { dependencies, getCSSProperty } = this.props;
+    const given: CSSPropertyIndices = [toInt(nodeId), ruleIndex, propertyIndex];
+
+    if (!focusedProperty || !dependencies[focusedProperty]) {
+      return null;
+    }
+    if (indicesEqual(given)(focusedProperty)) {
+      return 'FOCUSED';
+    }
+
+    const deps: Array<CSSPropertyIndices> = dependencies[focusedProperty];
+    if (deps.find(indicesEqual(given))) {
+      // Given property is a dependant of focused property.
+      // If the keystone is disabled, we show dependants as disabled, too.
+      const focused = getCSSProperty(...focusedProperty);
+      console.assert(!!focused, 'focused property exists');
+      return focused && focused.disabled ? 'DEPENDANT_DISABLED' : 'DEPENDANT';
+    }
+  };
 
   /**
    * Reduce an array of <ComputedStylesView /> components into a
@@ -79,6 +144,7 @@ class StyleViewer extends React.Component<Props> {
 
   renderNodeStyle = (nodeId: CRDP$NodeId): React.Element<any> => {
     const {
+      getCSSProperty,
       styles,
       isPruning,
       pruned,
@@ -88,6 +154,7 @@ class StyleViewer extends React.Component<Props> {
       highlightSelectorAll,
       clearHighlight,
     } = this.props;
+    const { focusedProperty } = this.state;
 
     const nodeStyle = styles[nodeId];
     if (!nodeStyle) {
@@ -115,20 +182,21 @@ class StyleViewer extends React.Component<Props> {
       >
         <MatchedStylesView
           name="Matched"
+          extraStyle={appStyles.cssPropertyFocused}
+          nodeId={nodeId}
+          focusedProperty={
+            focusedProperty && getCSSProperty(...focusedProperty)
+          }
           matchedStyles={matchedCSSRules}
           ruleAnnotations={ruleAnnotations}
           mask={mask}
+          getCSSProperty={getCSSProperty}
           highlightSelectorAll={highlightSelectorAll(nodeId)}
           clearHighlight={clearHighlight}
           toggleCSSProperty={toggleCSSProperty(nodeId)}
+          toggleFocusedProperty={this.toggleFocusedProperty(nodeId)}
+          getRelation={this.getRelation(nodeId)}
         />
-        {/**
-          <DependentStylesView
-            name="Dependent"
-            matchedStyles={matchedCSSRules}
-            toggleCSSProperty={toggleCSSProperty(nodeId)}
-          />
-          */}
         {showDevControls && (
           <ComputedStylesView
             name="Computed"
@@ -163,6 +231,8 @@ const mapStateToProps = (state: ReduxState) => ({
   selectedNodes: getSelectedNodes(state),
   isPruning: getIsPruning(state),
   pruned: getPruned(state),
+  dependencies: getDependencies(state),
+  getCSSProperty: getCSSProperty(state),
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
@@ -172,6 +242,16 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
   toggleCSSProperty: nodeId => ruleIdx => propIdx => () =>
     dispatch(toggleCSSProperty(nodeId, ruleIdx, propIdx)),
   clearHighlight: () => dispatch(clearHighlight()),
+  computeDependencies: (nodeId, ruleIndex, propertyIndex) =>
+    dispatch(computeDependencies(nodeId, ruleIndex, propertyIndex)),
+});
+
+const appStyles = StyleSheet.create({
+  cssPropertyFocused: {
+    backgroundColor: colors.highlightYellow,
+    boxShadow: `0 0 5px 3px ${colors.highlightYellow}`,
+    borderRadius: 2,
+  },
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(StyleViewer);

@@ -8,6 +8,7 @@ import type {
   NormalizedNodeMap,
   NodeStyleMap,
   NodeStyleMaskMap,
+  NodeStyleDependencies,
 } from '../types';
 import type { CRDP$NodeId } from 'devtools-typed/domain/DOM';
 
@@ -117,9 +118,49 @@ function isPruning(state: boolean = false, action: Action): boolean {
     case actionTypes.PRUNE_NODE_RESULT:
       return false;
 
+    case actionTypes.COMPUTE_DEPENDENCIES:
+      return true;
+
+    case actionTypes.SET_DEPENDENCIES:
+      return false;
+
     default:
       return state;
   }
+}
+
+function dependencies(
+  state: NodeStyleDependencies = {},
+  action: Action,
+): NodeStyleDependencies {
+  switch (action.type) {
+    case actionTypes.SET_DEPENDENCIES:
+      if (action.data.dependencies) {
+        return { ...state, ...action.data.dependencies };
+      }
+      return state;
+
+    default:
+      return state;
+  }
+}
+
+function resolveDiff(styles, { nodeId, maskDiff }) {
+  const result = {};
+  const nodeRules = styles[nodeId].matchedCSSRules;
+  if (maskDiff.enabled) {
+    result.enabled = maskDiff.enabled.map(
+      ([ruleIndex, propertyIndex]) =>
+        nodeRules[ruleIndex].rule.style.cssProperties[propertyIndex],
+    );
+  }
+  if (maskDiff.disabled) {
+    result.disabled = maskDiff.disabled.map(
+      ([ruleIndex, propertyIndex]) =>
+        nodeRules[ruleIndex].rule.style.cssProperties[propertyIndex],
+    );
+  }
+  return result;
 }
 
 // TODO: when we are normalizing more than just nodes,
@@ -178,6 +219,7 @@ export default combineReducers({
   error,
   inspectionRoot,
   pruned,
+  dependencies,
   selectedNodes,
   styles,
   isPruning,

@@ -62,7 +62,8 @@ export type PruneNodeResultAction = {
 export type SetDependenciesAction = {
   type: typeof actions.SET_STYLES,
   data: {
-    dependencies: NodeStyleDependencies,
+    error?: string,
+    dependants?: NodeStyleDependencies,
   },
 };
 

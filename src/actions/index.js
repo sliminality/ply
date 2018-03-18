@@ -1,5 +1,6 @@
 // @flow @format
 import actions from './actionTypes';
+import { toInt } from '../styleHelpers';
 
 import type { CRDP$NodeId } from 'devtools-typed/domain/DOM';
 import type {
@@ -12,8 +13,6 @@ import type {
   RequestStyleForNodeAction,
   ToggleCSSPropertyAction,
 } from './types';
-
-const toInt = (nodeId: CRDP$NodeId) => parseInt(nodeId, 10);
 
 export function setInspectionRoot(
   nodeId: CRDP$NodeId,

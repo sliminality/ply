@@ -15,6 +15,8 @@ type Props = {
   pruneNode: CRDP$NodeId => void,
   settings: InspectorSettings,
   children?: Array<React.Node>,
+
+  // TODO: This should just be an `isPruned` boolean.
   mask?: NodeStyleMask,
 };
 
@@ -78,46 +80,48 @@ class ElementStyles extends React.Component<Props, State> {
     // TODO: Logic about whether or not properties have
     // been changed since "Prune."
 
-    if (mask) {
-      return (
-        <div className="uk-button-group">
-          <button className="uk-button uk-button-default uk-button-small">
-            Prune
-          </button>
-          <button
-            className={`${css(
-              styles.pruneMenuButton,
-            )} uk-button uk-button-default uk-button-small`}
-            type="button"
-            tabIndex={0}
-            onClick={this.togglePruneMenu}
-            onBlur={() => this.togglePruneMenu(false)}
-          >
-            <Icon type="triangle-down" />
-          </button>
-          {showPruneMenu && (
-            <div className={css(styles.dropdown)}>
-              <ul className="uk-nav uk-dropdown-nav">
-                <li>
-                  <a href="#">Reset to pruned</a>
-                </li>
-                <li>
-                  <a href="#">Check dependencies</a>
-                </li>
-              </ul>
-            </div>
-          )}
-        </div>
-      );
-    }
-
     return (
-      <button
-        className="uk-button-default uk-button-small"
-        onClick={() => pruneNode(nodeId)}
-      >
-        {isPruning ? 'Pruning...' : 'Prune'}
-      </button>
+      <div className="uk-button-group">
+        <button
+          onClick={() => pruneNode(nodeId)}
+          className="uk-button uk-button-default uk-button-small"
+          disabled={isPruning}
+        >
+          {isPruning ? 'Pruning...' : 'Prune'}
+        </button>
+        {mask && (
+          <React.Fragment>
+            {' '}
+            <button
+              className={`${css(
+                styles.pruneMenuButton,
+              )} uk-button uk-button-default uk-button-small`}
+              type="button"
+              tabIndex={0}
+              onClick={this.togglePruneMenu}
+              onBlur={() => this.togglePruneMenu(false)}
+            >
+              <Icon
+                type="triangle-down"
+                title="Show more options"
+                transform="scale(0.7)"
+              />
+            </button>
+            {showPruneMenu && (
+              <div className={css(styles.dropdown)}>
+                <ul className="uk-nav uk-dropdown-nav">
+                  <li>
+                    <a href="#">Reset to pruned</a>
+                  </li>
+                  <li>
+                    <a href="#">Check dependencies</a>
+                  </li>
+                </ul>
+              </div>
+            )}
+          </React.Fragment>
+        )}
+      </div>
     );
   }
 

@@ -2,11 +2,15 @@
 /* eslint-disable no-use-before-define */
 import * as React from 'react';
 import { css, StyleSheet } from 'aphrodite';
-import { mixins, colors } from '../../styles';
+import { zIndex, mixins, colors } from '../../styles';
+
+type TooltipDirection = 'right' | 'left';
 
 type Props = {
   children: React.Node,
   title: React.Node,
+  direction?: TooltipDirection,
+  rest?: Object,
 };
 
 type State = {
@@ -18,6 +22,7 @@ class Tooltip extends React.Component<Props, State> {
   state: State = {
     showTooltip: false,
   };
+  static defaultProps: Object;
 
   toggleTooltip = () => {
     const { showTooltip } = this.state;
@@ -25,7 +30,7 @@ class Tooltip extends React.Component<Props, State> {
   };
 
   render() {
-    const { children, title } = this.props;
+    const { children, title, direction, rest } = this.props;
     const { showTooltip } = this.state;
     return (
       <span
@@ -34,11 +39,19 @@ class Tooltip extends React.Component<Props, State> {
         onMouseLeave={this.toggleTooltip}
       >
         {children}
-        {showTooltip && <span className={css(styles.tooltip)}>{title}</span>}
+        {showTooltip && (
+          <span className={css(styles.tooltip, styles[direction])} {...rest}>
+            {title}
+          </span>
+        )}
       </span>
     );
   }
 }
+
+Tooltip.defaultProps = {
+  direction: 'left',
+};
 
 const styles = StyleSheet.create({
   wrapper: {
@@ -52,8 +65,16 @@ const styles = StyleSheet.create({
     position: 'absolute',
     borderRadius: 2,
     padding: '3px 6px',
-    right: '100%',
-    marginRight: 5,
+    zIndex: zIndex.tooltip,
+    maxWidth: 150,
+  },
+  left: {
+    right: 0,
+    transform: 'translateX(calc(100% + 5px))',
+  },
+  right: {
+    left: 0,
+    transform: 'translateX(calc(-100% - 5px))',
   },
 });
 

@@ -19,8 +19,6 @@ const { incoming, outgoing, socketio } = messageTypes;
 const _url = config.socketURL(config.socketPort);
 const _socket = io.connect(_url, config.socketOptions);
 
-let hasStyles = false;
-
 function init(store: Store) {
   // Add listeners to socket messages, so they can be re-dispatched
   // as actionTypes.
@@ -29,14 +27,6 @@ function init(store: Store) {
 
   // Action creator for all socket incoming messages.
   const onIncomingMessage = messageType => data => {
-    if (messageType === incoming.SET_STYLES) {
-      if (hasStyles) {
-        console.timeEnd('REQUEST TOGGLE');
-        console.time('FROM RECEIVED TO COMPONENT');
-      } else {
-        hasStyles = true;
-      }
-    }
     store.dispatch({
       type: messageType.toUpperCase(),
       data,

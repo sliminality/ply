@@ -61,11 +61,6 @@ type PropertyListArgs = {
 class MatchedStylesView extends React.Component<Props> {
   props: Props;
 
-  componentDidUpdate() {
-    console.timeEnd('FROM RECEIVED TO COMPONENT');
-    console.groupEnd();
-  }
-
   isDeclaredProperty = (origin: CRDP$StyleSheetOrigin) => (
     prop: CRDP$CSSProperty,
   ): boolean => {

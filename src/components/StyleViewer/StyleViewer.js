@@ -2,6 +2,7 @@
 import * as React from 'react';
 import { css, StyleSheet } from 'aphrodite';
 import { connect } from 'react-redux';
+import { getEffectiveValueForProperty } from '../../styleHelpers';
 
 import SplitPane from 'react-split-pane';
 import JSONTree from 'react-json-tree';
@@ -38,6 +39,7 @@ import type {
   NodeStyleDependencies,
   CSSPropertyIndices,
   CSSPropertyRelation,
+  NodeStyle,
 } from '../../types';
 import type { CRDP$CSSProperty } from 'devtools-typed/domain/CSS';
 import type { CRDP$NodeId } from 'devtools-typed/domain/DOM';
@@ -112,6 +114,19 @@ class StyleViewer extends React.Component<Props, State> {
     }
   };
 
+  getEffectiveValue = (
+    nodeId: CRDP$NodeId,
+    nodeStyles: NodeStyle,
+    property: string,
+  ) => {
+    // TODO: Memoize this.
+    const ruleMatch = nodeStyles.matchedCSSRules;
+    const result = getEffectiveValueForProperty(nodeId, ruleMatch)(property);
+    const [firstMatch] = result;
+    console.log(firstMatch);
+    this.setState({ focusedProperty: firstMatch });
+  };
+
   /**
    * Reduce an array of <ComputedStylesView /> components into a
    * tree of <SplitPane /> components.
@@ -182,7 +197,6 @@ class StyleViewer extends React.Component<Props, State> {
       >
         <MatchedStylesView
           name="Matched"
-          extraStyle={appStyles.cssPropertyFocused}
           nodeId={nodeId}
           focusedProperty={
             focusedProperty && getCSSProperty(...focusedProperty)
@@ -190,6 +204,8 @@ class StyleViewer extends React.Component<Props, State> {
           matchedStyles={matchedCSSRules}
           ruleAnnotations={ruleAnnotations}
           mask={mask}
+          getEffectiveValue={property =>
+            this.getEffectiveValue(nodeId, nodeStyle, property)}
           getCSSProperty={getCSSProperty}
           highlightSelectorAll={highlightSelectorAll(nodeId)}
           clearHighlight={clearHighlight}
@@ -244,14 +260,6 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
   clearHighlight: () => dispatch(clearHighlight()),
   computeDependencies: (nodeId, ruleIndex, propertyIndex) =>
     dispatch(computeDependencies(nodeId, ruleIndex, propertyIndex)),
-});
-
-const appStyles = StyleSheet.create({
-  cssPropertyFocused: {
-    backgroundColor: colors.highlightYellow,
-    boxShadow: `0 0 5px 3px ${colors.highlightYellow}`,
-    borderRadius: 2,
-  },
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(StyleViewer);

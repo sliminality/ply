@@ -46,6 +46,7 @@ type Props = {
   getRelation: (
     ruleIndex: number,
   ) => (propertyIndex: number) => ?CSSPropertyRelation,
+  getEffectiveValue: (property: string) => void,
 };
 
 type PropertyListArgs = {
@@ -166,7 +167,24 @@ class MatchedStylesView extends React.Component<Props> {
   renderRuleAnnotation(annotation: CSSRuleAnnotation) {
     switch (annotation.type) {
       case 'BASE_STYLE':
-        return <div className={css(styles.hint)}>Likely base style</div>;
+        return (
+          <div className={css(styles.ruleAnnotation)}>
+            <Tooltip
+              title={
+                <span>
+                  These properties likely represent a{' '}
+                  <strong>base style</strong>, applied to multiple elements on
+                  the page. This particular element overrides some of the
+                  default values (highlighted in yellow).
+                </span>
+              }
+              direction="bottom"
+              isLarge="true"
+            >
+              Likely base style <Icon type="info" />
+            </Tooltip>
+          </div>
+        );
       default:
         return null;
     }
@@ -181,7 +199,7 @@ class MatchedStylesView extends React.Component<Props> {
     toggleFocusedProperty,
     getRelation,
   }: PropertyListArgs): React.Element<'ul'> => {
-    const { mask, focusedProperty } = this.props;
+    const { mask, focusedProperty, getEffectiveValue } = this.props;
 
     // TODO: Come up with a more systematic way to handle different
     // types of annotations.
@@ -204,6 +222,7 @@ class MatchedStylesView extends React.Component<Props> {
           const isPruned = checkMask && !checkMask(propertyIndex);
 
           const relation = getRelation(propertyIndex);
+          console.log(relation);
           const isFocused = relation === 'FOCUSED';
           const propertyStyles: { [CSSPropertyRelation]: Object } = {
             DEPENDANT_DISABLED: styles.cssPropertyDisabled,
@@ -214,14 +233,23 @@ class MatchedStylesView extends React.Component<Props> {
             ? propertyStyles[relation]
             : null;
 
-          const tooltipDependant = (
-            <span>
-              This property depends on{' '}
-              <span style={{ fontFamily: 'monospace' }}>
-                {focusedProperty && focusedProperty.text}
+          const tooltip =
+            relation === 'DEPENDANT' ? (
+              <span>
+                This property depends on{' '}
+                <code>{focusedProperty && focusedProperty.text}</code>
               </span>
-            </span>
-          );
+            ) : (
+              <span>
+                This property is a "default" setting for these base styles. The
+                current element <strong>overrides</strong> these values with
+                more specific styles (higher in the cascade).
+              </span>
+            );
+
+          const shadowedHandlers = {
+            onMouseEnter: () => getEffectiveValue(name),
+          };
 
           const propertyText = (
             <span
@@ -233,6 +261,7 @@ class MatchedStylesView extends React.Component<Props> {
                 isShadowed && styles.cssPropertyShadowed,
               )}
               onClick={toggleCSSPropertyForRule(propertyIndex)}
+              {...(isShadowed ? shadowedHandlers : null)}
             >
               <span className={css(styles.clipboardOnly)}>{'  '}</span>
               {isDisabled && (
@@ -271,8 +300,10 @@ class MatchedStylesView extends React.Component<Props> {
                 isNotParsedOk && styles.cssPropertyNotParsedOk,
               )}
             >
-              {relation === 'DEPENDANT' ? (
-                <Tooltip title={tooltipDependant}>{propertyText}</Tooltip>
+              {relation === 'DEPENDANT' || isShadowed ? (
+                <Tooltip title={tooltip} isLarge={isShadowed}>
+                  {propertyText}
+                </Tooltip>
               ) : (
                 propertyText
               )}
@@ -421,6 +452,9 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     display: 'flex',
     justifyContent: 'space-between',
+
+    // For rule annotation.
+    position: 'relative',
   },
   mediaRuleContents: {
     paddingLeft: 10,
@@ -442,22 +476,10 @@ const styles = StyleSheet.create({
   /**
    * Annotations
    */
-  hint: {
-    alignSelf: 'flex-start',
-    flexShrink: 0,
-    fontStyle: 'italic',
-    '::after': {
-      content: '"?"',
-      display: 'inline-block',
-      marginLeft: 10,
-      color: 'white',
-      minWidth: 20,
-      backgroundColor: colors.grey,
-      borderRadius: 25,
-      textAlign: 'center',
-      cursor: 'pointer',
-      fontStyle: 'normal',
-    },
+  ruleAnnotation: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
   },
 
   /**
@@ -505,6 +527,7 @@ const styles = StyleSheet.create({
   },
   cssPropertyShadowed: {
     backgroundColor: colors.highlightYellow,
+    boxShadow: `0 0 5px 3px ${colors.highlightYellow}`,
   },
   clipboardOnly: {
     ...mixins.clipboardOnly,

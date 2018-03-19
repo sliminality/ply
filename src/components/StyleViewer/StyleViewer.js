@@ -213,13 +213,11 @@ class StyleViewer extends React.Component<Props, State> {
           toggleFocusedProperty={this.toggleFocusedProperty(nodeId)}
           getRelation={this.getRelation(nodeId)}
         />
-        {showDevControls && (
-          <ComputedStylesView
-            name="Computed"
-            parentComputedStyle={parentComputedStyle}
-            computedStyle={computedStyle}
-          />
-        )}
+        <ComputedStylesView
+          name="Computed"
+          parentComputedStyle={parentComputedStyle}
+          computedStyle={computedStyle}
+        />
         {showDevControls && <JSONTree data={styles[nodeId]} name="JSON" />}
       </ElementStyles>
     );

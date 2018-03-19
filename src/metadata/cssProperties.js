@@ -381,19 +381,24 @@ export default [
   },
   {
     name: 'align-content',
+    defaultValue: 'auto',
   },
   {
     name: 'align-items',
+    defaultValue: 'auto',
   },
   {
     name: 'align-self',
+    defaultValue: 'auto',
   },
   {
     svg: true,
     name: 'alignment-baseline',
+    defaultValue: 'baseline',
   },
   {
     name: 'all',
+    defaultValue: '*',
   },
   {
     longhands: [
@@ -407,36 +412,46 @@ export default [
       'animation-play-state',
     ],
     name: 'animation',
+    defaultValue: '*',
   },
   {
     name: 'animation-delay',
+    defaultValue: '0',
   },
   {
     name: 'animation-direction',
+    defaultValue: 'normal',
   },
   {
     name: 'animation-duration',
+    defaultValue: '0',
   },
   {
     name: 'animation-fill-mode',
+    defaultValue: 'none',
   },
   {
     name: 'animation-iteration-count',
+    defaultValue: '1',
   },
   {
     name: 'animation-name',
+    defaultValue: 'none',
   },
   {
     name: 'animation-play-state',
+    defaultValue: 'running',
   },
   {
     name: 'animation-timing-function',
+    defaultValue: 'ease',
   },
   {
     name: 'backdrop-filter',
   },
   {
     name: 'backface-visibility',
+    defaultValue: 'visible',
   },
   {
     longhands: [
@@ -452,28 +467,35 @@ export default [
       'background-color',
     ],
     name: 'background',
+    defaultValue: '*',
   },
   {
     name: 'background-attachment',
+    defaultValue: 'scroll',
   },
   {
     name: 'background-blend-mode',
   },
   {
     name: 'background-clip',
+    defaultValue: 'box',
   },
   {
     name: 'background-color',
+    defaultValue: 'transparent',
   },
   {
     name: 'background-image',
+    defaultValue: 'none',
   },
   {
     name: 'background-origin',
+    defaultValue: 'box',
   },
   {
     longhands: ['background-position-x', 'background-position-y'],
     name: 'background-position',
+    defaultValue: '0%',
   },
   {
     name: 'background-position-x',
@@ -484,6 +506,7 @@ export default [
   {
     longhands: ['background-repeat-x', 'background-repeat-y'],
     name: 'background-repeat',
+    defaultValue: 'repeat',
   },
   {
     name: 'background-repeat-x',
@@ -493,10 +516,12 @@ export default [
   },
   {
     name: 'background-size',
+    defaultValue: 'auto',
   },
   {
     name: 'baseline-shift',
     svg: true,
+    defaultValue: '0',
   },
   {
     name: 'block-size',
@@ -522,6 +547,7 @@ export default [
       'border-image-repeat',
     ],
     name: 'border',
+    defaultValue: '*',
   },
   {
     longhands: [
@@ -530,25 +556,32 @@ export default [
       'border-bottom-color',
     ],
     name: 'border-bottom',
+    defaultValue: '*',
   },
   {
     name: 'border-bottom-color',
+    defaultValue: 'currentColor',
   },
   {
     name: 'border-bottom-left-radius',
+    defaultValue: '0',
   },
   {
     name: 'border-bottom-right-radius',
+    defaultValue: '0',
   },
   {
     name: 'border-bottom-style',
+    defaultValue: 'none',
   },
   {
     name: 'border-bottom-width',
+    defaultValue: 'medium',
   },
   {
     name: 'border-collapse',
     inherited: true,
+    defaultValue: 'separate',
   },
   {
     longhands: [
@@ -558,6 +591,7 @@ export default [
       'border-left-color',
     ],
     name: 'border-color',
+    defaultValue: '*',
   },
   {
     longhands: [
@@ -568,34 +602,44 @@ export default [
       'border-image-repeat',
     ],
     name: 'border-image',
+    defaultValue: 'none',
   },
   {
     name: 'border-image-outset',
+    defaultValue: '0',
   },
   {
     name: 'border-image-repeat',
+    defaultValue: 'stretch',
   },
   {
     name: 'border-image-slice',
+    defaultValue: '100%',
   },
   {
     name: 'border-image-source',
+    defaultValue: 'none',
   },
   {
     name: 'border-image-width',
+    defaultValue: '1',
   },
   {
     longhands: ['border-left-width', 'border-left-style', 'border-left-color'],
     name: 'border-left',
+    defaultValue: '*',
   },
   {
     name: 'border-left-color',
+    defaultValue: 'currentColor',
   },
   {
     name: 'border-left-style',
+    defaultValue: 'none',
   },
   {
     name: 'border-left-width',
+    defaultValue: 'medium',
   },
   {
     longhands: [
@@ -605,6 +649,7 @@ export default [
       'border-bottom-left-radius',
     ],
     name: 'border-radius',
+    defaultValue: '0',
   },
   {
     longhands: [
@@ -613,15 +658,19 @@ export default [
       'border-right-color',
     ],
     name: 'border-right',
+    defaultValue: '*',
   },
   {
     name: 'border-right-color',
+    defaultValue: 'currentColor',
   },
   {
     name: 'border-right-style',
+    defaultValue: 'none',
   },
   {
     name: 'border-right-width',
+    defaultValue: 'medium',
   },
   {
     longhands: [
@@ -629,6 +678,7 @@ export default [
       '-webkit-border-vertical-spacing',
     ],
     name: 'border-spacing',
+    defaultValue: '0px',
   },
   {
     name: 'border-style',
@@ -638,25 +688,32 @@ export default [
       'border-bottom-style',
       'border-left-style',
     ],
+    defaultValue: '*',
   },
   {
     longhands: ['border-top-width', 'border-top-style', 'border-top-color'],
     name: 'border-top',
+    defaultValue: '*',
   },
   {
     name: 'border-top-color',
+    defaultValue: 'currentColor',
   },
   {
     name: 'border-top-left-radius',
+    defaultValue: '0',
   },
   {
     name: 'border-top-right-radius',
+    defaultValue: '0',
   },
   {
     name: 'border-top-style',
+    defaultValue: 'none',
   },
   {
     name: 'border-top-width',
+    defaultValue: 'medium',
   },
   {
     longhands: [
@@ -666,24 +723,31 @@ export default [
       'border-left-width',
     ],
     name: 'border-width',
+    defaultValue: '*',
   },
   {
     name: 'bottom',
+    defaultValue: 'auto',
   },
   {
     name: 'box-shadow',
+    defaultValue: 'none',
   },
   {
     name: 'box-sizing',
+    defaultValue: 'box',
   },
   {
     name: 'break-after',
+    defaultValue: 'auto',
   },
   {
     name: 'break-before',
+    defaultValue: 'auto',
   },
   {
     name: 'break-inside',
+    defaultValue: 'auto',
   },
   {
     svg: true,
@@ -692,6 +756,7 @@ export default [
   {
     name: 'caption-side',
     inherited: true,
+    defaultValue: 'top',
   },
   {
     name: 'caret-color',
@@ -699,21 +764,26 @@ export default [
   },
   {
     name: 'clear',
+    defaultValue: 'none',
   },
   {
     name: 'clip',
+    defaultValue: 'auto',
   },
   {
     name: 'clip-path',
+    defaultValue: 'none',
   },
   {
     svg: true,
     name: 'clip-rule',
     inherited: true,
+    defaultValue: 'nonzero',
   },
   {
     name: 'color',
     inherited: true,
+    defaultValue: 'dependent',
   },
   {
     svg: true,
@@ -724,6 +794,7 @@ export default [
     svg: true,
     name: 'color-interpolation-filters',
     inherited: true,
+    defaultValue: 'auto',
   },
   {
     svg: true,
@@ -732,51 +803,66 @@ export default [
   },
   {
     name: 'column-count',
+    defaultValue: 'auto',
   },
   {
     name: 'column-fill',
+    defaultValue: 'balance',
   },
   {
     name: 'column-gap',
+    defaultValue: 'normal',
   },
   {
     longhands: ['column-rule-width', 'column-rule-style', 'column-rule-color'],
     name: 'column-rule',
+    defaultValue: '*',
   },
   {
     name: 'column-rule-color',
+    defaultValue: 'dependent',
   },
   {
     name: 'column-rule-style',
+    defaultValue: 'medium',
   },
   {
     name: 'column-rule-width',
+    defaultValue: 'medium',
   },
   {
     name: 'column-span',
+    defaultValue: 'none',
   },
   {
     name: 'column-width',
+    defaultValue: 'auto',
   },
   {
     longhands: ['column-width', 'column-count'],
     name: 'columns',
+    defaultValue: '*',
   },
   {
     name: 'contain',
+    defaultValue: 'none',
   },
   {
     name: 'content',
+    defaultValue: 'normal',
   },
   {
     name: 'counter-increment',
+    defaultValue: 'none',
   },
   {
     name: 'counter-reset',
+    defaultValue: 'none',
   },
   {
     name: 'cursor',
     inherited: true,
+    defaultValue: 'auto',
   },
   {
     name: 'cx',
@@ -793,18 +879,22 @@ export default [
   {
     name: 'direction',
     inherited: true,
+    defaultValue: 'ltr',
   },
   {
     name: 'display',
+    defaultValue: '*',
   },
   {
     svg: true,
     name: 'dominant-baseline',
     inherited: true,
+    defaultValue: 'normal',
   },
   {
     name: 'empty-cells',
     inherited: true,
+    defaultValue: 'show',
   },
   {
     name: 'fill',
@@ -823,40 +913,51 @@ export default [
   },
   {
     name: 'filter',
+    defaultValue: 'none',
   },
   {
     longhands: ['flex-grow', 'flex-shrink', 'flex-basis'],
     name: 'flex',
+    defaultValue: '*',
   },
   {
     name: 'flex-basis',
+    defaultValue: 'auto',
   },
   {
     name: 'flex-direction',
+    defaultValue: 'row',
   },
   {
     longhands: ['flex-direction', 'flex-wrap'],
     name: 'flex-flow',
+    defaultValue: '*',
   },
   {
     name: 'flex-grow',
+    defaultValue: '0',
   },
   {
     name: 'flex-shrink',
+    defaultValue: '1',
   },
   {
     name: 'flex-wrap',
+    defaultValue: 'nowrap',
   },
   {
     name: 'float',
+    defaultValue: 'none',
   },
   {
     name: 'flood-color',
     svg: true,
+    defaultValue: 'black',
   },
   {
     name: 'flood-opacity',
     svg: true,
+    defaultValue: '1',
   },
   {
     longhands: [
@@ -872,6 +973,7 @@ export default [
       'font-family',
     ],
     name: 'font',
+    defaultValue: '*',
   },
   {
     name: 'font-display',
@@ -879,30 +981,37 @@ export default [
   {
     name: 'font-family',
     inherited: true,
+    defaultValue: 'dependent',
   },
   {
     name: 'font-feature-settings',
     inherited: true,
+    defaultValue: 'normal',
   },
   {
     name: 'font-kerning',
     inherited: true,
+    defaultValue: 'auto',
   },
   {
     name: 'font-size',
     inherited: true,
+    defaultValue: 'medium',
   },
   {
     name: 'font-size-adjust',
     inherited: true,
+    defaultValue: 'none',
   },
   {
     name: 'font-stretch',
     inherited: true,
+    defaultValue: 'normal',
   },
   {
     name: 'font-style',
     inherited: true,
+    defaultValue: 'normal',
   },
   {
     longhands: [
@@ -912,30 +1021,37 @@ export default [
       'font-variant-east-asian',
     ],
     name: 'font-variant',
+    defaultValue: 'normal',
   },
   {
     name: 'font-variant-caps',
     inherited: true,
+    defaultValue: 'normal',
   },
   {
     name: 'font-variant-east-asian',
     inherited: true,
+    defaultValue: 'normal',
   },
   {
     name: 'font-variant-ligatures',
     inherited: true,
+    defaultValue: 'normal',
   },
   {
     name: 'font-variant-numeric',
     inherited: true,
+    defaultValue: 'normal',
   },
   {
     name: 'font-variation-settings',
     inherited: true,
+    defaultValue: 'normal',
   },
   {
     name: 'font-weight',
     inherited: true,
+    defaultValue: 'normal',
   },
   {
     longhands: [
@@ -947,6 +1063,7 @@ export default [
       'grid-auto-columns',
     ],
     name: 'grid',
+    defaultValue: '*',
   },
   {
     longhands: [
@@ -956,28 +1073,35 @@ export default [
       'grid-column-end',
     ],
     name: 'grid-area',
+    defaultValue: '*',
   },
   {
     name: 'grid-auto-columns',
+    defaultValue: 'auto',
   },
   {
     name: 'grid-auto-flow',
+    defaultValue: 'none',
   },
   {
     name: 'grid-auto-rows',
+    defaultValue: 'auto',
   },
   {
     longhands: ['grid-column-start', 'grid-column-end'],
     name: 'grid-column',
+    defaultValue: '*',
   },
   {
     name: 'grid-column-end',
+    defaultValue: 'auto',
   },
   {
     name: 'grid-column-gap',
   },
   {
     name: 'grid-column-start',
+    defaultValue: 'auto',
   },
   {
     longhands: ['grid-row-gap', 'grid-column-gap'],
@@ -986,15 +1110,18 @@ export default [
   {
     longhands: ['grid-row-start', 'grid-row-end'],
     name: 'grid-row',
+    defaultValue: '*',
   },
   {
     name: 'grid-row-end',
+    defaultValue: 'auto',
   },
   {
     name: 'grid-row-gap',
   },
   {
     name: 'grid-row-start',
+    defaultValue: 'auto',
   },
   {
     longhands: [
@@ -1003,30 +1130,38 @@ export default [
       'grid-template-areas',
     ],
     name: 'grid-template',
+    defaultValue: '*',
   },
   {
     name: 'grid-template-areas',
+    defaultValue: 'none',
   },
   {
     name: 'grid-template-columns',
+    defaultValue: 'none',
   },
   {
     name: 'grid-template-rows',
+    defaultValue: 'none',
   },
   {
     name: 'height',
+    defaultValue: 'auto',
   },
   {
     name: 'hyphens',
     inherited: true,
+    defaultValue: 'manual',
   },
   {
     name: 'image-orientation',
     inherited: true,
+    defaultValue: '0deg',
   },
   {
     name: 'image-rendering',
     inherited: true,
+    defaultValue: 'auto',
   },
   {
     name: 'inline-size',
@@ -1036,31 +1171,39 @@ export default [
   },
   {
     name: 'justify-content',
+    defaultValue: 'auto',
   },
   {
     name: 'justify-items',
+    defaultValue: 'auto',
   },
   {
     name: 'justify-self',
+    defaultValue: 'auto',
   },
   {
     name: 'left',
+    defaultValue: 'auto',
   },
   {
     inherited: true,
     name: 'letter-spacing',
+    defaultValue: 'normal',
   },
   {
     name: 'lighting-color',
     svg: true,
+    defaultValue: 'white',
   },
   {
     name: 'line-break',
     inherited: true,
+    defaultValue: 'auto',
   },
   {
     name: 'line-height',
     inherited: true,
+    defaultValue: 'normal',
   },
   {
     name: 'line-height-step',
@@ -1069,34 +1212,43 @@ export default [
   {
     longhands: ['list-style-type', 'list-style-position', 'list-style-image'],
     name: 'list-style',
+    defaultValue: '*',
   },
   {
     name: 'list-style-image',
     inherited: true,
+    defaultValue: 'none',
   },
   {
     name: 'list-style-position',
     inherited: true,
+    defaultValue: 'outside',
   },
   {
     name: 'list-style-type',
     inherited: true,
+    defaultValue: 'disc',
   },
   {
     longhands: ['margin-top', 'margin-right', 'margin-bottom', 'margin-left'],
     name: 'margin',
+    defaultValue: '*',
   },
   {
     name: 'margin-bottom',
+    defaultValue: '0',
   },
   {
     name: 'margin-left',
+    defaultValue: '0',
   },
   {
     name: 'margin-right',
+    defaultValue: '0',
   },
   {
     name: 'margin-top',
+    defaultValue: '0',
   },
   {
     longhands: ['marker-start', 'marker-mid', 'marker-end'],
@@ -1120,25 +1272,30 @@ export default [
   {
     name: 'mask',
     svg: true,
+    defaultValue: 'box',
   },
   {
     name: 'mask-source-type',
+    defaultValue: 'auto',
   },
   {
     svg: true,
     name: 'mask-type',
+    defaultValue: 'luminance',
   },
   {
     name: 'max-block-size',
   },
   {
     name: 'max-height',
+    defaultValue: 'none',
   },
   {
     name: 'max-inline-size',
   },
   {
     name: 'max-width',
+    defaultValue: 'none',
   },
   {
     name: 'max-zoom',
@@ -1148,12 +1305,14 @@ export default [
   },
   {
     name: 'min-height',
+    defaultValue: 'auto',
   },
   {
     name: 'min-inline-size',
   },
   {
     name: 'min-width',
+    defaultValue: 'auto',
   },
   {
     name: 'min-zoom',
@@ -1163,9 +1322,11 @@ export default [
   },
   {
     name: 'object-fit',
+    defaultValue: 'fill',
   },
   {
     name: 'object-position',
+    defaultValue: '50%',
   },
   {
     longhands: [
@@ -1194,9 +1355,11 @@ export default [
   },
   {
     name: 'opacity',
+    defaultValue: '1',
   },
   {
     name: 'order',
+    defaultValue: '0',
   },
   {
     name: 'orientation',
@@ -1204,26 +1367,33 @@ export default [
   {
     name: 'orphans',
     inherited: true,
+    defaultValue: '2',
   },
   {
     longhands: ['outline-color', 'outline-style', 'outline-width'],
     name: 'outline',
+    defaultValue: '*',
   },
   {
     name: 'outline-color',
+    defaultValue: 'invert',
   },
   {
     name: 'outline-offset',
+    defaultValue: '0',
   },
   {
     name: 'outline-style',
+    defaultValue: 'none',
   },
   {
     name: 'outline-width',
+    defaultValue: 'medium',
   },
   {
     longhands: ['overflow-x', 'overflow-y'],
     name: 'overflow',
+    defaultValue: '*',
   },
   {
     name: 'overflow-anchor',
@@ -1232,12 +1402,15 @@ export default [
   {
     name: 'overflow-wrap',
     inherited: true,
+    defaultValue: 'normal',
   },
   {
     name: 'overflow-x',
+    defaultValue: 'visible',
   },
   {
     name: 'overflow-y',
+    defaultValue: 'visible',
   },
   {
     longhands: ['overscroll-behavior-x', 'overscroll-behavior-y'],
@@ -1257,33 +1430,42 @@ export default [
       'padding-left',
     ],
     name: 'padding',
+    defaultValue: '*',
   },
   {
     name: 'padding-bottom',
+    defaultValue: '0',
   },
   {
     name: 'padding-left',
+    defaultValue: '0',
   },
   {
     name: 'padding-right',
+    defaultValue: '0',
   },
   {
     name: 'padding-top',
+    defaultValue: '0',
   },
   {
     name: 'page',
+    defaultValue: 'auto',
   },
   {
     longhands: ['break-after'],
     name: 'page-break-after',
+    defaultValue: 'auto',
   },
   {
     longhands: ['break-before'],
     name: 'page-break-before',
+    defaultValue: 'auto',
   },
   {
     longhands: ['break-inside'],
     name: 'page-break-inside',
+    defaultValue: 'auto',
   },
   {
     svg: true,
@@ -1292,9 +1474,11 @@ export default [
   },
   {
     name: 'perspective',
+    defaultValue: 'none',
   },
   {
     name: 'perspective-origin',
+    defaultValue: '50%',
   },
   {
     longhands: ['align-content', 'justify-content'],
@@ -1314,10 +1498,12 @@ export default [
   },
   {
     name: 'position',
+    defaultValue: 'static',
   },
   {
     name: 'quotes',
     inherited: true,
+    defaultValue: 'text',
   },
   {
     name: 'r',
@@ -1325,9 +1511,11 @@ export default [
   },
   {
     name: 'resize',
+    defaultValue: 'none',
   },
   {
     name: 'right',
+    defaultValue: 'auto',
   },
   {
     name: 'rotate',
@@ -1354,41 +1542,53 @@ export default [
       'scroll-padding-left',
     ],
     name: 'scroll-padding',
+    defaultValue: '0',
   },
   {
     longhands: ['scroll-padding-block-start', 'scroll-padding-block-end'],
     name: 'scroll-padding-block',
+    defaultValue: '0',
   },
   {
     name: 'scroll-padding-block-end',
+    defaultValue: '0',
   },
   {
     name: 'scroll-padding-block-start',
+    defaultValue: '0',
   },
   {
     name: 'scroll-padding-bottom',
+    defaultValue: '0',
   },
   {
     longhands: ['scroll-padding-inline-start', 'scroll-padding-inline-end'],
     name: 'scroll-padding-inline',
+    defaultValue: '0',
   },
   {
     name: 'scroll-padding-inline-end',
+    defaultValue: '0',
   },
   {
     name: 'scroll-padding-inline-start',
+    defaultValue: '0',
   },
   {
     name: 'scroll-padding-left',
+    defaultValue: '0',
   },
   {
     name: 'scroll-padding-right',
+    defaultValue: '0',
   },
   {
     name: 'scroll-padding-top',
+    defaultValue: '0',
   },
   {
     name: 'scroll-snap-align',
+    defaultValue: 'none',
   },
   {
     longhands: [
@@ -1398,6 +1598,7 @@ export default [
       'scroll-snap-margin-left',
     ],
     name: 'scroll-snap-margin',
+    defaultValue: '0',
   },
   {
     longhands: [
@@ -1405,15 +1606,19 @@ export default [
       'scroll-snap-margin-block-end',
     ],
     name: 'scroll-snap-margin-block',
+    defaultValue: '0',
   },
   {
     name: 'scroll-snap-margin-block-end',
+    defaultValue: '0',
   },
   {
     name: 'scroll-snap-margin-block-start',
+    defaultValue: '0',
   },
   {
     name: 'scroll-snap-margin-bottom',
+    defaultValue: '0',
   },
   {
     longhands: [
@@ -1421,36 +1626,47 @@ export default [
       'scroll-snap-margin-inline-end',
     ],
     name: 'scroll-snap-margin-inline',
+    defaultValue: '0',
   },
   {
     name: 'scroll-snap-margin-inline-end',
+    defaultValue: '0',
   },
   {
     name: 'scroll-snap-margin-inline-start',
+    defaultValue: '0',
   },
   {
     name: 'scroll-snap-margin-left',
+    defaultValue: '0',
   },
   {
     name: 'scroll-snap-margin-right',
+    defaultValue: '0',
   },
   {
     name: 'scroll-snap-margin-top',
+    defaultValue: '0',
   },
   {
     name: 'scroll-snap-stop',
+    defaultValue: 'normal',
   },
   {
     name: 'scroll-snap-type',
+    defaultValue: 'none',
   },
   {
     name: 'shape-image-threshold',
+    defaultValue: '0',
   },
   {
     name: 'shape-margin',
+    defaultValue: '0',
   },
   {
     name: 'shape-outside',
+    defaultValue: 'none',
   },
   {
     svg: true,
@@ -1459,10 +1675,12 @@ export default [
   },
   {
     name: 'size',
+    defaultValue: 'auto',
   },
   {
     name: 'speak',
     inherited: true,
+    defaultValue: 'auto',
   },
   {
     name: 'src',
@@ -1518,17 +1736,21 @@ export default [
   {
     name: 'tab-size',
     inherited: true,
+    defaultValue: '8',
   },
   {
     name: 'table-layout',
+    defaultValue: 'auto',
   },
   {
     name: 'text-align',
     inherited: true,
+    defaultValue: 'start',
   },
   {
     name: 'text-align-last',
     inherited: true,
+    defaultValue: 'auto',
   },
   {
     svg: true,
@@ -1538,6 +1760,7 @@ export default [
   {
     name: 'text-combine-upright',
     inherited: true,
+    defaultValue: 'none',
   },
   {
     longhands: [
@@ -1546,12 +1769,15 @@ export default [
       'text-decoration-color',
     ],
     name: 'text-decoration',
+    defaultValue: 'none',
   },
   {
     name: 'text-decoration-color',
+    defaultValue: 'currentColor',
   },
   {
     name: 'text-decoration-line',
+    defaultValue: 'none',
   },
   {
     name: 'text-decoration-skip-ink',
@@ -1559,21 +1785,26 @@ export default [
   },
   {
     name: 'text-decoration-style',
+    defaultValue: 'solid',
   },
   {
     name: 'text-indent',
     inherited: true,
+    defaultValue: '0',
   },
   {
     name: 'text-justify',
     inherited: true,
+    defaultValue: 'auto',
   },
   {
     name: 'text-orientation',
     inherited: true,
+    defaultValue: 'mixed',
   },
   {
     name: 'text-overflow',
+    defaultValue: 'clip',
   },
   {
     name: 'text-rendering',
@@ -1582,6 +1813,7 @@ export default [
   {
     name: 'text-shadow',
     inherited: true,
+    defaultValue: 'none',
   },
   {
     name: 'text-size-adjust',
@@ -1590,28 +1822,34 @@ export default [
   {
     name: 'text-transform',
     inherited: true,
+    defaultValue: 'none',
   },
   {
     name: 'text-underline-position',
     inherited: true,
+    defaultValue: 'auto',
   },
   {
     name: 'top',
+    defaultValue: 'auto',
   },
   {
     name: 'touch-action',
   },
   {
     name: 'transform',
+    defaultValue: 'none',
   },
   {
     name: 'transform-box',
   },
   {
     name: 'transform-origin',
+    defaultValue: '0',
   },
   {
     name: 'transform-style',
+    defaultValue: 'flat',
   },
   {
     longhands: [
@@ -1621,24 +1859,30 @@ export default [
       'transition-delay',
     ],
     name: 'transition',
+    defaultValue: '*',
   },
   {
     name: 'transition-delay',
+    defaultValue: '0s',
   },
   {
     name: 'transition-duration',
+    defaultValue: '0s',
   },
   {
     name: 'transition-property',
+    defaultValue: 'all',
   },
   {
     name: 'transition-timing-function',
+    defaultValue: 'ease',
   },
   {
     name: 'translate',
   },
   {
     name: 'unicode-bidi',
+    defaultValue: 'normal',
   },
   {
     name: 'unicode-range',
@@ -1656,40 +1900,50 @@ export default [
   },
   {
     name: 'vertical-align',
+    defaultValue: 'baseline',
   },
   {
     name: 'visibility',
     inherited: true,
+    defaultValue: 'visible',
   },
   {
     name: 'white-space',
     inherited: true,
+    defaultValue: 'normal',
   },
   {
     name: 'widows',
     inherited: true,
+    defaultValue: '2',
   },
   {
     name: 'width',
+    defaultValue: 'auto',
   },
   {
     name: 'will-change',
+    defaultValue: 'auto',
   },
   {
     name: 'word-break',
     inherited: true,
+    defaultValue: 'normal',
   },
   {
     inherited: true,
     name: 'word-spacing',
+    defaultValue: 'normal',
   },
   {
     name: 'word-wrap',
     inherited: true,
+    defaultValue: 'normal',
   },
   {
     name: 'writing-mode',
     inherited: true,
+    defaultValue: 'tb',
   },
   {
     name: 'x',
@@ -1701,6 +1955,7 @@ export default [
   },
   {
     name: 'z-index',
+    defaultValue: 'auto',
   },
   {
     name: 'zoom',

@@ -1,11 +1,11 @@
 // @flow @format
 import React, { Component } from 'react';
-import { ownStyles } from './styleHelpers';
 import fromPairs from 'lodash/fromPairs';
+import cssMetadata from '../../metadata';
 import './ComputedStylesView.css';
 
 import type { ComputedStyle } from '../../types';
-import type { CSSProperty } from './types';
+import type { CSSProperty } from '../../metadata';
 
 /**
  * Allow users to define their own computed property filters
@@ -21,14 +21,23 @@ export type Filter = {
 const createFilter = ({ props }: Filter) => (prop: string) => !!props.has(prop);
 
 const layoutFilter = {
-  name: 'Layout',
-  props: (new Set(['position', 'z-index']): Set<CSSProperty>),
+  name: 'All',
+  props: cssMetadata.allCanonicalProperties(),
 };
 
 type Props = {
   computedStyle: ComputedStyle,
   parentComputedStyle: ComputedStyle,
 };
+
+function ownStyles(mine: ComputedStyle, parent: ComputedStyle): ComputedStyle {
+  const isSameAsParent = name => mine[name] === parent[name];
+  const pairs = Object.entries(mine).filter(
+    ([name, value]) => !isSameAsParent(name),
+  );
+  const result = fromPairs(pairs);
+  return result;
+}
 
 class ComputedStylesView extends Component<Props> {
   props: Props;
@@ -43,9 +52,7 @@ class ComputedStylesView extends Component<Props> {
     const { computedStyle, parentComputedStyle } = this.props;
     const cs: ComputedStyle = fromPairs(
       Object.keys(computedStyle)
-        // Flow doesn't know that all the keys will be valid CSSProperties.
         .filter(createFilter(layoutFilter))
-        // $FlowFixMe - `prop` is guaranteed to be a CSS property because of the preceding filter.
         .map(prop => [prop, computedStyle[prop]]),
     );
 

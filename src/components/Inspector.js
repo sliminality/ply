@@ -35,6 +35,7 @@ class Inspector extends Component<Props, State> {
       showDevControls: true,
       deepExpandNodes: true,
       showConnection: false,
+      hidePruned: false,
     },
   };
 

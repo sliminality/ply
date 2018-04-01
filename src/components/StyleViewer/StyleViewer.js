@@ -212,6 +212,7 @@ class StyleViewer extends React.Component<Props, State> {
           toggleCSSProperty={toggleCSSProperty(nodeId)}
           toggleFocusedProperty={this.toggleFocusedProperty(nodeId)}
           getRelation={this.getRelation(nodeId)}
+          settings={settings}
         />
         <ComputedStylesView
           name="Computed"

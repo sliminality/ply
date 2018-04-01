@@ -30,6 +30,7 @@ export type InspectorSettings = {
   showDevControls: boolean,
   deepExpandNodes: boolean,
   showConnection: boolean,
+  hidePruned: boolean,
 };
 
 // TODO: add this to main styles repo

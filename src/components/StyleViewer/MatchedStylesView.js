@@ -12,6 +12,7 @@ import Icon from '../shared/Icon';
 import Tooltip from '../shared/Tooltip';
 
 import type {
+  InspectorSettings,
   CSSRuleAnnotation,
   NodeStyleMask,
   NodeStyleDependencies,
@@ -47,6 +48,8 @@ type Props = {
     ruleIndex: number,
   ) => (propertyIndex: number) => ?CSSPropertyRelation,
   getEffectiveValue: (property: string) => void,
+
+  settings: InspectorSettings,
 };
 
 type PropertyListArgs = {
@@ -100,9 +103,11 @@ class MatchedStylesView extends React.Component<Props> {
       clearHighlight,
       toggleFocusedProperty,
       getRelation,
+      settings,
     } = this.props;
     const { matchingSelectors, rule } = ruleMatch;
     const { selectorList, style, origin } = rule;
+    const { hidePruned } = settings;
 
     // Don't render rules with user-agent origins.
     if (origin === 'user-agent') {
@@ -123,8 +128,11 @@ class MatchedStylesView extends React.Component<Props> {
       checkMask,
     });
     const allPropertiesDisabled = style.cssProperties.every(
-      ({ disabled }) => disabled,
+      ({ disabled, parsedOk }) =>
+        disabled || (typeof parsedOk === 'boolean' && !parsedOk),
     );
+    const disabledStyle = hidePruned ? styles.hidden : styles.disabledColor;
+
     const ruleComponent = (
       <div
         className={css(
@@ -149,7 +157,7 @@ class MatchedStylesView extends React.Component<Props> {
         <li
           className={css(
             styles.cssDeclaration,
-            allPropertiesDisabled && styles.cssRuleDisabled,
+            allPropertiesDisabled && disabledStyle,
           )}
           key={ruleIdx}
         >
@@ -199,7 +207,8 @@ class MatchedStylesView extends React.Component<Props> {
     toggleFocusedProperty,
     getRelation,
   }: PropertyListArgs): React.Element<'ul'> => {
-    const { mask, focusedProperty, getEffectiveValue } = this.props;
+    const { mask, focusedProperty, getEffectiveValue, settings } = this.props;
+    const { hidePruned } = settings;
 
     // TODO: Come up with a more systematic way to handle different
     // types of annotations.
@@ -258,6 +267,7 @@ class MatchedStylesView extends React.Component<Props> {
                 isDisabled && styles.cssPropertyDisabled,
                 propertyRelationStyle,
                 isPruned && styles.cssPropertyPruned,
+                isPruned && hidePruned && styles.hidden,
                 isShadowed && styles.cssPropertyShadowed,
               )}
               onClick={toggleCSSPropertyForRule(propertyIndex)}
@@ -507,6 +517,9 @@ const styles = StyleSheet.create({
   },
   disabledColor: {
     ...sharedStyles.greyout,
+  },
+  hidden: {
+    display: 'none',
   },
   cssPropertyDisabled: {
     ...sharedStyles.strikethrough,

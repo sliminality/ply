@@ -57,11 +57,15 @@ const Label = ({
   clearHighlight,
   toggleSelectNode,
 }: LabelProps) => {
-  const { nodeValue, nodeId } = node;
+  const { nodeValue, nodeId, nodeType } = node;
   switch (nodeDisplayType) {
     case 'LEAF':
       return (
-        <ValueLabel value={nodeValue} maxLength={getMaxLengthForNode(node)} />
+        <ValueLabel
+          nodeType={nodeType}
+          value={nodeValue}
+          maxLength={getMaxLengthForNode(node)}
+        />
       );
 
     case 'FORK':
@@ -100,6 +104,7 @@ const Label = ({
  */
 type ValueLabelProps = {
   value: string,
+  nodeType?: $Keys<typeof NODE_TYPE>,
   maxLength?: number,
 };
 
@@ -120,14 +125,15 @@ class ValueLabel extends React.Component<ValueLabelProps, ValueLabelState> {
   };
 
   render() {
-    const { value, maxLength } = this.props;
+    const { value, nodeType, maxLength } = this.props;
     const { showTruncated } = this.state;
     const needsTruncation =
       typeof maxLength === 'number' && value.length > maxLength;
+    const isCommentNode = nodeType && NODE_TYPE[nodeType] === 'COMMENT_NODE';
     return (
       <span>
         <span
-          className={css(styles.nodeValue)}
+          className={css(styles.nodeValue, isCommentNode && styles.commentNode)}
           onClick={this.toggleShowTruncated}
           title={
             needsTruncation ? 'Click to expand/collapse contents' : undefined
@@ -185,6 +191,15 @@ const FullElementLabel = ({
 const styles = StyleSheet.create({
   nodeValue: {
     color: colors.grey,
+  },
+  commentNode: {
+    color: colors.lightGrey,
+    '::before': {
+      content: '"<!-- "',
+    },
+    '::after': {
+      content: '" -->"',
+    },
   },
   ellipsis: {
     marginLeft: '0.5em',

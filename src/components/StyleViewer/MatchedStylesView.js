@@ -231,7 +231,6 @@ class MatchedStylesView extends React.Component<Props> {
           const isPruned = checkMask && !checkMask(propertyIndex);
 
           const relation = getRelation(propertyIndex);
-          console.log(relation);
           const isFocused = relation === 'FOCUSED';
           const propertyStyles: { [CSSPropertyRelation]: Object } = {
             DEPENDANT_DISABLED: styles.cssPropertyDisabled,

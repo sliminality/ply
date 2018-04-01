@@ -169,6 +169,7 @@ class DOMViewer extends Component<Props, State> {
         toggleSelectNode={toggleSelectNode}
         highlightNode={highlightNode}
         clearHighlight={clearHighlight}
+        settings={settings}
       />
     );
     switch (type) {

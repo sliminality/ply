@@ -5,7 +5,7 @@ import AttributeList from './AttributeList';
 import { StyleSheet, css } from 'aphrodite';
 import { colors } from '../../styles';
 
-import type { NormalizedNode } from '../../types';
+import type { NormalizedNode, InspectorSettings } from '../../types';
 import type { CRDP$NodeId } from 'devtools-typed/domain/DOM';
 
 export type NodeDisplayType = 'FORK' | 'LEAF' | 'INLINE_LEAF';
@@ -47,6 +47,7 @@ type LabelProps = {
   highlightNode: CRDP$NodeId => void,
   toggleSelectNode: CRDP$NodeId => void,
   clearHighlight: () => void,
+  settings: InspectorSettings,
 };
 
 const Label = ({
@@ -56,14 +57,17 @@ const Label = ({
   highlightNode,
   clearHighlight,
   toggleSelectNode,
+  settings,
 }: LabelProps) => {
   const { nodeValue, nodeId, nodeType } = node;
+  const { hideComments } = settings;
   switch (nodeDisplayType) {
     case 'LEAF':
       return (
         <ValueLabel
-          nodeType={nodeType}
           value={nodeValue}
+          nodeType={nodeType}
+          hideComments={hideComments}
           maxLength={getMaxLengthForNode(node)}
         />
       );
@@ -104,8 +108,12 @@ const Label = ({
  */
 type ValueLabelProps = {
   value: string,
-  nodeType?: $Keys<typeof NODE_TYPE>,
   maxLength?: number,
+  hideComments?: boolean,
+
+  // Should be $Keys<typeof NODE_TYPE>, but Flow doesn't like that
+  // we pass in numbers instead of strings.
+  nodeType?: number | string,
 };
 
 type ValueLabelState = {
@@ -125,11 +133,16 @@ class ValueLabel extends React.Component<ValueLabelProps, ValueLabelState> {
   };
 
   render() {
-    const { value, nodeType, maxLength } = this.props;
+    const { value, nodeType, maxLength, hideComments } = this.props;
     const { showTruncated } = this.state;
     const needsTruncation =
       typeof maxLength === 'number' && value.length > maxLength;
     const isCommentNode = nodeType && NODE_TYPE[nodeType] === 'COMMENT_NODE';
+
+    if (hideComments && isCommentNode) {
+      return null;
+    }
+
     return (
       <span>
         <span

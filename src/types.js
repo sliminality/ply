@@ -31,6 +31,7 @@ export type InspectorSettings = {
   deepExpandNodes: boolean,
   showConnection: boolean,
   hidePruned: boolean,
+  hideComments: boolean,
 };
 
 // TODO: add this to main styles repo

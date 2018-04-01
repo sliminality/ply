@@ -503,6 +503,10 @@ const styles = StyleSheet.create({
     // Accommodate icon.
     maxWidth: 'calc(100% - 25px)',
     padding: '0 4px',
+
+    // Hanging indent for long values.
+    textIndent: '-1.5em',
+    marginLeft: '1.5em',
   },
   cssPropertyDependant: {
     backgroundColor: colors.highlightPink,

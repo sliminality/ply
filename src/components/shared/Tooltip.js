@@ -4,7 +4,7 @@ import * as React from 'react';
 import { css, StyleSheet } from 'aphrodite';
 import { zIndex, mixins, colors } from '../../styles';
 
-type TooltipDirection = 'right' | 'left';
+type TooltipDirection = 'right' | 'left' | 'bottom';
 
 type Props = {
   children: React.Node,

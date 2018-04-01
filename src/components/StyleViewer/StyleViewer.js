@@ -177,7 +177,7 @@ class StyleViewer extends React.Component<Props, State> {
       return <span>Loading styles...</span>;
     }
 
-    const { showDevControls } = settings;
+    const { showDevControls, showAnnotations } = settings;
     const {
       parentComputedStyle,
       computedStyle,
@@ -202,7 +202,7 @@ class StyleViewer extends React.Component<Props, State> {
             focusedProperty && getCSSProperty(...focusedProperty)
           }
           matchedStyles={matchedCSSRules}
-          ruleAnnotations={ruleAnnotations}
+          {...(showAnnotations ? { ruleAnnotations } : null)}
           mask={mask}
           getEffectiveValue={property =>
             this.getEffectiveValue(nodeId, nodeStyle, property)}

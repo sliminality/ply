@@ -32,6 +32,7 @@ export type InspectorSettings = {
   showConnection: boolean,
   hidePruned: boolean,
   hideComments: boolean,
+  showAnnotations: boolean,
 };
 
 // TODO: add this to main styles repo

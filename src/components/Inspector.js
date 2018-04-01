@@ -37,6 +37,7 @@ class Inspector extends Component<Props, State> {
       showConnection: false,
       hidePruned: false,
       hideComments: true,
+      showAnnotations: true,
     },
   };
 

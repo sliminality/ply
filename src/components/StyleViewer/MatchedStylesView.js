@@ -237,9 +237,11 @@ class MatchedStylesView extends React.Component<Props> {
             DEPENDANT: styles.cssPropertyDependant,
             FOCUSED: styles.cssPropertyFocused,
           };
+          // HACK: Don't want to apply hanging indent to shadowed
+          // properties.
           const propertyRelationStyle = relation
             ? propertyStyles[relation]
-            : null;
+            : isShadowed ? null : styles.hangingIndent;
 
           const tooltip =
             relation === 'DEPENDANT' ? (
@@ -310,7 +312,11 @@ class MatchedStylesView extends React.Component<Props> {
               )}
             >
               {relation === 'DEPENDANT' || isShadowed ? (
-                <Tooltip title={tooltip} isLarge={isShadowed}>
+                <Tooltip
+                  title={tooltip}
+                  isLarge={isShadowed}
+                  direction="bottom"
+                >
                   {propertyText}
                 </Tooltip>
               ) : (
@@ -494,6 +500,10 @@ const styles = StyleSheet.create({
   /**
    * CSS property styles
    */
+  hangingIndent: {
+    textIndent: '-1.5em',
+    marginLeft: '1.5em',
+  },
   cssProperty: {
     cursor: 'pointer',
     display: 'flex',
@@ -503,10 +513,6 @@ const styles = StyleSheet.create({
     // Accommodate icon.
     maxWidth: 'calc(100% - 25px)',
     padding: '0 4px',
-
-    // Hanging indent for long values.
-    textIndent: '-1.5em',
-    marginLeft: '1.5em',
   },
   cssPropertyDependant: {
     backgroundColor: colors.highlightPink,

@@ -29,6 +29,7 @@ export type InspectorSettings = {
   inspectMultiple: boolean,
   showDevControls: boolean,
   deepExpandNodes: boolean,
+  showConnection: boolean,
 };
 
 // TODO: add this to main styles repo

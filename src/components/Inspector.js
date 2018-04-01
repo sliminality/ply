@@ -34,6 +34,7 @@ class Inspector extends Component<Props, State> {
       inspectMultiple: false,
       showDevControls: true,
       deepExpandNodes: true,
+      showConnection: false,
     },
   };
 
@@ -114,9 +115,11 @@ class Inspector extends Component<Props, State> {
   }
 
   renderToolbar() {
+    const { settings } = this.state;
+    const { showConnection } = settings;
     return (
       <div className={css(styles.toolbar)}>
-        {this.renderConnectionStatus()}
+        {showConnection && this.renderConnectionStatus()}
         {this.renderSettings()}
       </div>
     );
@@ -163,7 +166,9 @@ const styles = StyleSheet.create({
   },
 
   settingsWrapper: {
-    position: 'relative',
+    position: 'absolute',
+    bottom: 0,
+    right: 0,
   },
   settings: {
     position: 'absolute',

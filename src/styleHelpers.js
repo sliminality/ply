@@ -1,12 +1,9 @@
 // @flow @format
-import cssMetadata, { CSSMetadata } from './metadata';
+import cssMetadata from './metadata';
 import flatten from 'lodash/flatten';
 
 import type { CRDP$NodeId } from 'devtools-typed/domain/DOM';
-import type {
-  CRDP$CSSProperty,
-  CRDP$RuleMatch,
-} from 'devtools-typed/domain/CSS';
+import type { CRDP$RuleMatch } from 'devtools-typed/domain/CSS';
 import type { NodeStyleMask, CSSPropertyIndices } from './types';
 
 export const isPropertyActiveInMask = (mask: NodeStyleMask) => (
@@ -63,8 +60,8 @@ export const getEffectiveValueForProperty = (
         ruleIndex,
         propertyIndex,
       ];
-      const canonicalName = CSSMetadata.canonicalPropertyName(name);
-      const longhands = CSSMetadata.longhandProperties(canonicalName);
+      const canonicalName = cssMetadata.canonicalPropertyName(name);
+      const longhands = cssMetadata.longhandProperties(canonicalName);
 
       if (longhands && longhands.length > 0) {
         // Check each longhand, e.g. `margin-left`, `margin-right`, etc.

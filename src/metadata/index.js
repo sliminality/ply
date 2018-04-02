@@ -36,7 +36,7 @@ export class CSSMetadata {
       const { name } = property;
       this._allProperties.add(name);
 
-      const canonicalName = CSSMetadata.canonicalPropertyName(name);
+      const canonicalName = this.canonicalPropertyName(name);
       this._allCanonical.add(canonicalName);
 
       if (property.defaultValue) {
@@ -63,7 +63,7 @@ export class CSSMetadata {
     return this._longhands.get(name);
   }
 
-  static canonicalPropertyName(name: CSSProperty): string {
+  canonicalPropertyName(name: CSSProperty): string {
     if (name.charAt(0) !== '-') {
       return name;
     }

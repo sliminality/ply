@@ -52,6 +52,9 @@
 
   &__content {
     overflow-y: auto;
+
+    // Expand to fill space when there are few styles.
+    height: 100%;
   }
 }
 

@@ -456,6 +456,7 @@ const styles = StyleSheet.create({
   },
   container: {
     padding: `${spacing.paddingSides / 2}px ${spacing.paddingSides}px`,
+      height: '100%',
   },
   matchedStylesList: {
     padding: 0,

@@ -123,7 +123,6 @@ class StyleViewer extends React.Component<Props, State> {
     const ruleMatch = nodeStyles.matchedCSSRules;
     const result = getEffectiveValueForProperty(nodeId, ruleMatch)(property);
     const [firstMatch] = result;
-    console.log(firstMatch);
     this.setState({ focusedProperty: firstMatch });
   };
 

@@ -340,7 +340,7 @@ class MatchedStylesView extends React.Component<Props> {
                           : styles.findDepsIcon,
                       )}
                       type="social"
-                      transform="scale(0.8)"
+                      transform="scale(0.8) rotate(90)"
                       onClick={() => toggleFocusedProperty(propertyIndex)}
                     />
                   </Tooltip>

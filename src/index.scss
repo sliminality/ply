@@ -4,6 +4,7 @@
 
 ::-webkit-scrollbar {
   width: 0.5em;
+  height: 0.5em;
 }
 
 ::-webkit-scrollbar-thumb {
@@ -13,9 +14,4 @@
 // Overrides for react-split-pane
 .Pane {
   height: 100%;
-
-  &::-webkit-scrollbar {
-    height: 5px;
-    width: 5px;
-  }
 }

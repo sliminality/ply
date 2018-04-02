@@ -19,7 +19,7 @@ import type {
   Dispatch,
   NormalizedNode,
   NormalizedNodeMap,
-  InspectorSettings,
+  DOMSettings,
 } from '../../types';
 import type { NodeDisplayType } from './ElementLabel';
 import type { CRDP$NodeId } from 'devtools-typed/domain/DOM';
@@ -46,7 +46,7 @@ type Props = {
   rootNode: Node,
   nodes: NormalizedNodeMap,
   selectedNodes: { [CRDP$NodeId]: boolean },
-  settings: InspectorSettings,
+  settings: DOMSettings,
   resolveNode: CRDP$NodeId => ?NormalizedNode,
 
   toggleSelectNode: CRDP$NodeId => void,

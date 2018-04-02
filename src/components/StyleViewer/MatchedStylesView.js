@@ -12,7 +12,7 @@ import Icon from '../shared/Icon';
 import Tooltip from '../shared/Tooltip';
 
 import type {
-  InspectorSettings,
+  StyleSettings,
   CSSRuleAnnotation,
   NodeStyleMask,
   NodeStyleDependencies,
@@ -49,7 +49,7 @@ type Props = {
   ) => (propertyIndex: number) => ?CSSPropertyRelation,
   getEffectiveValue: (property: string) => void,
 
-  settings: InspectorSettings,
+  settings: StyleSettings,
 };
 
 type PropertyListArgs = {
@@ -456,7 +456,7 @@ const styles = StyleSheet.create({
   },
   container: {
     padding: `${spacing.paddingSides / 2}px ${spacing.paddingSides}px`,
-      height: '100%',
+    height: '100%',
   },
   matchedStylesList: {
     padding: 0,

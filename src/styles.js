@@ -27,6 +27,7 @@ const spacing = {
 
 const zIndex = {
   tooltip: 30,
+  dropdown: 3000,
 };
 
 const mixins = {
@@ -52,6 +53,13 @@ const mixins = {
   },
   sansSerif: {
     fontFamily: `-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif`,
+  },
+  dropdown: {
+    position: 'absolute',
+    boxShadow: '0 5px 12px rgba(0,0,0,0.15)',
+    zIndex: zIndex.dropdown,
+    background: 'white',
+    padding: 10,
   },
 };
 

@@ -35,7 +35,7 @@ import type {
   Dispatch,
   NodeStyleMap,
   NodeStyleMaskMap,
-  InspectorSettings,
+  StyleSettings,
   NodeStyleDependencies,
   CSSPropertyIndices,
   CSSPropertyRelation,
@@ -50,7 +50,7 @@ type Props = {
   selectedNodes: { [CRDP$NodeId]: boolean },
   pruned: NodeStyleMaskMap,
   dependencies: NodeStyleDependencies,
-  settings: InspectorSettings,
+  settings: StyleSettings,
 
   getCSSProperty: (CRDP$NodeId, number, number) => ?CRDP$CSSProperty,
 

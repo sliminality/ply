@@ -5,7 +5,7 @@ import AttributeList from './AttributeList';
 import { StyleSheet, css } from 'aphrodite';
 import { colors } from '../../styles';
 
-import type { NormalizedNode, InspectorSettings } from '../../types';
+import type { NormalizedNode, DOMSettings } from '../../types';
 import type { CRDP$NodeId } from 'devtools-typed/domain/DOM';
 
 export type NodeDisplayType = 'FORK' | 'LEAF' | 'INLINE_LEAF';
@@ -47,7 +47,7 @@ type LabelProps = {
   highlightNode: CRDP$NodeId => void,
   toggleSelectNode: CRDP$NodeId => void,
   clearHighlight: () => void,
-  settings: InspectorSettings,
+  settings: DOMSettings,
 };
 
 const Label = ({

@@ -5,7 +5,7 @@ import { StyleSheet, css } from 'aphrodite';
 import { colors, mixins } from '../../styles';
 import Icon from '../shared/Icon';
 
-import type { NodeStyle, InspectorSettings, NodeStyleMask } from '../../types';
+import type { NodeStyle, StyleSettings, NodeStyleMask } from '../../types';
 import type { CRDP$NodeId } from 'devtools-typed/domain/DOM';
 
 type Props = {
@@ -13,7 +13,7 @@ type Props = {
   style: NodeStyle,
   isPruning: boolean,
   pruneNode: CRDP$NodeId => void,
-  settings: InspectorSettings,
+  settings: StyleSettings,
   children?: Array<React.Node>,
 
   // TODO: This should just be an `isPruned` boolean.
@@ -190,14 +190,10 @@ const styles = StyleSheet.create({
     },
   },
   dropdown: {
-    position: 'absolute',
-    boxShadow: '0 5px 12px rgba(0,0,0,0.15)',
-    zIndex: 3000,
-    background: 'white',
+    ...mixins.dropdown,
     right: 0,
     top: '100%',
     minWidth: 200,
-    padding: 10,
   },
   pruneMenuButton: {
     marginLeft: -1,

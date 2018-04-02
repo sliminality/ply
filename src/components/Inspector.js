@@ -1,13 +1,13 @@
 // @flow @format
 /* eslint-disable no-use-before-define */
-import React, { Component } from 'react';
+import * as React from 'react';
 import { connect } from 'react-redux';
 import { getConnection, getError } from '../selectors';
 import SplitPane from 'react-split-pane';
 import DOMViewer from './DOMViewer/DOMViewer';
 import StyleViewer from './StyleViewer/StyleViewer';
 import { StyleSheet, css } from 'aphrodite';
-import { colors } from '../styles';
+import { mixins, colors } from '../styles';
 import '../../lib/css/split-pane.css';
 
 import type {
@@ -26,18 +26,24 @@ type State = {
   settings: InspectorSettings,
 };
 
-class Inspector extends Component<Props, State> {
+class Inspector extends React.Component<Props, State> {
   props: Props;
   state: State = {
     showSettings: false,
     settings: {
-      inspectMultiple: false,
-      showDevControls: true,
-      deepExpandNodes: true,
-      showConnection: false,
-      hidePruned: false,
-      hideComments: true,
-      showAnnotations: true,
+      dom: {
+        deepExpandNodes: true,
+        hideComments: true,
+      },
+      css: {
+        inspectMultiple: false,
+        showDevControls: true,
+        hidePruned: false,
+        showAnnotations: true,
+      },
+      general: {
+        showConnection: false,
+      },
     },
   };
 
@@ -46,9 +52,18 @@ class Inspector extends Component<Props, State> {
     this.setState({ showSettings: !showSettings });
   };
 
-  toggleSetting = (item: string) => {
+  toggleSetting = (category: string, item: string) => {
     const { settings } = this.state;
-    this.setState({ settings: { ...settings, [item]: !settings[item] } });
+    const catSettings = settings[category];
+    this.setState({
+      settings: {
+        ...settings,
+        [category]: {
+          ...catSettings,
+          [item]: !catSettings[item],
+        },
+      },
+    });
   };
 
   renderConnectionStatus() {
@@ -86,31 +101,47 @@ class Inspector extends Component<Props, State> {
 
   renderSettings() {
     const { showSettings, settings } = this.state;
+
     return (
       <div className={css(styles.settingsWrapper)}>
         <button
-          className="uk-button-default uk-button-small"
+          className={'uk-button uk-button-default uk-button-small '.concat(
+            css(styles.settingsButton),
+          )}
           onClick={this.toggleShowSettings}
         >
           Settings
         </button>
         {showSettings && (
           <div className={css(styles.settings)}>
-            <ul className={css(styles.settingsList)}>
-              {Object.keys(settings).map((item: string, i: number) => (
-                <li key={i} className={css(styles.settingsListItem)}>
-                  <label className={css(styles.settingsItemLabel)}>
-                    <input
-                      type="checkbox"
-                      className={`uk-checkbox ${css(styles.settingsCheck)}`}
-                      checked={settings[item]}
-                      onChange={() => this.toggleSetting(item)}
-                    />
-                    {item.replace(/([A-Z])/g, ' $1').toLowerCase()}
-                  </label>
-                </li>
-              ))}
-            </ul>
+            {Object.keys(settings).map((category, catIdx) => {
+              const items = settings[category];
+              return (
+                <React.Fragment key={catIdx}>
+                  <h5 className="uk-nav-header uk-margin-remove">{category}</h5>
+                  <ul className={css(styles.settingsList)}>
+                    {Object.keys(items).map((item: string, itemIdx: number) => (
+                      <li
+                        key={itemIdx}
+                        className={css(styles.settingsListItem)}
+                      >
+                        <label className={css(styles.settingsItemLabel)}>
+                          <input
+                            type="checkbox"
+                            className={`uk-checkbox ${css(
+                              styles.settingsCheck,
+                            )}`}
+                            checked={items[item]}
+                            onChange={() => this.toggleSetting(category, item)}
+                          />
+                          {item.replace(/([A-Z])/g, ' $1').toLowerCase()}
+                        </label>
+                      </li>
+                    ))}
+                  </ul>
+                </React.Fragment>
+              );
+            })}
           </div>
         )}
       </div>
@@ -119,7 +150,7 @@ class Inspector extends Component<Props, State> {
 
   renderToolbar() {
     const { settings } = this.state;
-    const { showConnection } = settings;
+    const { showConnection } = settings.general;
     return (
       <div className={css(styles.toolbar)}>
         {showConnection && this.renderConnectionStatus()}
@@ -139,8 +170,8 @@ class Inspector extends Component<Props, State> {
             defaultSize="33%"
             primary="second"
           >
-            <DOMViewer settings={settings} />
-            <StyleViewer settings={settings} />
+            <DOMViewer settings={settings.dom} />
+            <StyleViewer settings={settings.css} />
           </SplitPane>
         </div>
         {this.renderToolbar()}
@@ -168,21 +199,19 @@ const styles = StyleSheet.create({
     display: 'flex',
   },
 
+  settingsButton: {
+    backgroundColor: 'white',
+  },
   settingsWrapper: {
     position: 'absolute',
     bottom: 0,
     right: 0,
   },
   settings: {
-    position: 'absolute',
+    ...mixins.dropdown,
     bottom: '100%',
     right: 0,
-    backgroundColor: 'white',
     width: 200,
-    zIndex: 5,
-    outline: `1px solid ${colors.lightestGrey}`,
-    borderRadius: 8,
-    padding: 10,
   },
   settingsList: {
     listStyleType: 'none',

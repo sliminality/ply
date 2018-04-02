@@ -26,12 +26,22 @@ export type State = {
 };
 
 export type InspectorSettings = {
+  dom: DOMSettings,
+  css: StyleSettings,
+  general: {
+    showConnection: boolean,
+  },
+};
+
+export type DOMSettings = {
+  deepExpandNodes: boolean,
+  hideComments: boolean,
+};
+
+export type StyleSettings = {
   inspectMultiple: boolean,
   showDevControls: boolean,
-  deepExpandNodes: boolean,
-  showConnection: boolean,
   hidePruned: boolean,
-  hideComments: boolean,
   showAnnotations: boolean,
 };
 

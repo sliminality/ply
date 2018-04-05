@@ -182,8 +182,8 @@ class MatchedStylesView extends React.Component<Props> {
                 <span>
                   These properties likely represent a{' '}
                   <strong>base style</strong>, applied to multiple elements on
-                  the page. This particular element overrides some of the
-                  default values (highlighted in yellow).
+                  the page. This particular element overloads the highlighted
+                  defaults.
                 </span>
               }
               direction="bottom"
@@ -253,7 +253,7 @@ class MatchedStylesView extends React.Component<Props> {
               <span>
                 This property is a "default" setting for these base styles. The
                 current element <strong>overrides</strong> these values with
-                more specific styles (higher in the cascade).
+                more <strong>specific</strong> styles, higher in the cascade.
               </span>
             );
 
@@ -323,14 +323,14 @@ class MatchedStylesView extends React.Component<Props> {
                 propertyText
               )}
               {/**
-              * Show dependants for pruned, active properties.
+              * Show dependents for pruned, active properties.
               * TODO: add title prop to <Icon> after study, or make it toggleable
               * from settings.
               */
               mask &&
                 !isDisabled && (
                   <Tooltip
-                    title={isFocused ? 'Hide dependants' : 'Show dependants'}
+                    title={isFocused ? 'Hide dependents' : 'Show dependents'}
                     direction="left"
                   >
                     <Icon
@@ -516,13 +516,13 @@ const styles = StyleSheet.create({
     padding: '0 4px',
   },
   cssPropertyDependant: {
-    backgroundColor: colors.highlightPink,
-    boxShadow: `0 0 5px 3px ${colors.highlightPink}`,
+    backgroundColor: colors.highlightLime,
+    // boxShadow: `0 0 4px 1px ${colors.highlightLime}`,
     borderRadius: 2,
   },
   cssPropertyFocused: {
     backgroundColor: colors.highlightYellow,
-    boxShadow: `0 0 5px 3px ${colors.highlightYellow}`,
+    // boxShadow: `0 0 5px 3px ${colors.highlightYellow}`,
     borderRadius: 2,
   },
   disabledColor: {
@@ -549,8 +549,9 @@ const styles = StyleSheet.create({
     display: 'none',
   },
   cssPropertyShadowed: {
+    // Used for base style annotation.
     backgroundColor: colors.highlightYellow,
-    boxShadow: `0 0 5px 3px ${colors.highlightYellow}`,
+    // boxShadow: `0 0 4px 1px ${colors.highlightLime}`,
   },
   clipboardOnly: {
     ...mixins.clipboardOnly,

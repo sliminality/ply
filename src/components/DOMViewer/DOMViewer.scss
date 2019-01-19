@@ -59,8 +59,8 @@ $hover-highlight: $yellow;
     display: inline;
 
     & > li {
-      display: inline;
-      word-break: break-word;
+      display: inline-block;
+      word-break: break-all;
     }
   }
 

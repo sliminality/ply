@@ -1,6 +1,8 @@
 # Ply
 
-Ply is a lightweight DOM and CSS inspector. It is designed to help less-experienced developers inspect and learn from production websites of interest, when existing inspector interfaces are too overwhelming. Ply is research software under active development through [Design, Technology, and Research](http://dtr.northwestern.edu/projects/ply) at Northwestern University.
+Ply is a lightweight DOM and CSS inspector. It introduces novel CSS analysis techniques to help less-experienced developers inspect and learn from production websites of interest, when existing inspector interfaces are too overwhelming. Ply is research software, initially under development through [Design, Technology, and Research](http://dtr.northwestern.edu/projects/ply) at Northwestern University.
+
+Several of Ply's core features have been released as [Inactive CSS](https://hacks.mozilla.org/2019/10/firefox-70-a-bountiful-release-for-all/#developertools) in [Mozilla Firefox](https://www.mozilla.org/en-US/firefox/new/) 70. Give it a try! You can also read our award-winning UIST 2018 paper, [Ply: A Visual Web Inspector for Learning from Professional Webpage](https://slim.computer/assets/papers/ply-uist.pdf), or watch the [talk](https://www.youtube.com/watch?v=n2dFxxBh2K4).
 
 ![Screenshot of Ply inspecting a pair of buttons on the Indiegogo homepage](docs/img/ply.png)
 
@@ -8,7 +10,8 @@ Ply is a lightweight DOM and CSS inspector. It is designed to help less-experien
 
 In order to help less-experienced developers navigate the complex DOM and CSS structures found on production webpages, Ply implements the following novel features:
 
-- **Visual regression pruning** (CHI 2017 SRC [paper](http://users.eecs.northwestern.edu/~scl025/files/ply.pdf), [talk](https://slides.com/soylentqueen/ply-chi-src/)): While inspecting the styles for an element, users can click a button to dynamically rule out styles with no visual impact on the page. Useful for reverse-engineering how certain visual effects are achieved, without wasting time on irrelevant properties.
+- **Visual relevance pruning** (CHI 2017 SRC [paper](http://users.eecs.northwestern.edu/~scl025/files/ply.pdf), [talk](https://slides.com/soylentqueen/ply-chi-src/)): While inspecting the styles for an element, users can click a button to dynamically rule out styles with no visual impact on the page. Useful for reverse-engineering how certain visual effects are achieved, without wasting time on irrelevant properties.
+- **Implicit dependencies** (UIST 2018 [paper](https://slim.computer/assets/papers/ply-uist.pdf), [talk](https://www.youtube.com/watch?v=n2dFxxBh2K4), [slides](https://slim.computer/ply-uist-2018/)): Many CSS properties depend upon each other in unintuitive ways (e.g. `z-index` does not apply if `position` is `static`). Ply uses visual relevance pruning to test for implicit dependencies, and provides explanatory tooltips to reinforce the relationships between properties.
 - **DOM component isolation**: Rather than viewing the entire DOM at all times, users can select a node on the target webpage, and inspect only its subtree. Useful for inspecting a component of interest.
 
 Additional features under development include:

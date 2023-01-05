@@ -8,7 +8,7 @@
     "flow-bin": "^0.64.0",
     "npm-run-all": "^4.0.2",
     "prettier": "^1.7.4",
-    "react-scripts": "0.9.0"
+    "react-scripts": "5.0.1"
   },
   "dependencies": {
     "aphrodite": "^1.2.5",
